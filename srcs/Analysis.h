@@ -175,12 +175,15 @@ public:
     bool IsChannelEMu();
     bool IsChannelOnZ();
     bool IsChannelOffZ();
+    bool Is2ndOnZFiveLepton();
 
     bool ChannelEMuHighMll();
     bool ChannelOffZHighMET();
 
     float VarMll();
     float VarMET();
+    float VarMll2ndZ();
+    float VarMT5th();
 
 };
 #endif

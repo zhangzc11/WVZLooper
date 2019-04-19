@@ -98,12 +98,15 @@ void Analysis::Loop(const char* TypeName)
 
     cutflow.getCut("Weight");
     cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
+    cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
 
     cutflow.bookCutflows();
 
     RooUtil::Histograms histograms;
     histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
     histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
+    histograms.addHistogram("Mll2ndZ", 180, 0, 300, [&](){ return this->VarMll2ndZ(); });
+    histograms.addHistogram("MT5th", 180, 0, 200, [&](){ return this->VarMT5th(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -567,6 +570,15 @@ bool Analysis::IsChannelOffZ()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::Is2ndOnZFiveLepton()
+{
+    if (fabs((leptons[lep_2ndZCand_idx1] + leptons[lep_2ndZCand_idx2]).M() - 91.1876) < 10.)
+        return true;
+    else
+        return false;
+}
+
+//______________________________________________________________________________________________
 bool Analysis::ChannelEMuHighMll()
 {
     if (dilepNominal.M() > 120.)
@@ -591,9 +603,22 @@ float Analysis::VarMll()
 }
 
 //______________________________________________________________________________________________
+float Analysis::VarMll2ndZ()
+{
+    return (leptons[lep_2ndZCand_idx1] + leptons[lep_2ndZCand_idx2]).M();
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarMET()
 {
     return met_pt;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMT5th()
+{
+    TLorentzVector MET = RooUtil::Calc::getTLV(RooUtil::Calc::getLV(met_pt, 0, met_phi, 0));
+    return (leptons[lep_WCand_idx1] + MET).Mt();
 }
 
 // eof

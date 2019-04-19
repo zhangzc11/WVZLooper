@@ -119,6 +119,7 @@ void Analysis::Loop(const char* TypeName)
         selectZCandLeptons();
         selectNominalLeptons();
         sortLeptonIndex();
+        select2ndZCandAndWCandLeptons();
         setDilepMasses();
         cutflow.fill();
     }//end of loop
@@ -227,6 +228,46 @@ void Analysis::selectNominalLeptons()
     if (nNominalLeptons > 1) lep_Nom_idx2 = good_idx[1];
     if (nNominalLeptons > 2) lep_Nom_idx3 = good_idx[2];
 
+}
+
+//______________________________________________________________________________________________
+void Analysis::select2ndZCandAndWCandLeptons()
+{
+    // These are the variables to set
+    lep_2ndZCand_idx1 = -999;
+    lep_2ndZCand_idx2 = -999;
+    lep_WCand_idx1 = -999;
+
+    if (nNominalLeptons != 3)
+        return;
+
+    // Assumes lep_Nom_idx1,2,3 are set
+    double dM12 = fabs((leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2]).M() - 91.1876);
+    double dM13 = fabs((leptons[lep_Nom_idx1] + leptons[lep_Nom_idx3]).M() - 91.1876);
+    double dM23 = fabs((leptons[lep_Nom_idx2] + leptons[lep_Nom_idx3]).M() - 91.1876);
+    double mindM = std::min(dM12, std::min(dM13, dM23));
+    if (mindM == dM12)
+    {
+        lep_2ndZCand_idx1 = lep_Nom_idx1;
+        lep_2ndZCand_idx2 = lep_Nom_idx2;
+        lep_WCand_idx1 = lep_Nom_idx3;
+    }
+    else if (mindM == dM13)
+    {
+        lep_2ndZCand_idx1 = lep_Nom_idx1;
+        lep_2ndZCand_idx2 = lep_Nom_idx3;
+        lep_WCand_idx1 = lep_Nom_idx2;
+    }
+    else if (mindM == dM23)
+    {
+        lep_2ndZCand_idx1 = lep_Nom_idx2;
+        lep_2ndZCand_idx2 = lep_Nom_idx3;
+        lep_WCand_idx1 = lep_Nom_idx1;
+    }
+    else
+    {
+        RooUtil::error("I should not be here!", "select2ndZCandAndWCandLeptons");
+    }
 }
 
 //______________________________________________________________________________________________

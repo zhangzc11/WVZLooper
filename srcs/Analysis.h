@@ -121,6 +121,9 @@ public:
     int lep_Nom_idx1;
     int lep_Nom_idx2;
     int lep_Nom_idx3;
+    int lep_2ndZCand_idx1;
+    int lep_2ndZCand_idx2;
+    int lep_WCand_idx1;
     TLorentzVector dilepZCand;
     TLorentzVector dilepNominal;
     TString output_tfile_name;
@@ -142,6 +145,7 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void select2ndZCandAndWCandLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
 

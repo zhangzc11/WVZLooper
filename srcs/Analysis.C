@@ -278,20 +278,20 @@ void Analysis::select2ndZCandAndWCandLeptons()
     double mindM = std::min(dM12, std::min(dM13, dM23));
     if (mindM == dM12)
     {
-        lep_2ndZCand_idx1 = lep_veto_idx1;
-        lep_2ndZCand_idx2 = lep_veto_idx2;
+        lep_2ndZCand_idx1 = lep_pt->at(lep_veto_idx1) > lep_pt->at(lep_veto_idx2) ? lep_veto_idx1 : lep_veto_idx2;
+        lep_2ndZCand_idx2 = lep_pt->at(lep_veto_idx1) > lep_pt->at(lep_veto_idx2) ? lep_veto_idx2 : lep_veto_idx1;
         lep_WCand_idx1 = lep_veto_idx3;
     }
     else if (mindM == dM13)
     {
-        lep_2ndZCand_idx1 = lep_veto_idx1;
-        lep_2ndZCand_idx2 = lep_veto_idx3;
+        lep_2ndZCand_idx1 = lep_pt->at(lep_veto_idx1) > lep_pt->at(lep_veto_idx3) ? lep_veto_idx1 : lep_veto_idx3;
+        lep_2ndZCand_idx2 = lep_pt->at(lep_veto_idx1) > lep_pt->at(lep_veto_idx3) ? lep_veto_idx3 : lep_veto_idx1;
         lep_WCand_idx1 = lep_veto_idx2;
     }
     else if (mindM == dM23)
     {
-        lep_2ndZCand_idx1 = lep_veto_idx2;
-        lep_2ndZCand_idx2 = lep_veto_idx3;
+        lep_2ndZCand_idx1 = lep_pt->at(lep_veto_idx2) > lep_pt->at(lep_veto_idx3) ? lep_veto_idx2 : lep_veto_idx3;
+        lep_2ndZCand_idx2 = lep_pt->at(lep_veto_idx2) > lep_pt->at(lep_veto_idx3) ? lep_veto_idx3 : lep_veto_idx2;
         lep_WCand_idx1 = lep_veto_idx1;
     }
     else
@@ -599,7 +599,7 @@ bool Analysis::IsChannelOffZ()
 //______________________________________________________________________________________________
 bool Analysis::Is2ndOnZFiveLepton()
 {
-    if (fabs((leptons[lep_2ndZCand_idx1] + leptons[lep_2ndZCand_idx2]).M() - 91.1876) < 10.)
+    if (fabs((leptons[lep_2ndZCand_idx1] + leptons[lep_2ndZCand_idx2]).M() - 91.1876) < 10. and leptons[lep_2ndZCand_idx1].Pt() > 25.)
         return true;
     else
         return false;
@@ -653,8 +653,7 @@ float Analysis::VarMET()
 //______________________________________________________________________________________________
 float Analysis::VarMT5th()
 {
-    TLorentzVector MET = RooUtil::Calc::getTLV(RooUtil::Calc::getLV(met_pt, 0, met_phi, 0));
-    return (leptons[lep_WCand_idx1] + MET).Mt();
+    return sqrt(2 * met_pt * leptons[lep_WCand_idx1].Et() * (1.0 - cos(leptons[lep_WCand_idx1].Phi() - met_phi)));
 }
 
 //______________________________________________________________________________________________

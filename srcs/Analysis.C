@@ -94,6 +94,7 @@ void Analysis::Loop(const char* TypeName)
     cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
     cutflow.getCut("Cut4LepBVeto");
     cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
+    cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
 
     cutflow.getCut("Weight");
     cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
@@ -102,6 +103,7 @@ void Analysis::Loop(const char* TypeName)
 
     RooUtil::Histograms histograms;
     histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
+    histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -568,9 +570,24 @@ bool Analysis::ChannelEMuHighMll()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::ChannelOffZHighMET()
+{
+    if (met_pt > 120.)
+        return true;
+    else
+        return false;
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarMll()
 {
     return dilepNominal.M();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMET()
+{
+    return met_pt;
 }
 
 // eof

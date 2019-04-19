@@ -11,7 +11,7 @@ tw_topnofullhad_powheg_1
 twz_ll_madgraph_1
 tZq_ll_madgraph_1
 vbsww_madgraph_1
-vh_nonbb_amcatnlo_1
+vh_nonbbwwzz_amcatnlo_1
 wjets_incl_madgraph_1
 wwg_amcatnlo_1
 ww_incl_pythia_1
@@ -23,3 +23,7 @@ wzz_amcatnlo_1
 zg_llg_amcatnlo_1
 zz_4l_powheg_1
 zzz_amcatnlo_1
+wh_ww_amcatnlo_1
+zh_zz_amcatnlo_1
+zh_ww_amcatnlo_1
+wh_zz_amcatnlo_1

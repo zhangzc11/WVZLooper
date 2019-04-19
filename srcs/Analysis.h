@@ -173,8 +173,10 @@ public:
     bool IsChannelOffZ();
 
     bool ChannelEMuHighMll();
+    bool ChannelOffZHighMET();
 
     float VarMll();
+    float VarMET();
 
 };
 #endif

@@ -2,7 +2,8 @@ dy_m1050_madgraph_1
 dy_m50_madgraph_1
 ggh_hzz4l_powheg_1
 sts_4f_leptonic_madgraph_1
-ttbar_amcatnlo_1
+ttbar_dilep_madgraph_1
+tth_nonbb_powheg_1
 ttw_lnu_amcatnlo_1
 ttz_ll_mll1_amcatnlo_1
 ttz_llvv_mll10_amcatnlo_1
@@ -18,7 +19,7 @@ ww_incl_pythia_1
 www_amcatnlo_1
 wwz_amcatnlo_1
 wzg_amcatnlo_1
-wz_incl_pythia_1
+wz_3lv_amcatnlo_1
 wzz_amcatnlo_1
 zg_llg_amcatnlo_1
 zz_4l_powheg_1

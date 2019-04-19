@@ -1,2 +1,4 @@
 *.o
 *.exe
+outputs/*.root
+plots/

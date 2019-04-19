@@ -177,8 +177,6 @@ public:
 
     float VarMll();
     float VarMET();
-    float VarLepNomPtLead();
-    float VarLepNomPtSubLead();
 
 };
 #endif

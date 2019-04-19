@@ -104,8 +104,6 @@ void Analysis::Loop(const char* TypeName)
     RooUtil::Histograms histograms;
     histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
     histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
-    histograms.addHistogram("lepNomPtLead", 180, 0, 200, [&](){ return this->VarLepNomPtLead(); });
-    histograms.addHistogram("lepNomPtSubLead", 180, 0, 200, [&](){ return this->VarLepNomPtSubLead(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -555,18 +553,6 @@ float Analysis::VarMll()
 float Analysis::VarMET()
 {
     return met_pt;
-}
-
-//______________________________________________________________________________________________
-float Analysis::VarLepNomPtLead()
-{
-    return leptons[lep_Nom_idx1].Pt();
-}
-
-//______________________________________________________________________________________________
-float Analysis::VarLepNomPtSubLead()
-{
-    return leptons[lep_Nom_idx2].Pt();
 }
 
 // eof

@@ -104,6 +104,8 @@ void Analysis::Loop(const char* TypeName)
     RooUtil::Histograms histograms;
     histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
     histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
+    histograms.addHistogram("lepNomPtLead", 180, 0, 200, [&](){ return this->VarLepNomPtLead(); });
+    histograms.addHistogram("lepNomPtSubLead", 180, 0, 200, [&](){ return this->VarLepNomPtSubLead(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -195,6 +197,8 @@ void Analysis::selectZCandLeptons()
 void Analysis::selectNominalLeptons()
 {
 
+    // The nominal leptons are the leptons that are not tagged as Z
+
     // reset
     nNominalLeptons = -999;
     lep_Nom_idx1 = -999;
@@ -231,6 +235,7 @@ void Analysis::selectNominalLeptons()
 void Analysis::sortLeptonIndex()
 {
 
+    // Sort Nominal leptons
     if (nNominalLeptons == 2)
     {
         int tmp1 = lep_Nom_idx1;
@@ -249,13 +254,6 @@ void Analysis::sortLeptonIndex()
         lep_Nom_idx1 = lepidx[0].idx;
         lep_Nom_idx2 = lepidx[1].idx;
         lep_Nom_idx3 = lepidx[2].idx;
-        // std::cout <<  " leptons[lep_Nom_idx1].Pt(): " << leptons[lep_Nom_idx1].Pt() <<  std::endl;
-        // std::cout <<  " leptons[lep_Nom_idx2].Pt(): " << leptons[lep_Nom_idx2].Pt() <<  std::endl;
-        // std::cout <<  " leptons[lep_Nom_idx3].Pt(): " << leptons[lep_Nom_idx3].Pt() <<  std::endl;
-        // bool bigger12 = (leptons[lep_Nom_idx1].Pt()>leptons[lep_Nom_idx2].Pt());
-        // bool bigger23 = (leptons[lep_Nom_idx2].Pt()>leptons[lep_Nom_idx3].Pt());
-        // bool bigger123 = bigger12 and bigger23;
-        // std::cout <<  " bigger123: " << bigger123 <<  std::endl;
 
     }
 
@@ -264,37 +262,6 @@ void Analysis::sortLeptonIndex()
     int tmp2 = lep_ZCand_idx2;
     lep_ZCand_idx1 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? lep_ZCand_idx1 : lep_ZCand_idx2;
     lep_ZCand_idx2 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? lep_ZCand_idx2 : lep_ZCand_idx1;
-
-    // int npflep[3];
-    // npflep[0] = -999;
-    // npflep[1] = -999;
-    // npflep[2] = -999;
-
-    // std::vector<int> nom_index;
-    // nom_index.push_back(lep_Nom_idx1);
-    // nom_index.push_back(lep_Nom_idx2);
-    // nom_index.push_back(lep_Nom_idx3);
-
-    // for (int jj = 0 ; jj < 3 ; jj ++)
-    // {
-    //     double comparePt;
-    //     comparePt = leptons[nom_index[jj]].Pt();
-    //     for (int kk = 0 ; kk < 3 ; kk ++)
-    //     {
-    //         if (npflep[nom_index[kk]] == -999)
-    //         {
-    //             npflep[nom_index[kk]] = nom_index[jj];
-    //             break;
-    //         }
-    //         if (leptons[npflep[nom_index[kk]]].Pt() < comparePt)
-    //         {
-    //             for (int mm = 3 ; mm > kk; mm --)
-    //                 npflep[nom_index[mm]] = npflep[nom_index[mm - 1]];
-    //             npflep[nom_index[kk]] = nom_index[jj];
-    //             break;
-    //         }
-    //     }
-    // }
 
 }
 
@@ -588,6 +555,18 @@ float Analysis::VarMll()
 float Analysis::VarMET()
 {
     return met_pt;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarLepNomPtLead()
+{
+    return leptons[lep_Nom_idx1].Pt();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarLepNomPtSubLead()
+{
+    return leptons[lep_Nom_idx2].Pt();
 }
 
 // eof

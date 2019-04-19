@@ -176,6 +176,7 @@ public:
     bool IsChannelOnZ();
     bool IsChannelOffZ();
     bool Is2ndOnZFiveLepton();
+    bool Is5thNominal();
 
     bool ChannelEMuHighMll();
     bool ChannelOffZHighMET();
@@ -184,6 +185,8 @@ public:
     float VarMET();
     float VarMll2ndZ();
     float VarMT5th();
+    float VarRelIso5th();
+    float VarPt5th();
 
 };
 #endif

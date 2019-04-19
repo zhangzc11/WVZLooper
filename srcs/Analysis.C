@@ -99,6 +99,7 @@ void Analysis::Loop(const char* TypeName)
     cutflow.getCut("Weight");
     cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
     cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
+    cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
 
     cutflow.bookCutflows();
 
@@ -106,7 +107,9 @@ void Analysis::Loop(const char* TypeName)
     histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
     histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
     histograms.addHistogram("Mll2ndZ", 180, 0, 300, [&](){ return this->VarMll2ndZ(); });
-    histograms.addHistogram("MT5th", 180, 0, 200, [&](){ return this->VarMT5th(); });
+    histograms.addHistogram("MT5th", 180, 0, 300, [&](){ return this->VarMT5th(); });
+    histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
+    histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -121,8 +124,8 @@ void Analysis::Loop(const char* TypeName)
         selectVetoLeptons();
         selectZCandLeptons();
         selectNominalLeptons();
-        sortLeptonIndex();
         select2ndZCandAndWCandLeptons();
+        sortLeptonIndex();
         setDilepMasses();
         cutflow.fill();
     }//end of loop
@@ -241,31 +244,55 @@ void Analysis::select2ndZCandAndWCandLeptons()
     lep_2ndZCand_idx2 = -999;
     lep_WCand_idx1 = -999;
 
-    if (nNominalLeptons != 3)
+    std::vector<int> good_veto_idx; // index of good nominal leptons
+
+    // Loop over the leptons
+    for (int jj = 0 ; jj < lep_pt->size(); jj++)
+    {
+
+        if (jj == lep_ZCand_idx1)
+            continue;
+
+        if (jj == lep_ZCand_idx2)
+            continue;
+
+        if (not passVetoLeptonID(jj))
+            continue;
+
+        good_veto_idx.push_back(jj);
+
+    }
+
+    // At this point we must only find 5 total
+    if (good_veto_idx.size() != 3)
         return;
 
+    int lep_veto_idx1 = good_veto_idx[0];
+    int lep_veto_idx2 = good_veto_idx[1];
+    int lep_veto_idx3 = good_veto_idx[2];
+
     // Assumes lep_Nom_idx1,2,3 are set
-    double dM12 = fabs((leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2]).M() - 91.1876);
-    double dM13 = fabs((leptons[lep_Nom_idx1] + leptons[lep_Nom_idx3]).M() - 91.1876);
-    double dM23 = fabs((leptons[lep_Nom_idx2] + leptons[lep_Nom_idx3]).M() - 91.1876);
+    double dM12 = fabs((leptons[lep_veto_idx1] + leptons[lep_veto_idx2]).M() - 91.1876);
+    double dM13 = fabs((leptons[lep_veto_idx1] + leptons[lep_veto_idx3]).M() - 91.1876);
+    double dM23 = fabs((leptons[lep_veto_idx2] + leptons[lep_veto_idx3]).M() - 91.1876);
     double mindM = std::min(dM12, std::min(dM13, dM23));
     if (mindM == dM12)
     {
-        lep_2ndZCand_idx1 = lep_Nom_idx1;
-        lep_2ndZCand_idx2 = lep_Nom_idx2;
-        lep_WCand_idx1 = lep_Nom_idx3;
+        lep_2ndZCand_idx1 = lep_veto_idx1;
+        lep_2ndZCand_idx2 = lep_veto_idx2;
+        lep_WCand_idx1 = lep_veto_idx3;
     }
     else if (mindM == dM13)
     {
-        lep_2ndZCand_idx1 = lep_Nom_idx1;
-        lep_2ndZCand_idx2 = lep_Nom_idx3;
-        lep_WCand_idx1 = lep_Nom_idx2;
+        lep_2ndZCand_idx1 = lep_veto_idx1;
+        lep_2ndZCand_idx2 = lep_veto_idx3;
+        lep_WCand_idx1 = lep_veto_idx2;
     }
     else if (mindM == dM23)
     {
-        lep_2ndZCand_idx1 = lep_Nom_idx2;
-        lep_2ndZCand_idx2 = lep_Nom_idx3;
-        lep_WCand_idx1 = lep_Nom_idx1;
+        lep_2ndZCand_idx1 = lep_veto_idx2;
+        lep_2ndZCand_idx2 = lep_veto_idx3;
+        lep_WCand_idx1 = lep_veto_idx1;
     }
     else
     {
@@ -597,6 +624,15 @@ bool Analysis::ChannelOffZHighMET()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::Is5thNominal()
+{
+    if (lep_relIso03EA->at(lep_WCand_idx1) < 0.1)
+        return true;
+    else
+        return false;
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarMll()
 {
     return dilepNominal.M();
@@ -619,6 +655,24 @@ float Analysis::VarMT5th()
 {
     TLorentzVector MET = RooUtil::Calc::getTLV(RooUtil::Calc::getLV(met_pt, 0, met_phi, 0));
     return (leptons[lep_WCand_idx1] + MET).Mt();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarRelIso5th()
+{
+    if (lep_WCand_idx1 >= 0)
+        return lep_relIso03EA->at(lep_WCand_idx1);
+    else
+        return -999;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarPt5th()
+{
+    if (lep_WCand_idx1 >= 0)
+        return lep_pt->at(lep_WCand_idx1);
+    else
+        return -999;
 }
 
 // eof

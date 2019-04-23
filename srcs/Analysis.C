@@ -592,10 +592,10 @@ bool Analysis::IsChannelOnZ()
 //______________________________________________________________________________________________
 bool Analysis::IsChannelOffZ()
 {
-    if (fabs(dilepNominal.M() - 91.1876) < 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // must be SFOS
-        return false;
-    else
+    if (fabs(dilepNominal.M() - 91.1876) >= 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // must be SFOS
         return true;
+    else
+        return false;
 }
 
 //______________________________________________________________________________________________

@@ -92,6 +92,7 @@ void Analysis::Loop(const char* TypeName)
     cutflow.addCutToLastActiveCut("ChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(); }, UNITY );
     cutflow.getCut("Cut4LepBVeto");
     cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
+    cutflow.addCutToLastActiveCut("ChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
     cutflow.getCut("Cut4LepBVeto");
     cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
     cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
@@ -110,6 +111,7 @@ void Analysis::Loop(const char* TypeName)
     histograms.addHistogram("MT5th", 180, 0, 300, [&](){ return this->VarMT5th(); });
     histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
     histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
+    histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -633,6 +635,12 @@ bool Analysis::Is5thNominal()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::IsNjetGeq2()
+{
+    return nj >= 2;
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarMll()
 {
     return dilepNominal.M();
@@ -672,6 +680,12 @@ float Analysis::VarPt5th()
         return lep_pt->at(lep_WCand_idx1);
     else
         return -999;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarNjet()
+{
+    return nj;
 }
 
 // eof

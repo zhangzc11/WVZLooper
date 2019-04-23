@@ -15,7 +15,7 @@ bkgfiles = [
 sigfiles = [
         "outputs/wwz.root",
         "outputs/wzz.root",
-        "outputs/www.root",
+        #"outputs/www.root",
         "outputs/zzz.root",
         # "outputs/sig.root",
         ]
@@ -33,7 +33,7 @@ p.dump_plot(fnames=bkgfiles,
         sig_fnames=sigfiles,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "other", "Z/t#bar{t}"],
-        signal_labels=["WWZ", "WZZ", "WWW", "ZZZ", "VVV"],
+        signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
         dirname="plots/lin",
         filter_pattern="__",
         dogrep=True,

@@ -521,12 +521,12 @@ bool Analysis::Cut4LepLowMll()
     {
         for (unsigned int jj = ii + 1; jj < indices.size(); ++jj)
         {
-            int id1 = lep_id->at(ii);
-            int id2 = lep_id->at(jj);
+            int id1 = lep_id->at(indices.at(ii));
+            int id2 = lep_id->at(indices.at(jj));
 
             if (id1 * id2 < 0)
             {
-                if ((leptons[ii] + leptons[jj]).M() < 12.)
+                if ((leptons[indices.at(ii)] + leptons[indices.at(jj)]).M() < 12.)
                     pass = false;
             }
         }

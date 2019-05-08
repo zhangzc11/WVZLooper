@@ -169,8 +169,10 @@ public:
     bool FindTwoOSNominalLeptons();
 
     bool Cut4LepLeptonPt();
+    bool Cut4LepLeptonPt_tag1();
     bool Cut4LepLowMll();
     bool Cut4LepBVeto();
+    bool Cut4LepMET_tag1();
 
     bool IsChannelEMu();
     bool IsChannelOnZ();
@@ -180,6 +182,7 @@ public:
     bool IsNjetGeq2();
 
     bool ChannelEMuHighMll();
+    bool ChannelEMuNonZ();
     bool ChannelOffZHighMET();
 
     float VarMll();
@@ -271,7 +274,7 @@ void Analysis::Initial(const char* RootName, int RootNumber)
     fChain->SetBranchAddress("evt_scale1fb", &evt_scale1fb);
     fChain->SetBranchAddress("genps_weight", &genps_weight);
     fChain->SetBranchAddress("xsec_br", &xsec_br);
-    fChain->SetBranchAddress("CMS4path",&CMS4path);
+    //fChain->SetBranchAddress("CMS4path",&CMS4path);
     fChain->SetBranchAddress("CMS4index", &CMS4index);
     fChain->SetBranchAddress("weight_fr_r1_f1", &weight_fr_r1_f1);
     fChain->SetBranchAddress("weight_fr_r1_f2", &weight_fr_r1_f2);

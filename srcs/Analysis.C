@@ -25,6 +25,8 @@
 
 #include "rooutil.h"
 
+const int selection_tag = 1;//0: ucsd selection; 1: caltech selection
+
 struct MyLepton
 {
     int idx;
@@ -80,27 +82,40 @@ void Analysis::Loop(const char* TypeName)
     TFile* output_file = new TFile("outputs/" + output_tfile_name, "RECREATE");
     RooUtil::Cutflow cutflow(output_file);
     cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
-    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
+    
+    if(selection_tag == 0){
+	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 
-    cutflow.getCut("Cut4LepBVeto");
-    cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
-    cutflow.addCutToLastActiveCut("ChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(); }, UNITY );
-    cutflow.getCut("Cut4LepBVeto");
-    cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
-    cutflow.addCutToLastActiveCut("ChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
-    cutflow.getCut("Cut4LepBVeto");
-    cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
-    cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
+	    cutflow.getCut("Cut4LepBVeto");
+	    cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("ChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(); }, UNITY );
+	    cutflow.getCut("Cut4LepBVeto");
+	    cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("ChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
+	    cutflow.getCut("Cut4LepBVeto");
+	    cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
 
-    cutflow.getCut("Weight");
-    cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
+	    cutflow.getCut("Weight");
+	    cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
+     }
+     if(selection_tag == 1){
+	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepMET", [&](){ return this->Cut4LepMET_tag1(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("ChannelEMuNonZ", [&](){ return this->ChannelEMuNonZ(); }, UNITY );
+     }
 
     cutflow.bookCutflows();
 
@@ -167,7 +182,9 @@ void Analysis::selectZCandLeptons()
     lep_ZCand_idx1 = -999;
     lep_ZCand_idx2 = -999;
     bool ifpass; // For tagging Z boson only
-    double compare = 10; // Min value of |Mll - MZ|
+    double ZWindow = 10.0;
+    if(selection_tag == 1) ZWindow = 15.0;
+    double compare = ZWindow; // Min value of |Mll - MZ|
 
     // Loop over the leptons and find the Z boson pair
     for (int jj = 0 ; jj < (lep_pt->size() - 1) ; jj ++)
@@ -186,7 +203,7 @@ void Analysis::selectZCandLeptons()
             int id1 = (*lep_id).at(jj);
             int id2 = (*lep_id).at(kk);
             ifpass = true;
-            if (fabs(dilepZCand.M() - 91.1875) > 10)  ifpass = false; // within Z mass window
+            if (fabs(dilepZCand.M() - 91.1875) > ZWindow)  ifpass = false; // within Z mass window
             if (abs(id1) != abs(id2)) ifpass = false; // same-flavor
             if (id1 == id2)  ifpass = false; // opposite-sign
             if (ifpass && fabs(dilepZCand.M() - 91.1875) > compare) ifpass = false; // if bigger than previous
@@ -543,6 +560,14 @@ bool Analysis::Cut4LepBVeto()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::Cut4LepMET_tag1()
+{
+    if (met_pt > 50.)
+        return true;
+    else
+        return false;
+}
+//______________________________________________________________________________________________
 bool Analysis::Cut4LepLeptonPt()
 {
     if (nNominalLeptons != 2 or lep_ZCand_idx1 == -999)
@@ -558,6 +583,32 @@ bool Analysis::Cut4LepLeptonPt()
     else
         return false;
 }
+
+bool Analysis::Cut4LepLeptonPt_tag1()
+{
+    if (nNominalLeptons != 2 or lep_ZCand_idx1 == -999)
+        return false;
+
+    float lepZpt1 = leptons[lep_ZCand_idx1].Pt();
+    float lepZpt2 = leptons[lep_ZCand_idx2].Pt();
+    float lepNpt1 = leptons[lep_Nom_idx1].Pt();
+    float lepNpt2 = leptons[lep_Nom_idx2].Pt();
+
+    if (!(lepZpt1 > 10. and lepZpt2 > 10. and lepNpt1 > 10. and lepNpt2 > 10.)) return false;
+    vector<float> leptonPtVector; 
+    leptonPtVector.push_back(lepZpt1);
+    leptonPtVector.push_back(lepZpt2);
+    leptonPtVector.push_back(lepNpt1);
+    leptonPtVector.push_back(lepNpt2);
+    std::sort(leptonPtVector.begin(), leptonPtVector.end());
+    float leadLeptonPt = leptonPtVector[3];
+    float subleadLeptonPt = leptonPtVector[2];
+    if(!(leadLeptonPt > 25 && subleadLeptonPt > 15)) return false;
+    
+    return true;
+}
+
+
 
 //______________________________________________________________________________________________
 bool Analysis::Is4LeptonEvent()
@@ -614,6 +665,15 @@ bool Analysis::ChannelEMuHighMll()
         return true;
     else
         return false;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::ChannelEMuNonZ()
+{
+    if (fabs(dilepNominal.M() - 91.1876) < 15.)
+        return false;
+    else
+        return true;
 }
 
 //______________________________________________________________________________________________

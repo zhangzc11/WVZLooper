@@ -183,6 +183,7 @@ public:
 
     bool ChannelEMuHighMll();
     bool ChannelEMuNonZ();
+    bool ChannelZZOnShell();
     bool ChannelOffZHighMET();
 
     float VarMll();

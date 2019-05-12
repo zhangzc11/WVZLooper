@@ -25,7 +25,7 @@
 
 #include "rooutil.h"
 
-const int selection_tag = 1;//0: ucsd selection; 1: caltech selection
+const int selection_tag = 2;//0: ucsd selection; 1: caltech selection; 2: ZZ double on-shell selection
 
 struct MyLepton
 {
@@ -116,6 +116,14 @@ void Analysis::Loop(const char* TypeName)
 	    cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
 	    cutflow.addCutToLastActiveCut("ChannelEMuNonZ", [&](){ return this->ChannelEMuNonZ(); }, UNITY );
      }
+     if(selection_tag == 2){
+	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("ChannelZZOnShell", [&](){ return this->ChannelZZOnShell(); }, UNITY );
+     }
+
 
     cutflow.bookCutflows();
 
@@ -183,7 +191,7 @@ void Analysis::selectZCandLeptons()
     lep_ZCand_idx2 = -999;
     bool ifpass; // For tagging Z boson only
     double ZWindow = 10.0;
-    if(selection_tag == 1) ZWindow = 15.0;
+    if(selection_tag == 1 || selection_tag == 2) ZWindow = 15.0;
     double compare = ZWindow; // Min value of |Mll - MZ|
 
     // Loop over the leptons and find the Z boson pair
@@ -241,9 +249,16 @@ void Analysis::selectNominalLeptons()
         if (jj == lep_ZCand_idx2)
             continue;
 
+	if(selection_tag == 0 || selection_tag == 1)
+	{
         if (not passNominalLeptonID(jj))
             continue;
-
+	}
+	if(selection_tag == 2)
+	{
+        if (not passZCandLeptonID(jj))
+            continue;
+	}
         good_idx.push_back(jj);
 
     }
@@ -671,6 +686,17 @@ bool Analysis::ChannelEMuHighMll()
 bool Analysis::ChannelEMuNonZ()
 {
     if (fabs(dilepNominal.M() - 91.1876) < 15.)
+        return false;
+    else
+        return true;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::ChannelZZOnShell()
+{
+    if (lep_id->at(lep_Nom_idx1) != -lep_id->at(lep_Nom_idx2))
+	return false;
+    if (fabs(dilepNominal.M() - 91.1876) > 15.)
         return false;
     else
         return true;

@@ -31,6 +31,8 @@ sigfiles_detail = [
         # "outputs/sig.root",
         ]
 
+#datafile = None
+datafile = "outputs/data.root"
 
 allfiles = glob.glob("outputs/MC_*")
 allfiles = [ f for f in allfiles if "ttbar" not in f ]
@@ -43,6 +45,7 @@ colors = [2005, 2001, 2003, 2007, 920, 2012, 2011]
 
 p.dump_plot(fnames=bkgfiles,
         sig_fnames=sigfiles,
+	data_fname=datafile,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
@@ -57,12 +60,13 @@ p.dump_plot(fnames=bkgfiles,
             "legend_scaley":1.1,
             "legend_ncolumns": 3,
             "ymax_scale": 1.2,
-            "lumi_value":137
+            "lumi_value":58.90000
             }
         )
 
 p.dump_plot(fnames=bkgfiles,
         sig_fnames=sigfiles,
+	data_fname=datafile,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
@@ -77,12 +81,13 @@ p.dump_plot(fnames=bkgfiles,
             "legend_scaley":1.1,
             "legend_ncolumns": 3,
             "ymax_scale": 1.2,
-            "lumi_value":137
+            "lumi_value":58.90000
             }
         )
 
 p.dump_plot(fnames=bkgfiles,
         sig_fnames=sigfiles,
+	data_fname=datafile,
         usercolors=colors,
         legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
@@ -97,12 +102,13 @@ p.dump_plot(fnames=bkgfiles,
             "legend_scaley":1.1,
             "legend_ncolumns": 3,
             "ymax_scale": 1.2,
-            "lumi_value":137
+            "lumi_value":58.90000
             }
         )
 
 p.dump_plot(fnames=bkgfiles,
         sig_fnames=sigfiles_detail,
+	data_fname=datafile,
         usercolors=colors,
         legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
@@ -117,12 +123,13 @@ p.dump_plot(fnames=bkgfiles,
             "legend_scaley":1.1,
             "legend_ncolumns": 3,
             "ymax_scale": 1.2,
-            "lumi_value":137
+            "lumi_value":58.90000
             }
         )
 
 p.dump_plot(fnames=bkgfiles,
         sig_fnames=sigfiles_detail,
+	data_fname=datafile,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
@@ -137,7 +144,7 @@ p.dump_plot(fnames=bkgfiles,
             "legend_scaley":1.1,
             "legend_ncolumns": 3,
             "ymax_scale": 1.2,
-            "lumi_value":137
+            "lumi_value":58.90000
             }
         )
 

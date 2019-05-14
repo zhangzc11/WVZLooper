@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
         // Form full path to the input root file
         TString RootName = InputRoot;
-        TString RootAdd = "/nfs-7/userdata/phchang/babies/WVZ2018_v0.0.5/" + (TString)InputRoot + ".root";
+        TString RootAdd = "/nfs-7/userdata/phchang/babies/WVZ2018_v0.0.6/" + (TString)InputRoot + ".root";
 
         // Increase # of input files ran over
         count++;

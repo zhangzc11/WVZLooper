@@ -81,7 +81,8 @@ void Analysis::Loop(const char* TypeName)
 
     TFile* output_file = new TFile("outputs/" + output_tfile_name, "RECREATE");
     RooUtil::Cutflow cutflow(output_file);
-    cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
+    if(isMC) cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
+    if(isData) cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return 1.0; } ); 
     
     if(selection_tag == 0){
 	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
@@ -131,6 +132,7 @@ void Analysis::Loop(const char* TypeName)
     histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
     histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
     histograms.addHistogram("Mll2ndZ", 180, 0, 300, [&](){ return this->VarMll2ndZ(); });
+    histograms.addHistogram("Mll34", 180, 0, 300, [&](){ return this->VarMll34(); });
     histograms.addHistogram("MT5th", 180, 0, 300, [&](){ return this->VarMT5th(); });
     histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
     histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
@@ -145,6 +147,10 @@ void Analysis::Loop(const char* TypeName)
     {
         // Load the entry
         fChain->GetEntry(ii, 0);
+	if (isData){
+	 duplicate_removal::DorkyEventIdentifier id(run, evt, lumi); 
+	 if ( is_duplicate(id) ) continue;
+	}
         readLeptons();
         selectVetoLeptons();
         selectZCandLeptons();
@@ -511,7 +517,7 @@ bool Analysis::passNominalMuonID(int idx)
 //______________________________________________________________________________________________
 float Analysis::EventWeight()
 {
-    return evt_scale1fb * 137;
+    return evt_scale1fb * 58.9;
 }
 
 //______________________________________________________________________________________________
@@ -736,6 +742,11 @@ float Analysis::VarMll()
 float Analysis::VarMll2ndZ()
 {
     return (leptons[lep_2ndZCand_idx1] + leptons[lep_2ndZCand_idx2]).M();
+}
+//______________________________________________________________________________________________
+float Analysis::VarMll34()
+{
+    return (leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2]).M();
 }
 
 //______________________________________________________________________________________________

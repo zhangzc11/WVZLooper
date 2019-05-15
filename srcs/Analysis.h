@@ -185,6 +185,7 @@ public:
     bool ChannelEMuNonZ();
     bool ChannelZZOnShell();
     bool ChannelOffZHighMET();
+    bool PassHLT();
 
     float VarMll();
     float VarMET();

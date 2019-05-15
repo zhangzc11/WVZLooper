@@ -19,3 +19,4 @@ hadd -f nonh_zzz.root MC_zzz_amcatnlo_1_results.root
 hadd -f dyttbar.root MC_dy_m1050_madgraph_1_results.root MC_dy_m50_madgraph_1_results.root MC_ttbar_dilep_madgraph_1_results.root MC_zg_llg_amcatnlo_1_results.root
 hadd -f rare.root MC_sts_4f_leptonic_madgraph_1_results.root MC_tZq_ll_madgraph_1_results.root MC_ttw_lnu_amcatnlo_1_results.root MC_tw_antitopnofullhad_powheg_1_results.root MC_tw_topnofullhad_powheg_1_results.root MC_vbsww_madgraph_1_results.root MC_ww_incl_pythia_1_results.root MC_wwg_amcatnlo_1_results.root MC_wzg_amcatnlo_1_results.root
 hadd -f higgs.root MC_ggh_hzz4l_powheg_1_results.root MC_vh_nonbbwwzz_amcatnlo_1_results.root MC_tth_nonbb_powheg_1_results.root
+hadd -k -f data.root data*.root

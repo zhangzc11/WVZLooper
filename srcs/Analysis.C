@@ -123,6 +123,7 @@ void Analysis::Loop(const char* TypeName)
 	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("ChannelZZOnShell", [&](){ return this->ChannelZZOnShell(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
      }
 
 
@@ -706,6 +707,14 @@ bool Analysis::ChannelZZOnShell()
         return false;
     else
         return true;
+}
+
+//______________________________________________________________________________________________
+
+bool Analysis::PassHLT()
+{
+	if(HLT_DoubleMu || HLT_DoubleEl || HLT_MuEG) return true;
+	else return false;
 }
 
 //______________________________________________________________________________________________

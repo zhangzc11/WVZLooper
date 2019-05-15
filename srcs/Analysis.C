@@ -118,25 +118,25 @@ void Analysis::Loop(const char* TypeName)
 	    cutflow.addCutToLastActiveCut("ChannelEMuNonZ", [&](){ return this->ChannelEMuNonZ(); }, UNITY );
      }
      if(selection_tag == 2){
+	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
 	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("ChannelZZOnShell", [&](){ return this->ChannelZZOnShell(); }, UNITY );
-	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
      }
 
 
     cutflow.bookCutflows();
 
     RooUtil::Histograms histograms;
-    histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
-    histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
-    histograms.addHistogram("Mll2ndZ", 180, 0, 300, [&](){ return this->VarMll2ndZ(); });
-    histograms.addHistogram("Mll34", 180, 0, 300, [&](){ return this->VarMll34(); });
-    histograms.addHistogram("MT5th", 180, 0, 300, [&](){ return this->VarMT5th(); });
-    histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
-    histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
+    histograms.addHistogram("Mll", 100, 0, 300, [&](){ return this->VarMll(); });
+    histograms.addHistogram("MET", 100, 0, 300, [&](){ return this->VarMET(); });
+    histograms.addHistogram("Mll2ndZ", 100, 0, 300, [&](){ return this->VarMll2ndZ(); });
+    histograms.addHistogram("Mll34", 100, 0, 300, [&](){ return this->VarMll34(); });
+    histograms.addHistogram("MT5th", 100, 0, 300, [&](){ return this->VarMT5th(); });
+    histograms.addHistogram("RelIso5th", 20, 0, 0.4, [&](){ return this->VarRelIso5th(); });
+    histograms.addHistogram("Pt5th", 100, 0, 200, [&](){ return this->VarPt5th(); });
     histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
 
     cutflow.bookHistograms(histograms);

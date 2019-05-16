@@ -25,7 +25,7 @@
 
 #include "rooutil.h"
 
-const int selection_tag = 2;//0: ucsd selection; 1: caltech selection; 2: ZZ double on-shell selection
+const int selection_tag = 3;//0: ucsd selection; 1: caltech selection; 2: ZZ double on-shell selection; 3: H->ZZ->4l selection
 
 struct MyLepton
 {
@@ -120,11 +120,22 @@ void Analysis::Loop(const char* TypeName)
      if(selection_tag == 2){
 	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
 	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("ChannelZZOnShell", [&](){ return this->ChannelZZOnShell(); }, UNITY );
      }
+     if(selection_tag == 3){
+	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("ChannelHZZ", [&](){ return this->ChannelHZZ(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("ChannelHZZTightMass", [&](){ return this->ChannelHZZTightMass(); }, UNITY );
+     }
+
 
 
     cutflow.bookCutflows();
@@ -134,12 +145,15 @@ void Analysis::Loop(const char* TypeName)
     histograms.addHistogram("MET", 100, 0, 300, [&](){ return this->VarMET(); });
     histograms.addHistogram("Mll2ndZ", 100, 0, 300, [&](){ return this->VarMll2ndZ(); });
     histograms.addHistogram("Mll34", 100, 0, 300, [&](){ return this->VarMll34(); });
+    histograms.addHistogram("M4l", 25, 100, 150, [&](){ return this->VarM4l(); });
     histograms.addHistogram("MT5th", 100, 0, 300, [&](){ return this->VarMT5th(); });
     histograms.addHistogram("RelIso5th", 20, 0, 0.4, [&](){ return this->VarRelIso5th(); });
     histograms.addHistogram("Pt5th", 100, 0, 200, [&](){ return this->VarPt5th(); });
     histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
 
     cutflow.bookHistograms(histograms);
+
+    cutflow.bookEventLists();
 
     // Event Loop (<3 of the code)
     Int_t Nentries = fChain->GetEntries();
@@ -148,10 +162,18 @@ void Analysis::Loop(const char* TypeName)
     {
         // Load the entry
         fChain->GetEntry(ii, 0);
+        //duplicate removal
 	if (isData){
+	 
+	 ////option 1: loop over all events
 	 duplicate_removal::DorkyEventIdentifier id(run, evt, lumi); 
 	 if ( is_duplicate(id) ) continue;
+	 
+	////option 2: use the trigger trick
+	//if (!pass_duplicate_ee_em_mm) continue;
+	//if (!pass_duplicate_mm_em_ee) continue;
 	}
+	cutflow.setEventID(run, lumi, evt);
         readLeptons();
         selectVetoLeptons();
         selectZCandLeptons();
@@ -161,6 +183,9 @@ void Analysis::Loop(const char* TypeName)
         setDilepMasses();
         cutflow.fill();
     }//end of loop
+
+    cutflow.getCut("Weight").writeEventList("outputs/list_Weight.txt"); 
+    //cutflow.getCut("PassHLT").writeEventList("outputs/list_PassHLT.txt"); 
 
     cutflow.saveOutput();
 
@@ -198,7 +223,7 @@ void Analysis::selectZCandLeptons()
     lep_ZCand_idx2 = -999;
     bool ifpass; // For tagging Z boson only
     double ZWindow = 10.0;
-    if(selection_tag == 1 || selection_tag == 2) ZWindow = 15.0;
+    if(selection_tag >= 1 ) ZWindow = 15.0;
     double compare = ZWindow; // Min value of |Mll - MZ|
 
     // Loop over the leptons and find the Z boson pair
@@ -261,7 +286,7 @@ void Analysis::selectNominalLeptons()
         if (not passNominalLeptonID(jj))
             continue;
 	}
-	if(selection_tag == 2)
+	if(selection_tag == 2 || selection_tag == 3)
 	{
         if (not passZCandLeptonID(jj))
             continue;
@@ -518,7 +543,8 @@ bool Analysis::passNominalMuonID(int idx)
 //______________________________________________________________________________________________
 float Analysis::EventWeight()
 {
-    return evt_scale1fb * 58.9;
+    //return evt_scale1fb * 35.92; // 2016
+    return evt_scale1fb * 58.9; // 2018
 }
 
 //______________________________________________________________________________________________
@@ -702,8 +728,39 @@ bool Analysis::ChannelEMuNonZ()
 bool Analysis::ChannelZZOnShell()
 {
     if (lep_id->at(lep_Nom_idx1) != -lep_id->at(lep_Nom_idx2))
+    //if (lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // emu selection
 	return false;
     if (fabs(dilepNominal.M() - 91.1876) > 15.)
+        return false;
+    else
+        return true;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::ChannelHZZ()
+{
+    if (lep_id->at(lep_Nom_idx1) != -lep_id->at(lep_Nom_idx2))
+    //if (lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // emu selection
+	return false;
+    float M4l = (leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2] + leptons[lep_ZCand_idx1] + leptons[lep_ZCand_idx2]).M();
+    if (fabs(dilepNominal.M() - 28.5) > 16.5 )
+        return false;
+    if (fabs(M4l - 125.0) > 15.0 )
+        return false;
+    else
+        return true;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::ChannelHZZTightMass()
+{
+    if (lep_id->at(lep_Nom_idx1) != -lep_id->at(lep_Nom_idx2))
+    //if (lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // emu selection
+	return false;
+    float M4l = (leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2] + leptons[lep_ZCand_idx1] + leptons[lep_ZCand_idx2]).M();
+    if (fabs(dilepNominal.M() - 28.5) > 16.5 )
+        return false;
+    if (fabs(M4l - 125.0) > 5.0 )
         return false;
     else
         return true;
@@ -758,6 +815,11 @@ float Analysis::VarMll34()
     return (leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2]).M();
 }
 
+//______________________________________________________________________________________________
+float Analysis::VarM4l()
+{
+    return (leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2] + leptons[lep_ZCand_idx1] + leptons[lep_ZCand_idx2]).M();
+}
 //______________________________________________________________________________________________
 float Analysis::VarMET()
 {

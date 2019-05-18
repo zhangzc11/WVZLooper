@@ -54,8 +54,8 @@ void Analysis::Loop(const char* TypeName)
         return;
     }
 
-    // Exit if no fChain (sanity check)
-    if (fChain == 0)
+    // Exit if no fTTree (sanity check)
+    if (fTTree == 0)
         return;
 
     //
@@ -102,6 +102,9 @@ void Analysis::Loop(const char* TypeName)
     cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
     cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
 
+    cutflow.getCut("Weight");
+    cutflow.addCutToLastActiveCut("TwoOSLeptons", [&](){ return this->IsTwoOSLeptonEvent(); }, UNITY ); 
+
     cutflow.bookCutflows();
 
     RooUtil::Histograms histograms;
@@ -116,12 +119,20 @@ void Analysis::Loop(const char* TypeName)
     cutflow.bookHistograms(histograms);
 
     // Event Loop (<3 of the code)
-    Int_t Nentries = fChain->GetEntries();
+    Int_t Nentries = fTTree->GetEntries();
     cout << "there are " << Nentries << " events in Loop" << endl;
-    for (int ii = 0 ; ii < Nentries ; ii++)
+
+    // Looper class to facilitate various things
+    TChain* ch = new TChain("t");
+    ch->Add(fTTree->GetCurrentFile()->GetName());
+    RooUtil::Looper<wvztree> looper(ch, &wvz, -1); // -1 means process 
+    while (looper.nextEvent())
     {
+        // Once it enters loop it's 1, and then 2, and so on.
+        // So need to subtract one and set it to 'ii' so fTTree can load event
+        int ii = looper.getNEventsProcessed() - 1; 
         // Load the entry
-        fChain->GetEntry(ii, 0);
+        fTTree->GetEntry(ii, 0);
         readLeptons();
         selectVetoLeptons();
         selectZCandLeptons();
@@ -130,7 +141,29 @@ void Analysis::Loop(const char* TypeName)
         sortLeptonIndex();
         setDilepMasses();
         cutflow.fill();
-    }//end of loop
+    }
+
+    // Old way of looping
+    // ----------------------------------------------------------------------------------------
+    // for (int ii = 0 ; ii < Nentries ; ii++)
+    // {
+    //     if (isatty(1)) // i.e. when it is running interactively, otherwise no need to let user know what's going on
+    //     {
+    //         if (ii % 10000 == 0)
+    //             printf("\015\033[32m ---> \033[1m\033[31m Processed %d / %d events [%4.1f%%] \033[34m \033[0m\033[32m  <---\033[0m\015 ", ii, Nentries, (float) ii / (float) Nentries);
+    //     }
+    //     // Load the entry
+    //     fTTree->GetEntry(ii, 0);
+    //     readLeptons();
+    //     selectVetoLeptons();
+    //     selectZCandLeptons();
+    //     selectNominalLeptons();
+    //     select2ndZCandAndWCandLeptons();
+    //     sortLeptonIndex();
+    //     setDilepMasses();
+    //     cutflow.fill();
+    // }//end of loop
+    // ----------------------------------------------------------------------------------------
 
     cutflow.saveOutput();
 
@@ -149,11 +182,13 @@ void Analysis::readLeptons()
 void Analysis::selectVetoLeptons()
 {
     nVetoLeptons = 0;
+    lep_veto_idxs.clear();
     for (int kk = 0 ; kk < lep_pt->size() ; kk++)
     {
         if (not passVetoLeptonID(kk))
             continue;
         nVetoLeptons++;
+        lep_veto_idxs.push_back(kk);
     }
 }
 
@@ -569,6 +604,16 @@ bool Analysis::Is4LeptonEvent()
 bool Analysis::Is5LeptonEvent()
 {
     return nVetoLeptons == 5;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::IsTwoOSLeptonEvent()
+{
+    if (not (nVetoLeptons == 2)) return false;
+    if (not (leptons[lep_veto_idxs[0]].Pt() > 25.)) return false;
+    if (not (leptons[lep_veto_idxs[1]].Pt() > 25.)) return false;
+    if (not (lep_id->at(lep_veto_idxs[0]) * lep_id->at(lep_veto_idxs[1]) < 0)) return false;
+    return true;
 }
 
 //______________________________________________________________________________________________

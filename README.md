@@ -1,6 +1,6 @@
 # WVZLooper
 
-## Install
+## Quick start
 
     git clone --recurse-submodule git@github.com:sgnoohc/WVZLooper.git
     cd WVZLooper
@@ -13,3 +13,4 @@
     cd ../
     python scripts/makeplot.py
     # outputs are in plots/
+

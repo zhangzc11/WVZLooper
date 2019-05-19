@@ -191,6 +191,7 @@ public:
 
     float VarMll();
     float VarMET();
+    float VarNvtx();
     float VarMll2ndZ();
     float VarMT5th();
     float VarRelIso5th();

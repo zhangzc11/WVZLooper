@@ -132,6 +132,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("Mll2l", 180, 0, 300, [&](){ return this->VarMll2l(); });
         histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
         histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
+        histograms.addHistogram("nvtx", 60, 0, 60, [&](){ return this->VarNvtx(); });
     }
 
     // Book histograms
@@ -271,10 +272,10 @@ void Analysis::selectNominalLeptons()
     for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
     {
 
-        if (jj == lep_ZCand_idx1)
+        if (jj == (unsigned int) lep_ZCand_idx1)
             continue;
 
-        if (jj == lep_ZCand_idx2)
+        if (jj == (unsigned int) lep_ZCand_idx2)
             continue;
 
         if (not passNominalLeptonID(jj))
@@ -305,10 +306,10 @@ void Analysis::select2ndZCandAndWCandLeptons()
     for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
     {
 
-        if (jj == lep_ZCand_idx1)
+        if (jj == (unsigned int) lep_ZCand_idx1)
             continue;
 
-        if (jj == lep_ZCand_idx2)
+        if (jj == (unsigned int) lep_ZCand_idx2)
             continue;
 
         if (not passVetoLeptonID(jj))
@@ -737,6 +738,12 @@ float Analysis::VarMll2ndZ()
 float Analysis::VarMET()
 {
     return met_pt;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarNvtx()
+{
+    return nvtx;
 }
 
 //______________________________________________________________________________________________

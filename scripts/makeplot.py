@@ -60,13 +60,36 @@ def dilep_analysis_make_plot():
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":180,
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
                 "legend_ncolumns": 3,
                 "ymax_scale": 1.2,
                 "lumi_value":59.74,
+                }
+            )
+
+    p.dump_plot(fnames=bkgfiles,
+            sig_fnames=sigfiles,
+            data_fname=data_fname,
+            usercolors=colors,
+            legend_labels=["DY"],
+            signal_labels=[],
+            dirname="plots/{}/{}/log".format(ntuple_version, tag),
+            filter_pattern="__",
+            dogrep=True,
+            extraoptions={
+                "print_yield":True,
+                "nbins":180,
+                "signal_scale": 1,
+                "legend_scalex":1.8,
+                "legend_scaley":1.1,
+                "legend_ncolumns": 3,
+                "ymax_scale": 1.2,
+                "lumi_value":59.74,
+                "yaxis_log":True,
+                "legend_smart":False,
                 }
             )
 

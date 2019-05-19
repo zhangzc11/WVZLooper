@@ -66,7 +66,7 @@ def dilep_analysis_make_plot():
                 "legend_scaley":1.1,
                 "legend_ncolumns": 3,
                 "ymax_scale": 1.2,
-                "lumi_value":137
+                "lumi_value":59.74,
                 }
             )
 

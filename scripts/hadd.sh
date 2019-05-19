@@ -24,7 +24,7 @@ cd outputs/$1/$2
 # If the sample set is dilepton set use a different hadding scheme
 if [[ $1 == *"Dilep"* ]]; then
     hadd -f dy.root MC_dy_m50_madgraph_1_results.root
-    hadd -f data.root MC_data_Run*
+    hadd -f data.root DATA_data_Run*
 elif [[ $1 == *"WVZ"* ]]; then
     hadd -f zz.root MC_zz_4l_powheg_1_results.root
     hadd -f ttz.root MC_ttz_ll_mll1_amcatnlo_1_results.root MC_ttz_llvv_mll10_amcatnlo_1_results.root

@@ -44,7 +44,7 @@ struct less_than_key
 using namespace std;
 
 //______________________________________________________________________________________________
-void Analysis::Loop(const char* TypeName)
+void Analysis::Loop(const char* TypeName, const char* NtupleVersion, const char* TagName)
 {
 
     // Sanity checks
@@ -77,7 +77,11 @@ void Analysis::Loop(const char* TypeName)
         cout << "input file type wrong! please input 'data' or 'MC'!" << endl;
     }
 
-    TFile* output_file = new TFile("outputs/" + output_tfile_name, "RECREATE");
+    TString output_path = TString::Format("outputs/%s/%s", NtupleVersion, TagName);
+
+    gSystem->Exec(TString::Format("mkdir -p %s", output_path.Data()));
+
+    TFile* output_file = new TFile(output_path + "/" + output_tfile_name, "RECREATE");
     RooUtil::Cutflow cutflow(output_file);
     cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
     cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
@@ -115,6 +119,7 @@ void Analysis::Loop(const char* TypeName)
     histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
     histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
     histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
+    histograms.addHistogram("Mll2l", 180, 0, 300, [&](){ return this->VarMll2l(); });
 
     cutflow.bookHistograms(histograms);
 
@@ -613,6 +618,10 @@ bool Analysis::IsTwoOSLeptonEvent()
     if (not (leptons[lep_veto_idxs[0]].Pt() > 25.)) return false;
     if (not (leptons[lep_veto_idxs[1]].Pt() > 25.)) return false;
     if (not (lep_id->at(lep_veto_idxs[0]) * lep_id->at(lep_veto_idxs[1]) < 0)) return false;
+    if (not (abs(lep_id->at(lep_veto_idxs[0])) == 13)) return false;
+    if (not (abs(lep_id->at(lep_veto_idxs[1])) == 13)) return false;
+    if (not (HLT_DoubleMu)) return false;
+    if (not ((leptons[lep_veto_idxs[0]] + leptons[lep_veto_idxs[1]]).M() > 50.)) return false;
     return true;
 }
 
@@ -731,6 +740,14 @@ float Analysis::VarPt5th()
 float Analysis::VarNjet()
 {
     return nj;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMll2l()
+{
+    if (nVetoLeptons < 2)
+        return -999;
+    return (leptons[lep_veto_idxs[0]] + leptons[lep_veto_idxs[1]]).M();
 }
 
 // eof

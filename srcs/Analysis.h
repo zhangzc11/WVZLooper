@@ -21,6 +21,7 @@
 #include "TEnv.h"
 #include <TComplex.h>
 #include "TH2D.h"
+#include "TSystem.h"
 
 #include <tuple>
 #include <unistd.h>
@@ -136,7 +137,7 @@ public:
     Analysis(const char* ifileName, const char* TypeName, const char* RootName);
     virtual ~Analysis();
     virtual void  Initial(const char* RootName, int RootNumber);
-    virtual void  Loop(const char* TypeName);
+    virtual void  Loop(const char* TypeName, const char* NtupleVersion, const char* TagName);
     virtual void  End(int RootNumber);
     virtual void  Finish(int RootNumber);
     virtual void  Output();
@@ -194,6 +195,7 @@ public:
     float VarRelIso5th();
     float VarPt5th();
     float VarNjet();
+    float VarMll2l();
 
 };
 #endif

@@ -3,6 +3,22 @@
 import plottery_wrapper as p
 import ROOT as r
 
+import sys
+
+def usage():
+    print "Usage:"
+    print ""
+    print "   $ {} ntuple_version tag".format(sys.argv[0])
+    print ""
+    print ""
+    sys.exit(-1)
+
+try:
+    ntuple_version = sys.argv[1]
+    tag = sys.argv[2]
+except:
+    usage()
+
 import glob
 bkgfiles = [
         "outputs/ttz.root",
@@ -46,7 +62,7 @@ p.dump_plot(fnames=bkgfiles,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-        dirname="plots/lin",
+        dirname="plots/{}/{}/lin".format(ntuple_version, tag),
         filter_pattern="__",
         dogrep=True,
         extraoptions={
@@ -66,7 +82,7 @@ p.dump_plot(fnames=bkgfiles,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-        dirname="plots/lin5x",
+        dirname="plots/{}/{}/lin5x".format(ntuple_version, tag),
         filter_pattern="__",
         dogrep=True,
         extraoptions={
@@ -86,7 +102,7 @@ p.dump_plot(fnames=bkgfiles,
         usercolors=colors,
         legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-        dirname="plots/cutflow",
+        dirname="plots/{}/{}/cutflow".format(ntuple_version, tag),
         filter_pattern="_cutflow",
         dogrep=True,
         extraoptions={
@@ -106,7 +122,7 @@ p.dump_plot(fnames=bkgfiles,
         usercolors=colors,
         legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
-        dirname="plots/cutflow_detail",
+        dirname="plots/{}/{}/cutflow_detail".format(ntuple_version, tag),
         filter_pattern="_cutflow",
         dogrep=True,
         extraoptions={
@@ -126,7 +142,7 @@ p.dump_plot(fnames=bkgfiles,
         usercolors=colors,
         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
         signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
-        dirname="plots/lin_detail",
+        dirname="plots/{}/{}/lin_detail".format(ntuple_version, tag),
         filter_pattern="__",
         dogrep=True,
         extraoptions={

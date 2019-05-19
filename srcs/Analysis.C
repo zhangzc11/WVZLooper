@@ -191,7 +191,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 //______________________________________________________________________________________________
 void Analysis::readLeptons()
 {
-    for (int jj = 0 ; jj < lep_pt->size(); jj++)
+    for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
         leptons[jj].SetPtEtaPhiE(((*lep_pt).at(jj)), ((*lep_eta).at(jj)), ((*lep_phi).at(jj)), ((*lep_energy).at(jj)));
 }
 
@@ -201,7 +201,7 @@ void Analysis::selectVetoLeptons()
 {
     nVetoLeptons = 0;
     lep_veto_idxs.clear();
-    for (int kk = 0 ; kk < lep_pt->size() ; kk++)
+    for (unsigned int kk = 0 ; kk < lep_pt->size() ; kk++)
     {
         if (not passVetoLeptonID(kk))
             continue;
@@ -223,13 +223,13 @@ void Analysis::selectZCandLeptons()
     double compare = 10; // Min value of |Mll - MZ|
 
     // Loop over the leptons and find the Z boson pair
-    for (int jj = 0 ; jj < (lep_pt->size() - 1) ; jj ++)
+    for (unsigned int jj = 0 ; jj < (lep_pt->size() - 1) ; jj ++)
     {
 
         if (not passZCandLeptonID(jj))
             continue;
 
-        for (int kk = jj + 1 ; kk < lep_pt->size() ; kk++)
+        for (unsigned int kk = jj + 1 ; kk < lep_pt->size() ; kk++)
         {
 
             if (not passZCandLeptonID(kk))
@@ -268,7 +268,7 @@ void Analysis::selectNominalLeptons()
     std::vector<int> good_idx; // index of good nominal leptons
 
     // Loop over the leptons
-    for (int jj = 0 ; jj < lep_pt->size(); jj++)
+    for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
     {
 
         if (jj == lep_ZCand_idx1)
@@ -302,7 +302,7 @@ void Analysis::select2ndZCandAndWCandLeptons()
     std::vector<int> good_veto_idx; // index of good nominal leptons
 
     // Loop over the leptons
-    for (int jj = 0 ; jj < lep_pt->size(); jj++)
+    for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
     {
 
         if (jj == lep_ZCand_idx1)
@@ -382,8 +382,8 @@ void Analysis::sortLeptonIndex()
     }
 
     // Sort Z lepton indices
-    int tmp1 = lep_ZCand_idx1;
-    int tmp2 = lep_ZCand_idx2;
+    // int tmp1 = lep_ZCand_idx1;
+    // int tmp2 = lep_ZCand_idx2;
     lep_ZCand_idx1 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? lep_ZCand_idx1 : lep_ZCand_idx2;
     lep_ZCand_idx2 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? lep_ZCand_idx2 : lep_ZCand_idx1;
 

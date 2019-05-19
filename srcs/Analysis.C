@@ -44,7 +44,7 @@ struct less_than_key
 using namespace std;
 
 //______________________________________________________________________________________________
-void Analysis::Loop(const char* TypeName, const char* NtupleVersion, const char* TagName)
+void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 {
 
     // Sanity checks
@@ -58,74 +58,84 @@ void Analysis::Loop(const char* TypeName, const char* NtupleVersion, const char*
     if (fTTree == 0)
         return;
 
-    //
-    // To set whether this ntuple is data or MC
-    //
-    TString InputName = TString(TypeName);
-    bool isData = false ;
-    bool isMC = false;
-    if (InputName == "data")
-    {
-        isData = true;
-    }
-    else if (InputName == "MC")
-    {
-        isMC = true;
-    }
-    else
-    {
-        cout << "input file type wrong! please input 'data' or 'MC'!" << endl;
-    }
+    // Because TString is better than const char*
+    TString ntupleVersion = NtupleVersion;
 
+    // Parsing year
+    if (ntupleVersion.Contains("v0.0.5")) year = -1; // Meaning use this sets to scale it up to 137
+    else if (ntupleVersion.Contains("2016")) year = 2016;
+    else if (ntupleVersion.Contains("2017")) year = 2017;
+    else if (ntupleVersion.Contains("2018")) year = 2018;
+    else cout << "could not recognize year! defaulting to '2018'! Make sure this is OK!" << endl;
+
+    // Creating output directory and output files where histograms will be
     TString output_path = TString::Format("outputs/%s/%s", NtupleVersion, TagName);
-
     gSystem->Exec(TString::Format("mkdir -p %s", output_path.Data()));
-
     TFile* output_file = new TFile(output_path + "/" + output_tfile_name, "RECREATE");
+
+    // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
     cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
-    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 
-    cutflow.getCut("Cut4LepBVeto");
-    cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
-    cutflow.addCutToLastActiveCut("ChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(); }, UNITY );
-    cutflow.getCut("Cut4LepBVeto");
-    cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
-    cutflow.addCutToLastActiveCut("ChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
-    cutflow.getCut("Cut4LepBVeto");
-    cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
-    cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
+    // There are two types of NtupleVersion
+    // 1. WVZ201*_v* which only contains events with 4 or more leptons
+    // 2. Dilep201*_v* which contains dilepton events
+    if (ntupleVersion.Contains("WVZ"))
+    {
+        cutflow.getCut("Weight");
+        cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 
-    cutflow.getCut("Weight");
-    cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
-    cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
+        cutflow.getCut("Cut4LepBVeto");
+        cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(); }, UNITY );
+        cutflow.getCut("Cut4LepBVeto");
+        cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
+        cutflow.getCut("Cut4LepBVeto");
+        cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
 
-    cutflow.getCut("Weight");
-    cutflow.addCutToLastActiveCut("TwoOSLeptons", [&](){ return this->IsTwoOSLeptonEvent(); }, UNITY ); 
+        cutflow.getCut("Weight");
+        cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
+    }
+    else if (ntupleVersion.Contains("Dilep"))
+    {
+        cutflow.getCut("Weight");
+        cutflow.addCutToLastActiveCut("TwoOSLeptons", [&](){ return this->IsTwoOSLeptonEvent(); }, UNITY ); 
+    }
 
+    // Book Cutflow
     cutflow.bookCutflows();
 
+    // Histogram object contains histogram definitions and the lambda to be used for histogram filling
     RooUtil::Histograms histograms;
-    histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
-    histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
-    histograms.addHistogram("Mll2ndZ", 180, 0, 300, [&](){ return this->VarMll2ndZ(); });
-    histograms.addHistogram("MT5th", 180, 0, 300, [&](){ return this->VarMT5th(); });
-    histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
-    histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
-    histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
-    histograms.addHistogram("Mll2l", 180, 0, 300, [&](){ return this->VarMll2l(); });
+    if (ntupleVersion.Contains("WVZ"))
+    {
+        histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
+        histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
+        histograms.addHistogram("Mll2ndZ", 180, 0, 300, [&](){ return this->VarMll2ndZ(); });
+        histograms.addHistogram("MT5th", 180, 0, 300, [&](){ return this->VarMT5th(); });
+        histograms.addHistogram("RelIso5th", 180, 0, 0.4, [&](){ return this->VarRelIso5th(); });
+        histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
+        histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
+        histograms.addHistogram("Mll2l", 180, 0, 300, [&](){ return this->VarMll2l(); });
+    }
+    else if (ntupleVersion.Contains("Dilep"))
+    {
+        histograms.addHistogram("Mll2l", 180, 0, 300, [&](){ return this->VarMll2l(); });
+        histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
+        histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
+    }
 
+    // Book histograms
     cutflow.bookHistograms(histograms);
-
-    // Event Loop (<3 of the code)
-    Int_t Nentries = fTTree->GetEntries();
-    cout << "there are " << Nentries << " events in Loop" << endl;
 
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
@@ -150,6 +160,9 @@ void Analysis::Loop(const char* TypeName, const char* NtupleVersion, const char*
 
     // Old way of looping
     // ----------------------------------------------------------------------------------------
+    // // Event Loop (<3 of the code)
+    // Int_t Nentries = fTTree->GetEntries();
+    // cout << "there are " << Nentries << " events in Loop" << endl;
     // for (int ii = 0 ; ii < Nentries ; ii++)
     // {
     //     if (isatty(1)) // i.e. when it is running interactively, otherwise no need to let user know what's going on
@@ -519,7 +532,21 @@ bool Analysis::passNominalMuonID(int idx)
 //______________________________________________________________________________________________
 float Analysis::EventWeight()
 {
-    return evt_scale1fb * 137;
+    if (isData)
+    {
+        return 1;
+    }
+    else
+    {
+        if (year == 2016)
+            return evt_scale1fb * 35.9;
+        else if (year == 2017)
+            return evt_scale1fb * 41.3;
+        else if (year == 2018)
+            return evt_scale1fb * 59.74;
+        else
+            return evt_scale1fb * 137;
+    }
 }
 
 //______________________________________________________________________________________________

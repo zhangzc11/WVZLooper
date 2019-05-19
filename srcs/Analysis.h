@@ -132,12 +132,13 @@ public:
     TLorentzVector dilepZCand;
     TLorentzVector dilepNominal;
     TString output_tfile_name;
+    int year;
 
 //*******functions********//
-    Analysis(const char* ifileName, const char* TypeName, const char* RootName);
+    Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
     virtual void  Initial(const char* RootName, int RootNumber);
-    virtual void  Loop(const char* TypeName, const char* NtupleVersion, const char* TagName);
+    virtual void  Loop(const char* NtupleVersion, const char* TagName);
     virtual void  End(int RootNumber);
     virtual void  Finish(int RootNumber);
     virtual void  Output();
@@ -201,13 +202,15 @@ public:
 #endif
 
 #ifdef Analysis_C
-Analysis::Analysis(const char* ifileName, const char* TypeName, const char* RootName)
+Analysis::Analysis(const char* ifileName, const char* RootName)
 {
 
     // Create histograms
     myhists = new makeHists();
 
-    output_tfile_name = (TString)TypeName + "_" + (TString)RootName +  "_results.root";
+    TString TypeName = TString(RootName).Contains("Run201") ? "DATA" : "MC";
+
+    output_tfile_name = TypeName + "_" + (TString)RootName +  "_results.root";
 
     // myhists->bookHists(output_tfile_name);
 

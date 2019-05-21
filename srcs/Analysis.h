@@ -184,6 +184,7 @@ public:
     bool ChannelEMuHighMll();
     bool ChannelEMuNonZ();
     bool ChannelZZOnShell();
+    bool CutLowMll34();
     bool ChannelHZZ();
     bool ChannelHZZTightMass();
     bool ChannelOffZHighMET();
@@ -193,9 +194,14 @@ public:
     float VarMET();
     float VarMll2ndZ();
     float VarMll34();
+    float VarMll12();
     float VarM4l();
     float VarMT5th();
     float VarRelIso5th();
+    float VarPt1st();
+    float VarPt2nd();
+    float VarPt3rd();
+    float VarPt4th();
     float VarPt5th();
     float VarNjet();
 

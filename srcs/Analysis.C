@@ -25,7 +25,7 @@
 
 #include "rooutil.h"
 
-const int selection_tag = 3;//0: ucsd selection; 1: caltech selection; 2: ZZ double on-shell selection; 3: H->ZZ->4l selection
+const int selection_tag = 3;//0: ucsd selection; 1: caltech selection; 2: ZZ double on-shell selection; 3: H->ZZ->4l selection; 4: ossf dilepton selection
 
 struct MyLepton
 {
@@ -120,8 +120,9 @@ void Analysis::Loop(const char* TypeName)
      if(selection_tag == 2){
 	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
 	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
-	    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("CutLowMll34", [&](){ return this->CutLowMll34(); }, UNITY );
+	    cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("ChannelZZOnShell", [&](){ return this->ChannelZZOnShell(); }, UNITY );
@@ -130,6 +131,7 @@ void Analysis::Loop(const char* TypeName)
 	    cutflow.addCutToLastActiveCut("PassHLT", [&](){ return this->PassHLT(); }, UNITY );
 	    cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+	    cutflow.addCutToLastActiveCut("CutLowMll34", [&](){ return this->CutLowMll34(); }, UNITY );
 	    cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt_tag1(); }, UNITY ); 
 	    cutflow.addCutToLastActiveCut("ChannelHZZ", [&](){ return this->ChannelHZZ(); }, UNITY );
@@ -144,11 +146,16 @@ void Analysis::Loop(const char* TypeName)
     histograms.addHistogram("Mll", 100, 0, 300, [&](){ return this->VarMll(); });
     histograms.addHistogram("MET", 100, 0, 300, [&](){ return this->VarMET(); });
     histograms.addHistogram("Mll2ndZ", 100, 0, 300, [&](){ return this->VarMll2ndZ(); });
+    histograms.addHistogram("Mll12", 100, 0, 300, [&](){ return this->VarMll12(); });
     histograms.addHistogram("Mll34", 100, 0, 300, [&](){ return this->VarMll34(); });
     histograms.addHistogram("M4l", 25, 100, 150, [&](){ return this->VarM4l(); });
     histograms.addHistogram("MT5th", 100, 0, 300, [&](){ return this->VarMT5th(); });
     histograms.addHistogram("RelIso5th", 20, 0, 0.4, [&](){ return this->VarRelIso5th(); });
-    histograms.addHistogram("Pt5th", 100, 0, 200, [&](){ return this->VarPt5th(); });
+    histograms.addHistogram("Pt1st", 40, 0, 200, [&](){ return this->VarPt1st(); });
+    histograms.addHistogram("Pt2nd", 40, 0, 200, [&](){ return this->VarPt2nd(); });
+    histograms.addHistogram("Pt3rd", 40, 0, 200, [&](){ return this->VarPt3rd(); });
+    histograms.addHistogram("Pt4th", 40, 0, 200, [&](){ return this->VarPt4th(); });
+    histograms.addHistogram("Pt5th", 40, 0, 200, [&](){ return this->VarPt5th(); });
     histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
 
     cutflow.bookHistograms(histograms);
@@ -173,6 +180,10 @@ void Analysis::Loop(const char* TypeName)
 	//if (!pass_duplicate_ee_em_mm) continue;
 	//if (!pass_duplicate_mm_em_ee) continue;
 	}
+
+	////apply evt_passgoodrunlist
+	if(!evt_passgoodrunlist) continue;
+
 	cutflow.setEventID(run, lumi, evt);
         readLeptons();
         selectVetoLeptons();
@@ -737,6 +748,15 @@ bool Analysis::ChannelZZOnShell()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::CutLowMll34()
+{
+    if (dilepNominal.M() < 12.)
+        return false;
+    else
+        return true;
+}
+
+//______________________________________________________________________________________________
 bool Analysis::ChannelHZZ()
 {
     if (lep_id->at(lep_Nom_idx1) != -lep_id->at(lep_Nom_idx2))
@@ -816,6 +836,11 @@ float Analysis::VarMll34()
 }
 
 //______________________________________________________________________________________________
+float Analysis::VarMll12()
+{
+    return (leptons[lep_ZCand_idx1] + leptons[lep_ZCand_idx2]).M();
+}
+//______________________________________________________________________________________________
 float Analysis::VarM4l()
 {
     return (leptons[lep_Nom_idx1] + leptons[lep_Nom_idx2] + leptons[lep_ZCand_idx1] + leptons[lep_ZCand_idx2]).M();
@@ -849,6 +874,44 @@ float Analysis::VarPt5th()
     else
         return -999;
 }
+
+//______________________________________________________________________________________________
+float Analysis::VarPt1st()
+{
+    if (lep_ZCand_idx1 >= 0)
+        return lep_pt->at(lep_ZCand_idx1);
+    else
+        return -999;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarPt2nd()
+{
+    if (lep_ZCand_idx2 >= 0)
+        return lep_pt->at(lep_ZCand_idx2);
+    else
+        return -999;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarPt3rd()
+{
+    if (lep_Nom_idx1 >= 0)
+        return lep_pt->at(lep_Nom_idx1);
+    else
+        return -999;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarPt4th()
+{
+    if (lep_Nom_idx2 >= 0)
+        return lep_pt->at(lep_Nom_idx2);
+    else
+        return -999;
+}
+
+
 
 //______________________________________________________________________________________________
 float Analysis::VarNjet()

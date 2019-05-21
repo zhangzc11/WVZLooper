@@ -144,6 +144,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepZrelIso04DB1", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_ZCand_idx2]; });
         histograms.addHistogram("lepNrelIso04DB0", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_Nom_idx1]; });
         histograms.addHistogram("lepNrelIso04DB1", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_Nom_idx2]; });
+        histograms.addHistogram("lepZsIP3D0", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZsIP3D1", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNsIP3D0", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNsIP3D1", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_Nom_idx2]); });
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -201,6 +205,21 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         //     std::cout << wvz.lep_id()[lep_Nom_idx1] << " ";
         //     std::cout << wvz.lep_id()[lep_Nom_idx2] << " ";
         //     std::cout << std::endl;
+        //     std::cout << wvz.lep_isCutBasedIsoLoosePOG()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoLoosePOG()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoLoosePOG()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoLoosePOG()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        //     std::cout << wvz.lep_isCutBasedIsoMediumPOG()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoMediumPOG()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoMediumPOG()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoMediumPOG()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        //     std::cout << wvz.lep_isCutBasedIsoTightPOG()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoTightPOG()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoTightPOG()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_isCutBasedIsoTightPOG()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
         //     std::cout << wvz.lep_sip3d()[lep_ZCand_idx1] << " ";
         //     std::cout << wvz.lep_sip3d()[lep_ZCand_idx2] << " ";
         //     std::cout << wvz.lep_sip3d()[lep_Nom_idx1] << " ";
@@ -216,6 +235,21 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         //     std::cout << wvz.lep_eta()[lep_Nom_idx1] << " ";
         //     std::cout << wvz.lep_eta()[lep_Nom_idx2] << " ";
         //     std::cout << std::endl;
+        //     std::cout << "====electron from nominal====" << std::endl;
+        //     if (abs(wvz.lep_id()[lep_Nom_idx1]) == 11)
+        //     {
+        //         std::cout << wvz.lep_isCutBasedIsoLoosePOG()[lep_Nom_idx1] << " ";
+        //         std::cout << wvz.lep_isCutBasedIsoMediumPOG()[lep_Nom_idx1] << " ";
+        //         std::cout << wvz.lep_isCutBasedIsoTightPOG()[lep_Nom_idx1] << " ";
+        //         std::cout << std::endl;
+        //     }
+        //     else if (abs(wvz.lep_id()[lep_Nom_idx2]) == 11)
+        //     {
+        //         std::cout << wvz.lep_isCutBasedIsoLoosePOG()[lep_Nom_idx2] << " ";
+        //         std::cout << wvz.lep_isCutBasedIsoMediumPOG()[lep_Nom_idx2] << " ";
+        //         std::cout << wvz.lep_isCutBasedIsoTightPOG()[lep_Nom_idx2] << " ";
+        //         std::cout << std::endl;
+        //     }
         // }
     }
 
@@ -543,8 +577,8 @@ bool Analysis::passZCandElectronID(int idx)
     // // - RelIso03EA < 0.2 if ZCandElectron
     // if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
 
-    // - |sip3d| < 4
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    // // - |sip3d| < 4
+    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -561,8 +595,8 @@ bool Analysis::passZCandMuonID(int idx)
 
     // Veto is same as Z muon cand
 
-    // - |sip3d| < 4
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    // // - |sip3d| < 4
+    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -586,7 +620,8 @@ bool Analysis::passNominalElectronID(int idx)
     // if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
 
     // Cut-based IsoMedium
-    if (not (wvz.lep_isCutBasedIsoLoosePOG()[idx])) return false;
+    // if (not (wvz.lep_isCutBasedIsoLoosePOG()[idx])) return false;
+    if (not (wvz.lep_isCutBasedIsoMediumPOG()[idx])) return false;
 
     return true;
 }

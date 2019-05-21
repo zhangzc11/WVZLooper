@@ -577,8 +577,8 @@ bool Analysis::passZCandElectronID(int idx)
     // // - RelIso03EA < 0.2 if ZCandElectron
     // if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
 
-    // // - |sip3d| < 4
-    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    // - |sip3d| < 4
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -595,8 +595,8 @@ bool Analysis::passZCandMuonID(int idx)
 
     // Veto is same as Z muon cand
 
-    // // - |sip3d| < 4
-    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    // - |sip3d| < 4
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -652,12 +652,12 @@ float Analysis::EventWeight()
     else
     {
         if (year == 2016)
-            return evt_scale1fb * 35.9 * getTruePUw(wvz.nTrueInt());
+            return evt_scale1fb * 35.9;
         else if (year == 2017)
-            return evt_scale1fb * 41.3 * getTruePUw(wvz.nTrueInt());
+            return evt_scale1fb * 41.3;
         else if (year == 2018)
-            // return evt_scale1fb * 59.74 * getTruePUw(wvz.nTrueInt());
-            return evt_scale1fb * 137;
+            return evt_scale1fb * 59.74 * getTruePUw(wvz.nTrueInt());
+            // return evt_scale1fb * 137;
         // else if (year == 2018)
         //     return evt_scale1fb * 6.94 * getTruePUw(wvz.nTrueInt());
         else

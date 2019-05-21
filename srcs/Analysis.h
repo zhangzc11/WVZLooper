@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 #include "wvztree.h"
+#include "rooutil.h"
 
 using namespace std;
 //class: the main class for functions;
@@ -134,6 +135,9 @@ public:
     TString output_tfile_name;
     int year;
 
+    // Scale factors
+    RooUtil::HistMap* histmap_purwegt;
+
 //*******functions********//
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
@@ -176,6 +180,7 @@ public:
     bool FindTwoOSNominalLeptons();
 
     bool Cut4LepLeptonPt();
+    bool CutHLT();
     bool Cut4LepLowMll();
     bool Cut4LepBVeto();
 
@@ -270,10 +275,10 @@ void Analysis::Initial(const char* RootName, int RootNumber)
     //output: got a new rootfile
     cout << "**Runing: Starting Rootfile " << RootNumber << endl;
     isRead = true;
-    double filenumber;
-    filenumber = fTTree->GetEntries();
-    if (filenumber == 0)
-        isRead = false;
+    // double filenumber;
+    // filenumber = fTTree->GetEntries();
+    // if (filenumber == 0)
+    //     isRead = false;
     //*****set address****//
     CMS4path = 0;
     fTTree->SetBranchAddress("run", &run);

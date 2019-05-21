@@ -36,7 +36,10 @@ def dilep_analysis_make_plot():
         usage()
 
     bkgfiles = [
+            "outputs/{}/{}/top.root".format(ntuple_version, tag),
             "outputs/{}/{}/dy.root".format(ntuple_version, tag),
+            "outputs/{}/{}/wj.root".format(ntuple_version, tag),
+            "outputs/{}/{}/ww.root".format(ntuple_version, tag),
             ]
 
     sigfiles = [
@@ -53,7 +56,7 @@ def dilep_analysis_make_plot():
             sig_fnames=sigfiles,
             data_fname=data_fname,
             usercolors=colors,
-            legend_labels=["DY"],
+            legend_labels=["t#bar{t}", "DY", "W", "WW"],
             signal_labels=[],
             dirname="plots/{}/{}/lin".format(ntuple_version, tag),
             filter_pattern="__",
@@ -67,6 +70,7 @@ def dilep_analysis_make_plot():
                 "legend_ncolumns": 3,
                 "ymax_scale": 1.2,
                 "lumi_value":59.74,
+                "remove_underflow": True,
                 }
             )
 
@@ -74,7 +78,7 @@ def dilep_analysis_make_plot():
             sig_fnames=sigfiles,
             data_fname=data_fname,
             usercolors=colors,
-            legend_labels=["DY"],
+            legend_labels=["t#bar{t}", "DY", "W", "WW"],
             signal_labels=[],
             dirname="plots/{}/{}/log".format(ntuple_version, tag),
             filter_pattern="__",
@@ -90,6 +94,7 @@ def dilep_analysis_make_plot():
                 "lumi_value":59.74,
                 "yaxis_log":True,
                 "legend_smart":False,
+                "remove_underflow": True,
                 }
             )
 
@@ -136,6 +141,27 @@ def main_analysis_make_plot():
 
 
     colors = [2005, 2001, 2003, 2007, 920, 2012, 2011]
+
+    p.dump_plot(fnames=bkgfiles,
+            sig_fnames=sigfiles,
+            data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
+            usercolors=colors,
+            legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
+            signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
+            dirname="plots/{}/{}/cr".format(ntuple_version, tag),
+            filter_pattern="OnZ__",
+            dogrep=True,
+            extraoptions={
+                "print_yield":True,
+                "nbins":15,
+                "signal_scale": 1,
+                "legend_scalex":1.8,
+                "legend_scaley":1.1,
+                "legend_ncolumns": 3,
+                "ymax_scale": 1.2,
+                "lumi_value":137
+                }
+            )
 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles,

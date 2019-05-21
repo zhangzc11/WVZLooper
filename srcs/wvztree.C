@@ -12,6 +12,8 @@ void wvztree::Init(TTree *tree) {
   if (met_p4_branch) met_p4_branch->SetAddress(&met_p4_);
   jets_p4_branch = tree->GetBranch("jets_p4");
   if (jets_p4_branch) jets_p4_branch->SetAddress(&jets_p4_);
+  jets_cen_p4_branch = tree->GetBranch("jets_cen_p4");
+  if (jets_cen_p4_branch) jets_cen_p4_branch->SetAddress(&jets_cen_p4_);
 
   tree->SetMakeClass(1);
 
@@ -113,6 +115,8 @@ void wvztree::Init(TTree *tree) {
   if (lep_energy_branch) lep_energy_branch->SetAddress(&lep_energy_);
   lep_mva_branch = tree->GetBranch("lep_mva");
   if (lep_mva_branch) lep_mva_branch->SetAddress(&lep_mva_);
+  lep_relIso04DB_branch = tree->GetBranch("lep_relIso04DB");
+  if (lep_relIso04DB_branch) lep_relIso04DB_branch->SetAddress(&lep_relIso04DB_);
   lep_relIso03EA_branch = tree->GetBranch("lep_relIso03EA");
   if (lep_relIso03EA_branch) lep_relIso03EA_branch->SetAddress(&lep_relIso03EA_);
   lep_relIso03EAwLep_branch = tree->GetBranch("lep_relIso03EAwLep");
@@ -137,6 +141,22 @@ void wvztree::Init(TTree *tree) {
   if (lep_isTightPOG_branch) lep_isTightPOG_branch->SetAddress(&lep_isTightPOG_);
   lep_isMediumPOG_branch = tree->GetBranch("lep_isMediumPOG");
   if (lep_isMediumPOG_branch) lep_isMediumPOG_branch->SetAddress(&lep_isMediumPOG_);
+  lep_isCutBasedNoIsoVetoPOG_branch = tree->GetBranch("lep_isCutBasedNoIsoVetoPOG");
+  if (lep_isCutBasedNoIsoVetoPOG_branch) lep_isCutBasedNoIsoVetoPOG_branch->SetAddress(&lep_isCutBasedNoIsoVetoPOG_);
+  lep_isCutBasedNoIsoLoosePOG_branch = tree->GetBranch("lep_isCutBasedNoIsoLoosePOG");
+  if (lep_isCutBasedNoIsoLoosePOG_branch) lep_isCutBasedNoIsoLoosePOG_branch->SetAddress(&lep_isCutBasedNoIsoLoosePOG_);
+  lep_isCutBasedNoIsoMediumPOG_branch = tree->GetBranch("lep_isCutBasedNoIsoMediumPOG");
+  if (lep_isCutBasedNoIsoMediumPOG_branch) lep_isCutBasedNoIsoMediumPOG_branch->SetAddress(&lep_isCutBasedNoIsoMediumPOG_);
+  lep_isCutBasedNoIsoTightPOG_branch = tree->GetBranch("lep_isCutBasedNoIsoTightPOG");
+  if (lep_isCutBasedNoIsoTightPOG_branch) lep_isCutBasedNoIsoTightPOG_branch->SetAddress(&lep_isCutBasedNoIsoTightPOG_);
+  lep_isCutBasedIsoVetoPOG_branch = tree->GetBranch("lep_isCutBasedIsoVetoPOG");
+  if (lep_isCutBasedIsoVetoPOG_branch) lep_isCutBasedIsoVetoPOG_branch->SetAddress(&lep_isCutBasedIsoVetoPOG_);
+  lep_isCutBasedIsoLoosePOG_branch = tree->GetBranch("lep_isCutBasedIsoLoosePOG");
+  if (lep_isCutBasedIsoLoosePOG_branch) lep_isCutBasedIsoLoosePOG_branch->SetAddress(&lep_isCutBasedIsoLoosePOG_);
+  lep_isCutBasedIsoMediumPOG_branch = tree->GetBranch("lep_isCutBasedIsoMediumPOG");
+  if (lep_isCutBasedIsoMediumPOG_branch) lep_isCutBasedIsoMediumPOG_branch->SetAddress(&lep_isCutBasedIsoMediumPOG_);
+  lep_isCutBasedIsoTightPOG_branch = tree->GetBranch("lep_isCutBasedIsoTightPOG");
+  if (lep_isCutBasedIsoTightPOG_branch) lep_isCutBasedIsoTightPOG_branch->SetAddress(&lep_isCutBasedIsoTightPOG_);
   met_pt_branch = tree->GetBranch("met_pt");
   if (met_pt_branch) met_pt_branch->SetAddress(&met_pt_);
   met_phi_branch = tree->GetBranch("met_phi");
@@ -161,6 +181,14 @@ void wvztree::Init(TTree *tree) {
   if (jets_phi_branch) jets_phi_branch->SetAddress(&jets_phi_);
   jets_mass_branch = tree->GetBranch("jets_mass");
   if (jets_mass_branch) jets_mass_branch->SetAddress(&jets_mass_);
+  jets_cen_pt_branch = tree->GetBranch("jets_cen_pt");
+  if (jets_cen_pt_branch) jets_cen_pt_branch->SetAddress(&jets_cen_pt_);
+  jets_cen_eta_branch = tree->GetBranch("jets_cen_eta");
+  if (jets_cen_eta_branch) jets_cen_eta_branch->SetAddress(&jets_cen_eta_);
+  jets_cen_phi_branch = tree->GetBranch("jets_cen_phi");
+  if (jets_cen_phi_branch) jets_cen_phi_branch->SetAddress(&jets_cen_phi_);
+  jets_cen_mass_branch = tree->GetBranch("jets_cen_mass");
+  if (jets_cen_mass_branch) jets_cen_mass_branch->SetAddress(&jets_cen_mass_);
   nj_branch = tree->GetBranch("nj");
   if (nj_branch) nj_branch->SetAddress(&nj_);
   nb_branch = tree->GetBranch("nb");
@@ -169,6 +197,8 @@ void wvztree::Init(TTree *tree) {
   if (nbmed_branch) nbmed_branch->SetAddress(&nbmed_);
   ht_branch = tree->GetBranch("ht");
   if (ht_branch) ht_branch->SetAddress(&ht_);
+  nj_cen_branch = tree->GetBranch("nj_cen");
+  if (nj_cen_branch) nj_cen_branch->SetAddress(&nj_cen_);
   weight_btagsf_branch = tree->GetBranch("weight_btagsf");
   if (weight_btagsf_branch) weight_btagsf_branch->SetAddress(&weight_btagsf_);
   weight_btagsf_heavy_DN_branch = tree->GetBranch("weight_btagsf_heavy_DN");
@@ -238,6 +268,7 @@ void wvztree::GetEntry(unsigned int idx) {
   lep_phi_isLoaded = false;
   lep_energy_isLoaded = false;
   lep_mva_isLoaded = false;
+  lep_relIso04DB_isLoaded = false;
   lep_relIso03EA_isLoaded = false;
   lep_relIso03EAwLep_isLoaded = false;
   lep_ip3d_isLoaded = false;
@@ -250,6 +281,14 @@ void wvztree::GetEntry(unsigned int idx) {
   lep_id_isLoaded = false;
   lep_isTightPOG_isLoaded = false;
   lep_isMediumPOG_isLoaded = false;
+  lep_isCutBasedNoIsoVetoPOG_isLoaded = false;
+  lep_isCutBasedNoIsoLoosePOG_isLoaded = false;
+  lep_isCutBasedNoIsoMediumPOG_isLoaded = false;
+  lep_isCutBasedNoIsoTightPOG_isLoaded = false;
+  lep_isCutBasedIsoVetoPOG_isLoaded = false;
+  lep_isCutBasedIsoLoosePOG_isLoaded = false;
+  lep_isCutBasedIsoMediumPOG_isLoaded = false;
+  lep_isCutBasedIsoTightPOG_isLoaded = false;
   met_p4_isLoaded = false;
   met_pt_isLoaded = false;
   met_phi_isLoaded = false;
@@ -264,10 +303,16 @@ void wvztree::GetEntry(unsigned int idx) {
   jets_eta_isLoaded = false;
   jets_phi_isLoaded = false;
   jets_mass_isLoaded = false;
+  jets_cen_p4_isLoaded = false;
+  jets_cen_pt_isLoaded = false;
+  jets_cen_eta_isLoaded = false;
+  jets_cen_phi_isLoaded = false;
+  jets_cen_mass_isLoaded = false;
   nj_isLoaded = false;
   nb_isLoaded = false;
   nbmed_isLoaded = false;
   ht_isLoaded = false;
+  nj_cen_isLoaded = false;
   weight_btagsf_isLoaded = false;
   weight_btagsf_heavy_DN_isLoaded = false;
   weight_btagsf_heavy_UP_isLoaded = false;
@@ -329,6 +374,7 @@ void wvztree::LoadAllBranches() {
   if (lep_phi_branch != 0) lep_phi();
   if (lep_energy_branch != 0) lep_energy();
   if (lep_mva_branch != 0) lep_mva();
+  if (lep_relIso04DB_branch != 0) lep_relIso04DB();
   if (lep_relIso03EA_branch != 0) lep_relIso03EA();
   if (lep_relIso03EAwLep_branch != 0) lep_relIso03EAwLep();
   if (lep_ip3d_branch != 0) lep_ip3d();
@@ -341,6 +387,14 @@ void wvztree::LoadAllBranches() {
   if (lep_id_branch != 0) lep_id();
   if (lep_isTightPOG_branch != 0) lep_isTightPOG();
   if (lep_isMediumPOG_branch != 0) lep_isMediumPOG();
+  if (lep_isCutBasedNoIsoVetoPOG_branch != 0) lep_isCutBasedNoIsoVetoPOG();
+  if (lep_isCutBasedNoIsoLoosePOG_branch != 0) lep_isCutBasedNoIsoLoosePOG();
+  if (lep_isCutBasedNoIsoMediumPOG_branch != 0) lep_isCutBasedNoIsoMediumPOG();
+  if (lep_isCutBasedNoIsoTightPOG_branch != 0) lep_isCutBasedNoIsoTightPOG();
+  if (lep_isCutBasedIsoVetoPOG_branch != 0) lep_isCutBasedIsoVetoPOG();
+  if (lep_isCutBasedIsoLoosePOG_branch != 0) lep_isCutBasedIsoLoosePOG();
+  if (lep_isCutBasedIsoMediumPOG_branch != 0) lep_isCutBasedIsoMediumPOG();
+  if (lep_isCutBasedIsoTightPOG_branch != 0) lep_isCutBasedIsoTightPOG();
   if (met_p4_branch != 0) met_p4();
   if (met_pt_branch != 0) met_pt();
   if (met_phi_branch != 0) met_phi();
@@ -355,10 +409,16 @@ void wvztree::LoadAllBranches() {
   if (jets_eta_branch != 0) jets_eta();
   if (jets_phi_branch != 0) jets_phi();
   if (jets_mass_branch != 0) jets_mass();
+  if (jets_cen_p4_branch != 0) jets_cen_p4();
+  if (jets_cen_pt_branch != 0) jets_cen_pt();
+  if (jets_cen_eta_branch != 0) jets_cen_eta();
+  if (jets_cen_phi_branch != 0) jets_cen_phi();
+  if (jets_cen_mass_branch != 0) jets_cen_mass();
   if (nj_branch != 0) nj();
   if (nb_branch != 0) nb();
   if (nbmed_branch != 0) nbmed();
   if (ht_branch != 0) ht();
+  if (nj_cen_branch != 0) nj_cen();
   if (weight_btagsf_branch != 0) weight_btagsf();
   if (weight_btagsf_heavy_DN_branch != 0) weight_btagsf_heavy_DN();
   if (weight_btagsf_heavy_UP_branch != 0) weight_btagsf_heavy_UP();
@@ -1042,6 +1102,19 @@ const vector<float> &wvztree::lep_mva() {
   return *lep_mva_;
 }
 
+const vector<float> &wvztree::lep_relIso04DB() {
+  if (not lep_relIso04DB_isLoaded) {
+    if (lep_relIso04DB_branch != 0) {
+      lep_relIso04DB_branch->GetEntry(index);
+    } else {
+      printf("branch lep_relIso04DB_branch does not exist!\n");
+      exit(1);
+    }
+    lep_relIso04DB_isLoaded = true;
+  }
+  return *lep_relIso04DB_;
+}
+
 const vector<float> &wvztree::lep_relIso03EA() {
   if (not lep_relIso03EA_isLoaded) {
     if (lep_relIso03EA_branch != 0) {
@@ -1196,6 +1269,110 @@ const vector<int> &wvztree::lep_isMediumPOG() {
     lep_isMediumPOG_isLoaded = true;
   }
   return *lep_isMediumPOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedNoIsoVetoPOG() {
+  if (not lep_isCutBasedNoIsoVetoPOG_isLoaded) {
+    if (lep_isCutBasedNoIsoVetoPOG_branch != 0) {
+      lep_isCutBasedNoIsoVetoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedNoIsoVetoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedNoIsoVetoPOG_isLoaded = true;
+  }
+  return *lep_isCutBasedNoIsoVetoPOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedNoIsoLoosePOG() {
+  if (not lep_isCutBasedNoIsoLoosePOG_isLoaded) {
+    if (lep_isCutBasedNoIsoLoosePOG_branch != 0) {
+      lep_isCutBasedNoIsoLoosePOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedNoIsoLoosePOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedNoIsoLoosePOG_isLoaded = true;
+  }
+  return *lep_isCutBasedNoIsoLoosePOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedNoIsoMediumPOG() {
+  if (not lep_isCutBasedNoIsoMediumPOG_isLoaded) {
+    if (lep_isCutBasedNoIsoMediumPOG_branch != 0) {
+      lep_isCutBasedNoIsoMediumPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedNoIsoMediumPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedNoIsoMediumPOG_isLoaded = true;
+  }
+  return *lep_isCutBasedNoIsoMediumPOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedNoIsoTightPOG() {
+  if (not lep_isCutBasedNoIsoTightPOG_isLoaded) {
+    if (lep_isCutBasedNoIsoTightPOG_branch != 0) {
+      lep_isCutBasedNoIsoTightPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedNoIsoTightPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedNoIsoTightPOG_isLoaded = true;
+  }
+  return *lep_isCutBasedNoIsoTightPOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedIsoVetoPOG() {
+  if (not lep_isCutBasedIsoVetoPOG_isLoaded) {
+    if (lep_isCutBasedIsoVetoPOG_branch != 0) {
+      lep_isCutBasedIsoVetoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedIsoVetoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedIsoVetoPOG_isLoaded = true;
+  }
+  return *lep_isCutBasedIsoVetoPOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedIsoLoosePOG() {
+  if (not lep_isCutBasedIsoLoosePOG_isLoaded) {
+    if (lep_isCutBasedIsoLoosePOG_branch != 0) {
+      lep_isCutBasedIsoLoosePOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedIsoLoosePOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedIsoLoosePOG_isLoaded = true;
+  }
+  return *lep_isCutBasedIsoLoosePOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedIsoMediumPOG() {
+  if (not lep_isCutBasedIsoMediumPOG_isLoaded) {
+    if (lep_isCutBasedIsoMediumPOG_branch != 0) {
+      lep_isCutBasedIsoMediumPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedIsoMediumPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedIsoMediumPOG_isLoaded = true;
+  }
+  return *lep_isCutBasedIsoMediumPOG_;
+}
+
+const vector<int> &wvztree::lep_isCutBasedIsoTightPOG() {
+  if (not lep_isCutBasedIsoTightPOG_isLoaded) {
+    if (lep_isCutBasedIsoTightPOG_branch != 0) {
+      lep_isCutBasedIsoTightPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isCutBasedIsoTightPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isCutBasedIsoTightPOG_isLoaded = true;
+  }
+  return *lep_isCutBasedIsoTightPOG_;
 }
 
 const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &wvztree::met_p4() {
@@ -1380,6 +1557,71 @@ const vector<float> &wvztree::jets_mass() {
   return *jets_mass_;
 }
 
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::jets_cen_p4() {
+  if (not jets_cen_p4_isLoaded) {
+    if (jets_cen_p4_branch != 0) {
+      jets_cen_p4_branch->GetEntry(index);
+    } else {
+      printf("branch jets_cen_p4_branch does not exist!\n");
+      exit(1);
+    }
+    jets_cen_p4_isLoaded = true;
+  }
+  return *jets_cen_p4_;
+}
+
+const vector<float> &wvztree::jets_cen_pt() {
+  if (not jets_cen_pt_isLoaded) {
+    if (jets_cen_pt_branch != 0) {
+      jets_cen_pt_branch->GetEntry(index);
+    } else {
+      printf("branch jets_cen_pt_branch does not exist!\n");
+      exit(1);
+    }
+    jets_cen_pt_isLoaded = true;
+  }
+  return *jets_cen_pt_;
+}
+
+const vector<float> &wvztree::jets_cen_eta() {
+  if (not jets_cen_eta_isLoaded) {
+    if (jets_cen_eta_branch != 0) {
+      jets_cen_eta_branch->GetEntry(index);
+    } else {
+      printf("branch jets_cen_eta_branch does not exist!\n");
+      exit(1);
+    }
+    jets_cen_eta_isLoaded = true;
+  }
+  return *jets_cen_eta_;
+}
+
+const vector<float> &wvztree::jets_cen_phi() {
+  if (not jets_cen_phi_isLoaded) {
+    if (jets_cen_phi_branch != 0) {
+      jets_cen_phi_branch->GetEntry(index);
+    } else {
+      printf("branch jets_cen_phi_branch does not exist!\n");
+      exit(1);
+    }
+    jets_cen_phi_isLoaded = true;
+  }
+  return *jets_cen_phi_;
+}
+
+const vector<float> &wvztree::jets_cen_mass() {
+  if (not jets_cen_mass_isLoaded) {
+    if (jets_cen_mass_branch != 0) {
+      jets_cen_mass_branch->GetEntry(index);
+    } else {
+      printf("branch jets_cen_mass_branch does not exist!\n");
+      exit(1);
+    }
+    jets_cen_mass_isLoaded = true;
+  }
+  return *jets_cen_mass_;
+}
+
 const int &wvztree::nj() {
   if (not nj_isLoaded) {
     if (nj_branch != 0) {
@@ -1430,6 +1672,19 @@ const float &wvztree::ht() {
     ht_isLoaded = true;
   }
   return ht_;
+}
+
+const int &wvztree::nj_cen() {
+  if (not nj_cen_isLoaded) {
+    if (nj_cen_branch != 0) {
+      nj_cen_branch->GetEntry(index);
+    } else {
+      printf("branch nj_cen_branch does not exist!\n");
+      exit(1);
+    }
+    nj_cen_isLoaded = true;
+  }
+  return nj_cen_;
 }
 
 const float &wvztree::weight_btagsf() {
@@ -1572,6 +1827,7 @@ const vector<float> &lep_eta() { return wvz.lep_eta(); }
 const vector<float> &lep_phi() { return wvz.lep_phi(); }
 const vector<float> &lep_energy() { return wvz.lep_energy(); }
 const vector<float> &lep_mva() { return wvz.lep_mva(); }
+const vector<float> &lep_relIso04DB() { return wvz.lep_relIso04DB(); }
 const vector<float> &lep_relIso03EA() { return wvz.lep_relIso03EA(); }
 const vector<float> &lep_relIso03EAwLep() { return wvz.lep_relIso03EAwLep(); }
 const vector<float> &lep_ip3d() { return wvz.lep_ip3d(); }
@@ -1584,6 +1840,14 @@ const vector<int> &lep_idx() { return wvz.lep_idx(); }
 const vector<int> &lep_id() { return wvz.lep_id(); }
 const vector<int> &lep_isTightPOG() { return wvz.lep_isTightPOG(); }
 const vector<int> &lep_isMediumPOG() { return wvz.lep_isMediumPOG(); }
+const vector<int> &lep_isCutBasedNoIsoVetoPOG() { return wvz.lep_isCutBasedNoIsoVetoPOG(); }
+const vector<int> &lep_isCutBasedNoIsoLoosePOG() { return wvz.lep_isCutBasedNoIsoLoosePOG(); }
+const vector<int> &lep_isCutBasedNoIsoMediumPOG() { return wvz.lep_isCutBasedNoIsoMediumPOG(); }
+const vector<int> &lep_isCutBasedNoIsoTightPOG() { return wvz.lep_isCutBasedNoIsoTightPOG(); }
+const vector<int> &lep_isCutBasedIsoVetoPOG() { return wvz.lep_isCutBasedIsoVetoPOG(); }
+const vector<int> &lep_isCutBasedIsoLoosePOG() { return wvz.lep_isCutBasedIsoLoosePOG(); }
+const vector<int> &lep_isCutBasedIsoMediumPOG() { return wvz.lep_isCutBasedIsoMediumPOG(); }
+const vector<int> &lep_isCutBasedIsoTightPOG() { return wvz.lep_isCutBasedIsoTightPOG(); }
 const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &met_p4() { return wvz.met_p4(); }
 const float &met_pt() { return wvz.met_pt(); }
 const float &met_phi() { return wvz.met_phi(); }
@@ -1598,10 +1862,16 @@ const vector<float> &jets_pt() { return wvz.jets_pt(); }
 const vector<float> &jets_eta() { return wvz.jets_eta(); }
 const vector<float> &jets_phi() { return wvz.jets_phi(); }
 const vector<float> &jets_mass() { return wvz.jets_mass(); }
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_cen_p4() { return wvz.jets_cen_p4(); }
+const vector<float> &jets_cen_pt() { return wvz.jets_cen_pt(); }
+const vector<float> &jets_cen_eta() { return wvz.jets_cen_eta(); }
+const vector<float> &jets_cen_phi() { return wvz.jets_cen_phi(); }
+const vector<float> &jets_cen_mass() { return wvz.jets_cen_mass(); }
 const int &nj() { return wvz.nj(); }
 const int &nb() { return wvz.nb(); }
 const int &nbmed() { return wvz.nbmed(); }
 const float &ht() { return wvz.ht(); }
+const int &nj_cen() { return wvz.nj_cen(); }
 const float &weight_btagsf() { return wvz.weight_btagsf(); }
 const float &weight_btagsf_heavy_DN() { return wvz.weight_btagsf_heavy_DN(); }
 const float &weight_btagsf_heavy_UP() { return wvz.weight_btagsf_heavy_UP(); }

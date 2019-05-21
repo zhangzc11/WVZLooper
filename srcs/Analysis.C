@@ -23,7 +23,7 @@
 #include <TProfile2D.h>
 #include <iomanip>
 
-#include "rooutil.h"
+#include "puw.h"
 
 struct MyLepton
 {
@@ -87,6 +87,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY ); 
 
@@ -126,6 +127,23 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("Pt5th", 180, 0, 200, [&](){ return this->VarPt5th(); });
         histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
         histograms.addHistogram("Mll2l", 180, 0, 300, [&](){ return this->VarMll2l(); });
+        histograms.addHistogram("lepZPt0", 180, 0, 200, [&](){ return wvz.lep_pt()[lep_ZCand_idx1]; });
+        histograms.addHistogram("lepZPt1", 180, 0, 200, [&](){ return wvz.lep_pt()[lep_ZCand_idx2]; });
+        histograms.addHistogram("lepNPt0", 180, 0, 200, [&](){ return wvz.lep_pt()[lep_Nom_idx1]; });
+        histograms.addHistogram("lepNPt1", 180, 0, 200, [&](){ return wvz.lep_pt()[lep_Nom_idx2]; });
+        histograms.addHistogram("MllZCand", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).M(); });
+        histograms.addHistogram("MllNom", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2]).M(); });
+        histograms.addHistogram("M4l", 180, 0, 450, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2] + wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).M(); });
+        histograms.addHistogram("PtllZCand", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).Pt(); });
+        histograms.addHistogram("PtllNom", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2]).Pt(); });
+        histograms.addHistogram("lepZrelIso03EA0", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_ZCand_idx1]; });
+        histograms.addHistogram("lepZrelIso03EA1", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_ZCand_idx2]; });
+        histograms.addHistogram("lepNrelIso03EA0", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_Nom_idx1]; });
+        histograms.addHistogram("lepNrelIso03EA1", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_Nom_idx2]; });
+        histograms.addHistogram("lepZrelIso04DB0", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_ZCand_idx1]; });
+        histograms.addHistogram("lepZrelIso04DB1", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_ZCand_idx2]; });
+        histograms.addHistogram("lepNrelIso04DB0", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_Nom_idx1]; });
+        histograms.addHistogram("lepNrelIso04DB1", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_Nom_idx2]; });
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -133,10 +151,23 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
         histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
         histograms.addHistogram("nvtx", 60, 0, 60, [&](){ return this->VarNvtx(); });
+        histograms.addHistogram("lep_pt0", 180, 0, 150, [&](){ return wvz.lep_pt().size() > 0 ? wvz.lep_pt()[0] : -999; });
+        histograms.addHistogram("lep_pt1", 180, 0, 125, [&](){ return wvz.lep_pt().size() > 1 ? wvz.lep_pt()[1] : -999; });
+        histograms.addHistogram("lep_eta0", 180, -2.5, 2.5, [&](){ return wvz.lep_eta().size() > 0 ? wvz.lep_eta()[0] : -999; });
+        histograms.addHistogram("lep_eta1", 180, -2.5, 2.5, [&](){ return wvz.lep_eta().size() > 1 ? wvz.lep_eta()[1] : -999; });
+        histograms.addHistogram("jets_pt0", 180, 0, 150, [&](){ return wvz.jets_pt().size() > 0 ? wvz.jets_pt()[0] : -999; });
+        histograms.addHistogram("jets_pt1", 180, 0, 125, [&](){ return wvz.jets_pt().size() > 1 ? wvz.jets_pt()[1] : -999; });
+        histograms.addHistogram("jets_pt2", 180, 0, 100, [&](){ return wvz.jets_pt().size() > 2 ? wvz.jets_pt()[2] : -999; });
+        histograms.addHistogram("jets_eta0", 180, -5, 5, [&](){ return wvz.jets_eta().size() > 0 ? wvz.jets_eta()[0] : -999; });
+        histograms.addHistogram("jets_eta1", 180, -5, 5, [&](){ return wvz.jets_eta().size() > 1 ? wvz.jets_eta()[1] : -999; });
+        histograms.addHistogram("jets_eta2", 180, -5, 5, [&](){ return wvz.jets_eta().size() > 2 ? wvz.jets_eta()[2] : -999; });
     }
 
     // Book histograms
     cutflow.bookHistograms(histograms);
+
+    // // Book event list
+    // cutflow.bookEventLists();
 
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
@@ -156,8 +187,39 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         select2ndZCandAndWCandLeptons();
         sortLeptonIndex();
         setDilepMasses();
+        // cutflow.setEventID(wvz.run(), wvz.lumi(), wvz.evt());
         cutflow.fill();
+        // if (cutflow.getCut("ChannelEMu").pass)
+        // {
+        //     std::cout << wvz.lep_motherIdv2()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_motherIdv2()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_motherIdv2()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_motherIdv2()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        //     std::cout << wvz.lep_id()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_id()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_id()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_id()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        //     std::cout << wvz.lep_sip3d()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_sip3d()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_sip3d()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_sip3d()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        //     std::cout << wvz.lep_pt()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_pt()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_pt()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_pt()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        //     std::cout << wvz.lep_eta()[lep_ZCand_idx1] << " ";
+        //     std::cout << wvz.lep_eta()[lep_ZCand_idx2] << " ";
+        //     std::cout << wvz.lep_eta()[lep_Nom_idx1] << " ";
+        //     std::cout << wvz.lep_eta()[lep_Nom_idx2] << " ";
+        //     std::cout << std::endl;
+        // }
     }
+
+    // cutflow.getCut("ChannelEMu").printEventList();
 
     // Old way of looping
     // ----------------------------------------------------------------------------------------
@@ -419,20 +481,20 @@ bool Analysis::passVetoElectronID(int idx)
     // - POG MVA Veto (i.e. HZZ w.p.)
     // Already applied at WVZBabyMaker
 
-    // - |eta| < 2.5
-    if (not (fabs(lep_eta->at(idx)) < 2.5)) return false;
+    // // - |eta| < 2.5
+    // if (not (fabs(lep_eta->at(idx)) < 2.5)) return false;
 
-    // - dz < 0.1
-    if (not (fabs(lep_dz->at(idx)) < 0.1)) return false;
+    // // - dz < 0.1
+    // if (not (fabs(lep_dz->at(idx)) < 0.1)) return false;
 
-    // - dxy < 0.05
-    if (not (fabs(lep_dxy->at(idx)) < 0.05)) return false;
+    // // - dxy < 0.05
+    // if (not (fabs(lep_dxy->at(idx)) < 0.05)) return false;
 
-    // - RelIso03EA < 0.2 if tagged as Z
-    if (not (fabs(lep_relIso03EA->at(idx)) < 0.4)) return false;
+    // // - RelIso03EA < 0.2 if tagged as Z
+    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.4)) return false;
 
-    // - |sip3d| < 5
-    if (not (fabs(lep_sip3d->at(idx)) < 5)) return false;
+    // // - |sip3d| < 5
+    // if (not (fabs(lep_sip3d->at(idx)) < 5)) return false;
 
     return true;
 
@@ -444,20 +506,20 @@ bool Analysis::passVetoMuonID(int idx)
     // - POG Loose
     // Already applied at WVZBabyMaker
 
-    // - |eta| < 2.4
-    if (not (fabs(lep_eta->at(idx)) < 2.4)) return false;
+    // // - |eta| < 2.4
+    // if (not (fabs(lep_eta->at(idx)) < 2.4)) return false;
 
-    // - dz < 0.1
-    if (not (fabs(lep_dz->at(idx)) < 0.1)) return false;
+    // // - dz < 0.1
+    // if (not (fabs(lep_dz->at(idx)) < 0.1)) return false;
 
-    // - dxy < 0.05
-    if (not (fabs(lep_dxy->at(idx)) < 0.05)) return false;
+    // // - dxy < 0.05
+    // if (not (fabs(lep_dxy->at(idx)) < 0.05)) return false;
 
-    // - RelIso03EA < 0.2 if tagged as Z
-    if (not (fabs(lep_relIso03EA->at(idx)) < 0.4)) return false;
+    // // - RelIso03EA < 0.2 if tagged as Z
+    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.4)) return false;
 
-    // - |sip3d| < 5
-    if (not (fabs(lep_sip3d->at(idx)) < 5)) return false;
+    // // - |sip3d| < 5
+    // if (not (fabs(lep_sip3d->at(idx)) < 5)) return false;
 
     return true;
 }
@@ -478,8 +540,11 @@ bool Analysis::passZCandElectronID(int idx)
     // Must pass ZCand ID
     if (not (passVetoElectronID(idx))) return false;
 
-    // - RelIso03EA < 0.2 if ZCandElectron
-    if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
+    // // - RelIso03EA < 0.2 if ZCandElectron
+    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
+
+    // - |sip3d| < 4
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -491,8 +556,13 @@ bool Analysis::passZCandMuonID(int idx)
     // Must pass ZCand ID
     if (not (passVetoMuonID(idx))) return false;
 
-    // - RelIso03EA < 0.2 if ZCandMuon
-    if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
+    // // - RelIso03EA < 0.2 if ZCandMuon
+    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
+
+    // Veto is same as Z muon cand
+
+    // - |sip3d| < 4
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -512,8 +582,11 @@ bool Analysis::passNominalElectronID(int idx)
     // Must pass ZCand ID
     if (not (passZCandElectronID(idx))) return false;
 
-    // - RelIso03EA < 0.1 if not tagged as Z
-    if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
+    // // - RelIso03EA < 0.1 if not tagged as Z
+    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
+
+    // Cut-based IsoMedium
+    if (not (wvz.lep_isCutBasedIsoLoosePOG()[idx])) return false;
 
     return true;
 }
@@ -524,8 +597,12 @@ bool Analysis::passNominalMuonID(int idx)
     // Must pass ZCand ID
     if (not (passZCandMuonID(idx))) return false;
 
-    // - RelIso03EA < 0.1 if not tagged as Z
-    if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
+    // // - RelIso03EA < 0.1 if not tagged as Z
+    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
+
+    // Nominal same as Z cand
+    if (not (fabs(wvz.lep_relIso04DB()[idx]) < 0.15)) return false;
+    // if (not (fabs(wvz.lep_relIso03EA()[idx]) < 0.10)) return false;
 
     return true;
 }
@@ -540,11 +617,14 @@ float Analysis::EventWeight()
     else
     {
         if (year == 2016)
-            return evt_scale1fb * 35.9;
+            return evt_scale1fb * 35.9 * getTruePUw(wvz.nTrueInt());
         else if (year == 2017)
-            return evt_scale1fb * 41.3;
+            return evt_scale1fb * 41.3 * getTruePUw(wvz.nTrueInt());
         else if (year == 2018)
-            return evt_scale1fb * 59.74;
+            // return evt_scale1fb * 59.74 * getTruePUw(wvz.nTrueInt());
+            return evt_scale1fb * 137;
+        // else if (year == 2018)
+        //     return evt_scale1fb * 6.94 * getTruePUw(wvz.nTrueInt());
         else
             return evt_scale1fb * 137;
     }
@@ -628,6 +708,26 @@ bool Analysis::Cut4LepLeptonPt()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::CutHLT()
+{
+    if (nNominalLeptons != 2 or lep_ZCand_idx1 == -999)
+        return false;
+    if (wvz.isData())
+        if (not wvz.pass_duplicate_mm_em_ee())
+            return false;
+    if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 11 and abs(wvz.lep_id()[lep_Nom_idx1]) == 11)
+        return wvz.HLT_DoubleEl();
+    else if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 13 and abs(wvz.lep_id()[lep_Nom_idx1]) == 11)
+        return wvz.HLT_MuEG();
+    else if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 11 and abs(wvz.lep_id()[lep_Nom_idx1]) == 13)
+        return wvz.HLT_MuEG();
+    else if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 13 and abs(wvz.lep_id()[lep_Nom_idx1]) == 13)
+        return wvz.HLT_DoubleMu();
+    else
+        return false;
+}
+
+//______________________________________________________________________________________________
 bool Analysis::Is4LeptonEvent()
 {
     return nVetoLeptons == 4;
@@ -650,6 +750,8 @@ bool Analysis::IsTwoOSLeptonEvent()
     if (not (abs(lep_id->at(lep_veto_idxs[1])) == 13)) return false;
     if (not (HLT_DoubleMu)) return false;
     if (not ((leptons[lep_veto_idxs[0]] + leptons[lep_veto_idxs[1]]).M() > 50.)) return false;
+    if (not (passZCandLeptonID(lep_veto_idxs[0]))) return false;
+    if (not (passZCandLeptonID(lep_veto_idxs[1]))) return false;
     return true;
 }
 

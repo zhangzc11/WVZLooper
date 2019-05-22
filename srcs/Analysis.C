@@ -32,6 +32,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     gSystem->Exec(TString::Format("mkdir -p %s", output_path.Data()));
     TFile* output_file = new TFile(output_path + "/" + output_tfile_name, "RECREATE");
 
+    // Load scale factor histograms
+    loadScaleFactors();
+
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
     cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
@@ -107,6 +110,18 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepZsIP3D1", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_ZCand_idx2]); });
         histograms.addHistogram("lepNsIP3D0", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_Nom_idx1]); });
         histograms.addHistogram("lepNsIP3D1", 180, 0, 10, [&](){ return fabs(wvz.lep_sip3d()[lep_Nom_idx2]); });
+        histograms.addHistogram("lepZdxy0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dxy()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZdxy1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dxy()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNdxy0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dxy()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNdxy1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dxy()[lep_Nom_idx2]); });
+        histograms.addHistogram("lepZdz0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dz()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZdz1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dz()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNdz0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dz()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNdz1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_dz()[lep_Nom_idx2]); });
+        histograms.addHistogram("lepZIP3D0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZIP3D1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNIP3D0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNIP3D1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_Nom_idx2]); });
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -218,6 +233,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 
 
 }//end of whole function
+
+//______________________________________________________________________________________________
+void Analysis::loadScaleFactors()
+{
+    histmap_purwegt = new RooUtil::HistMap(TString::Format("scalefactors/puWeight%d.root/pileupWeight", year));
+}
 
 //______________________________________________________________________________________________
 void Analysis::readLeptons()
@@ -466,7 +487,7 @@ bool Analysis::passVetoElectronID(int idx)
     // return true;
 
     // One addition on top of veto ID
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -497,7 +518,7 @@ bool Analysis::passVetoMuonID(int idx)
     // return true;
 
     // One addition on top of veto ID
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -574,11 +595,11 @@ float Analysis::EventWeight()
     else
     {
         if (year == 2016)
-            return evt_scale1fb * 35.9;
+            return evt_scale1fb * 35.9 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2017)
-            return evt_scale1fb * 41.3;
+            return evt_scale1fb * 41.3 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2018)
-            return evt_scale1fb * 59.74 * getTruePUw(wvz.nTrueInt());
+            return evt_scale1fb * 59.74 * histmap_purwegt->eval(wvz.nTrueInt());
         else
             return evt_scale1fb * 137;
     }

@@ -32,7 +32,6 @@
 #include <vector>
 
 #include "makeHists.h"
-#include "puw.h"
 #include "rooutil.h"
 #include "wvztree.h"
 
@@ -157,6 +156,8 @@ public:
 
 //*******plots*******//
     makeHists* myhists;
+
+    void loadScaleFactors();
 
     void readLeptons();
 

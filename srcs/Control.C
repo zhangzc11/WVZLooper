@@ -7,9 +7,9 @@ using namespace std;
 int main(int argc, char** argv)
 {
     //usage output
-    if (argc != 3)
+    if (argc != 4)
     {
-        std::cout << "usage : " << argv[0] << " ntuple_file_name type_of_samples  " << std::endl;
+        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag" << std::endl;
         return 0;
     }
 
@@ -55,13 +55,13 @@ int main(int argc, char** argv)
 
         // Form full path to the input root file
         TString RootName = InputRoot;
-        TString RootAdd = "/nfs-7/userdata/phchang/babies/WVZ2018_v0.0.5/" + (TString)InputRoot + ".root";
+        TString RootAdd = "/nfs-7/userdata/phchang/babies/" + (TString)argv[2] + "/" + (TString)InputRoot + ".root";
 
         // Increase # of input files ran over
         count++;
 
         // Create the analysis instance
-        Analysis Run(argv[1], argv[2], InputRoot);
+        Analysis Run(argv[1], InputRoot);
 
         cout << " Initial Begin: " << endl;
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
         //
         // Loop!
         //
-        Run.Loop(argv[2]);
+        Run.Loop(argv[2], argv[3]);
 
         // Done
         Run.End(count);

@@ -1,35 +1,43 @@
 #ifndef Analysis_h
 #define Analysis_h
 
-#include <TROOT.h>
-#include <TChain.h>
-#include <TFile.h>
-#include "TMath.h"
-#include "TH1F.h"
-#include <iostream>
-#include <vector>
-#include "makeHists.h"
-#include <fstream>
-#include <TH2.h>
-#include <TStyle.h>
-#include <TCanvas.h>
-#include "TLorentzVector.h"
-#include "TH3F.h"
-#include <TRandom3.h>
-#include <TMinuit.h>
-#include <TApplication.h>
+#include "TApplication.h"
+#include "TCanvas.h"
+#include "TChain.h"
+#include "TComplex.h"
 #include "TEnv.h"
-#include <TComplex.h>
+#include "TFile.h"
+#include "TGraph.h"
+#include "TH1D.h"
+#include "TH1F.h"
+#include "TH2.h"
 #include "TH2D.h"
+#include "TH3F.h"
+#include "TH3F.h"
+#include "TLorentzVector.h"
+#include "TMath.h"
+#include "TMinuit.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
+#include "TROOT.h"
+#include "TRandom3.h"
+#include "TStyle.h"
 #include "TSystem.h"
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <tuple>
 #include <unistd.h>
+#include <vector>
 
-#include "wvztree.h"
+#include "makeHists.h"
+#include "puw.h"
 #include "rooutil.h"
+#include "wvztree.h"
 
 using namespace std;
+
 //class: the main class for functions;
 class Analysis
 {
@@ -352,4 +360,24 @@ void Analysis::Initial(const char* RootName, int RootNumber)
     fTTree->SetBranchAddress("weight_btagsf_light_UP", &weight_btagsf_light_UP);
 }
 
+//===========================================================================
+// Needed for sorting leptons by pt
+//===========================================================================
+struct MyLepton
+{
+    int idx;
+    double pt;
+    MyLepton(int idx_, float pt_) { idx = idx_; pt = pt_; }
+};
+
+struct less_than_key
+{
+    inline bool operator() (const MyLepton& struct1, const MyLepton& struct2)
+    {
+        return (struct1.pt > struct2.pt);
+    }
+};
+
+
+using namespace std;
 #endif

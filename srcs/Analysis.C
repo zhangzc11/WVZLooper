@@ -1,60 +1,19 @@
 #define Analysis_C
 #include "Analysis.h"
-#include <TROOT.h>
-#include <TChain.h>
-#include <TFile.h>
-#include "TMath.h"
-#include "TH1D.h"
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <TH2.h>
-#include <TStyle.h>
-#include <TCanvas.h>
-#include "TLorentzVector.h"
-#include "TH3F.h"
-#include <TRandom3.h>
-#include <TMinuit.h>
-#include <TApplication.h>
-#include "TEnv.h"
-#include <TComplex.h>
-#include <TGraph.h>
-#include <TProfile.h>
-#include <TProfile2D.h>
-#include <iomanip>
-
-#include "puw.h"
-
-struct MyLepton
-{
-    int idx;
-    double pt;
-    MyLepton(int idx_, float pt_) { idx = idx_; pt = pt_; }
-};
-
-struct less_than_key
-{
-    inline bool operator() (const MyLepton& struct1, const MyLepton& struct2)
-    {
-        return (struct1.pt > struct2.pt);
-    }
-};
-
-
-using namespace std;
 
 //______________________________________________________________________________________________
+// e.g.
+// NtupleVersion = "WVZ2018_v0.0.9"
+// TagName = "LoopTag1"
 void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 {
 
-    // Sanity checks
-    if (isRead == false)
-    {
-        cout << "this file does not content any events, skip to the next" << endl;
-        return;
-    }
+    //==================
+    // This is the main analysis looper
+    // The entry point is being called in Control.C
+    //==================
 
-    // Exit if no fTTree (sanity check)
+    // Exit if no fTTree
     if (fTTree == 0)
         return;
 
@@ -254,31 +213,6 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     }
 
     // cutflow.getCut("ChannelEMu").printEventList();
-
-    // Old way of looping
-    // ----------------------------------------------------------------------------------------
-    // // Event Loop (<3 of the code)
-    // Int_t Nentries = fTTree->GetEntries();
-    // cout << "there are " << Nentries << " events in Loop" << endl;
-    // for (int ii = 0 ; ii < Nentries ; ii++)
-    // {
-    //     if (isatty(1)) // i.e. when it is running interactively, otherwise no need to let user know what's going on
-    //     {
-    //         if (ii % 10000 == 0)
-    //             printf("\015\033[32m ---> \033[1m\033[31m Processed %d / %d events [%4.1f%%] \033[34m \033[0m\033[32m  <---\033[0m\015 ", ii, Nentries, (float) ii / (float) Nentries);
-    //     }
-    //     // Load the entry
-    //     fTTree->GetEntry(ii, 0);
-    //     readLeptons();
-    //     selectVetoLeptons();
-    //     selectZCandLeptons();
-    //     selectNominalLeptons();
-    //     select2ndZCandAndWCandLeptons();
-    //     sortLeptonIndex();
-    //     setDilepMasses();
-    //     cutflow.fill();
-    // }//end of loop
-    // ----------------------------------------------------------------------------------------
 
     cutflow.saveOutput();
 
@@ -512,23 +446,27 @@ bool Analysis::passVetoLeptonID(int idx)
 bool Analysis::passVetoElectronID(int idx)
 {
 
-    // - POG MVA Veto (i.e. HZZ w.p.)
-    // Already applied at WVZBabyMaker
+    //-------------------------------------------------
+    // What is already applied at the baby making stage
+    //-------------------------------------------------
 
-    // // - |eta| < 2.5
-    // if (not (fabs(lep_eta->at(idx)) < 2.5)) return false;
+    // if (!( cms3.els_p4()[idx].pt() > 10.          )) return false;
+    // if (!( isVetoElectronPOGfall17_v2(idx)        )) return false;
+    // if (!( fabs(cms3.els_p4()[idx].eta()) < 2.5   )) return false;
+    // if (fabs(cms3.els_etaSC()[idx]) <= 1.479)
+    // {
+    //     if (!( fabs(cms3.els_dzPV()[idx]) < 0.1       )) return false;
+    //     if (!( fabs(cms3.els_dxyPV()[idx]) < 0.05     )) return false;
+    // }
+    // else
+    // {
+    //     if (!( fabs(cms3.els_dzPV()[idx]) < 0.2       )) return false;
+    //     if (!( fabs(cms3.els_dxyPV()[idx]) < 0.1      )) return false;
+    // }
+    // return true;
 
-    // // - dz < 0.1
-    // if (not (fabs(lep_dz->at(idx)) < 0.1)) return false;
-
-    // // - dxy < 0.05
-    // if (not (fabs(lep_dxy->at(idx)) < 0.05)) return false;
-
-    // // - RelIso03EA < 0.2 if tagged as Z
-    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.4)) return false;
-
-    // // - |sip3d| < 5
-    // if (not (fabs(lep_sip3d->at(idx)) < 5)) return false;
+    // One addition on top of veto ID
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -537,23 +475,29 @@ bool Analysis::passVetoElectronID(int idx)
 //______________________________________________________________________________________________
 bool Analysis::passVetoMuonID(int idx)
 {
-    // - POG Loose
-    // Already applied at WVZBabyMaker
 
-    // // - |eta| < 2.4
-    // if (not (fabs(lep_eta->at(idx)) < 2.4)) return false;
+    //-------------------------------------------------
+    // What is already applied at the baby making stage
+    //-------------------------------------------------
 
-    // // - dz < 0.1
-    // if (not (fabs(lep_dz->at(idx)) < 0.1)) return false;
+    // if (!( cms3.mus_p4()[idx].pt() > 10.        )) return false;
+    // if (!( isLooseMuonPOG(idx)                  )) return false;
+    // if (!( fabs(cms3.mus_p4()[idx].eta()) < 2.4 )) return false;
+    // if (!( muRelIso04DB(idx)  < 0.25            )) return false;
+    // if (fabs(cms3.mus_p4()[idx].eta()) <= 1.479)
+    // {
+    //     if (!( fabs(cms3.mus_dzPV()[idx]) < 0.1       )) return false;
+    //     if (!( fabs(cms3.mus_dxyPV()[idx]) < 0.05     )) return false;
+    // }
+    // else
+    // {
+    //     if (!( fabs(cms3.mus_dzPV()[idx]) < 0.2       )) return false;
+    //     if (!( fabs(cms3.mus_dxyPV()[idx]) < 0.1      )) return false;
+    // }
+    // return true;
 
-    // // - dxy < 0.05
-    // if (not (fabs(lep_dxy->at(idx)) < 0.05)) return false;
-
-    // // - RelIso03EA < 0.2 if tagged as Z
-    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.4)) return false;
-
-    // // - |sip3d| < 5
-    // if (not (fabs(lep_sip3d->at(idx)) < 5)) return false;
+    // One addition on top of veto ID
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -571,14 +515,8 @@ bool Analysis::passZCandLeptonID(int idx)
 bool Analysis::passZCandElectronID(int idx)
 {
 
-    // Must pass ZCand ID
+    // Must pass Veto ID
     if (not (passVetoElectronID(idx))) return false;
-
-    // // - RelIso03EA < 0.2 if ZCandElectron
-    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
-
-    // - |sip3d| < 4
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -589,14 +527,6 @@ bool Analysis::passZCandMuonID(int idx)
 {
     // Must pass ZCand ID
     if (not (passVetoMuonID(idx))) return false;
-
-    // // - RelIso03EA < 0.2 if ZCandMuon
-    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.2)) return false;
-
-    // Veto is same as Z muon cand
-
-    // - |sip3d| < 4
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -616,11 +546,7 @@ bool Analysis::passNominalElectronID(int idx)
     // Must pass ZCand ID
     if (not (passZCandElectronID(idx))) return false;
 
-    // // - RelIso03EA < 0.1 if not tagged as Z
-    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
-
     // Cut-based IsoMedium
-    // if (not (wvz.lep_isCutBasedIsoLoosePOG()[idx])) return false;
     if (not (wvz.lep_isCutBasedIsoMediumPOG()[idx])) return false;
 
     return true;
@@ -632,12 +558,8 @@ bool Analysis::passNominalMuonID(int idx)
     // Must pass ZCand ID
     if (not (passZCandMuonID(idx))) return false;
 
-    // // - RelIso03EA < 0.1 if not tagged as Z
-    // if (not (fabs(lep_relIso03EA->at(idx)) < 0.1)) return false;
-
-    // Nominal same as Z cand
+    // Tight POG muon isolation
     if (not (fabs(wvz.lep_relIso04DB()[idx]) < 0.15)) return false;
-    // if (not (fabs(wvz.lep_relIso03EA()[idx]) < 0.10)) return false;
 
     return true;
 }
@@ -657,13 +579,18 @@ float Analysis::EventWeight()
             return evt_scale1fb * 41.3;
         else if (year == 2018)
             return evt_scale1fb * 59.74 * getTruePUw(wvz.nTrueInt());
-            // return evt_scale1fb * 137;
-        // else if (year == 2018)
-        //     return evt_scale1fb * 6.94 * getTruePUw(wvz.nTrueInt());
         else
             return evt_scale1fb * 137;
     }
 }
+
+//==============================================================================================
+//
+//
+// Booleans for event selection cuts
+//
+//
+//==============================================================================================
 
 //______________________________________________________________________________________________
 bool Analysis::FindZCandLeptons()
@@ -858,6 +785,17 @@ bool Analysis::IsNjetGeq2()
 {
     return nj >= 2;
 }
+
+
+
+
+//==============================================================================================
+//
+//
+// float functions for histogram variables
+//
+//
+//==============================================================================================
 
 //______________________________________________________________________________________________
 float Analysis::VarMll()

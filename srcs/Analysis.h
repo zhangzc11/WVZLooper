@@ -192,6 +192,7 @@ public:
     bool CutHLT();
     bool Cut4LepLowMll();
     bool Cut4LepBVeto();
+    bool CutLowMll34();
 
     bool IsChannelEMu();
     bool IsChannelOnZ();
@@ -202,6 +203,10 @@ public:
 
     bool ChannelEMuHighMll();
     bool ChannelOffZHighMET();
+    bool ChannelZZOnShell();
+    bool ChannelHZZ();
+    bool ChannelHZZTightMass();
+  
 
     float VarMll();
     float VarMET();

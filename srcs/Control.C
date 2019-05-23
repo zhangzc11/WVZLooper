@@ -64,7 +64,7 @@ int main(int argc, char** argv)
         Analysis Run(argv[1], InputRoot);
 
         cout << " Initial Begin: " << endl;
-
+	cout<<" File Name: "<<RootAdd<<endl;
         // Set the input root file and the "index" of the input root file
         Run.Initial(RootAdd, count);
 

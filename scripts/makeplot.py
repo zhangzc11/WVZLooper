@@ -146,18 +146,22 @@ def main_analysis_make_plot():
     if "2017" in ntuple_version: lumi = 41.3
     if "2018" in ntuple_version: lumi = 59.74
 
+    datafile = None
+    if "HZZ" in tag or "ZZonshell" in tag:
+	datafile = "outputs/{}/{}/data.root".format(ntuple_version, tag)	
+ 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles,
-            data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
+	    data_fname=datafile,
             usercolors=colors,
             legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
             signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-            dirname="plots/{}/{}/cr".format(ntuple_version, tag),
-            filter_pattern="OnZ__",
+            dirname="plots/{}/{}/lin".format(ntuple_version, tag),
+            filter_pattern="__",
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":50,
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
@@ -169,16 +173,16 @@ def main_analysis_make_plot():
 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles,
-            data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
+	    data_fname=datafile,
             usercolors=colors,
             legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
             signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-            dirname="plots/{}/{}/cr_log".format(ntuple_version, tag),
-            filter_pattern="OnZ__",
+            dirname="plots/{}/{}/log".format(ntuple_version, tag),
+            filter_pattern="__",
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":50,
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
@@ -192,26 +196,7 @@ def main_analysis_make_plot():
 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles,
-            usercolors=colors,
-            legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
-            signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-            dirname="plots/{}/{}/lin".format(ntuple_version, tag),
-            filter_pattern="__",
-            dogrep=True,
-            extraoptions={
-                "print_yield":True,
-                "nbins":15,
-                "signal_scale": 1,
-                "legend_scalex":1.8,
-                "legend_scaley":1.1,
-                "legend_ncolumns": 3,
-                "ymax_scale": 1.2,
-                "lumi_value":lumi,
-                }
-            )
-
-    p.dump_plot(fnames=bkgfiles,
-            sig_fnames=sigfiles,
+	    data_fname=datafile,
             usercolors=colors,
             legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
             signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
@@ -220,7 +205,7 @@ def main_analysis_make_plot():
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":50,
                 "signal_scale": 5,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
@@ -232,6 +217,7 @@ def main_analysis_make_plot():
 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles,
+	    data_fname=datafile,
             usercolors=colors,
             legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
             signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
@@ -240,7 +226,7 @@ def main_analysis_make_plot():
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":50,
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
@@ -252,6 +238,7 @@ def main_analysis_make_plot():
 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles_detail,
+	    data_fname=datafile,
             usercolors=colors,
             legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
             signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
@@ -260,7 +247,7 @@ def main_analysis_make_plot():
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":50,
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
@@ -272,6 +259,7 @@ def main_analysis_make_plot():
 
     p.dump_plot(fnames=bkgfiles,
             sig_fnames=sigfiles_detail,
+	    data_fname=datafile,
             usercolors=colors,
             legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
             signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
@@ -280,7 +268,7 @@ def main_analysis_make_plot():
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":50,
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,

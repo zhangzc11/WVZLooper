@@ -192,6 +192,7 @@ public:
     bool CutHLT();
     bool Cut4LepLowMll();
     bool Cut4LepBVeto();
+    bool Cut4LepBSelection();
     bool CutLowMll34();
 
     bool IsChannelEMu();

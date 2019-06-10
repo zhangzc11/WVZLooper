@@ -72,6 +72,18 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 		cutflow.addCutToLastActiveCut("ChannelHZZ", [&](){ return this->ChannelHZZ(); }, UNITY );
 		cutflow.addCutToLastActiveCut("ChannelHZZTightMass", [&](){ return this->ChannelHZZTightMass(); }, UNITY );
 	}
+	else if(tagName.Contains("ttZ"))
+	{
+		cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY );
+		cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY );
+		cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY );
+		cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY );
+		cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY );
+		//cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY );
+		cutflow.addCutToLastActiveCut("CutLowMll34", [&](){ return this->CutLowMll34(); }, UNITY );
+		cutflow.addCutToLastActiveCut("Cut4LepBSelection", [&](){ return this->Cut4LepBSelection(); }, UNITY );
+		cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu() ; }, UNITY );
+	}
 	else{//signal region
 		cutflow.getCut("Weight");
 		cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
@@ -711,6 +723,12 @@ bool Analysis::Cut4LepLowMll()
 bool Analysis::Cut4LepBVeto()
 {
     return nb == 0;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::Cut4LepBSelection()
+{
+    return nb >= 1;
 }
 
 //______________________________________________________________________________________________

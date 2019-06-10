@@ -147,7 +147,7 @@ def main_analysis_make_plot():
     if "2018" in ntuple_version: lumi = 59.74
 
     datafile = None
-    if "HZZ" in tag or "ZZonshell" in tag:
+    if "HZZ" in tag or "ZZonshell" in tag or "ttZ" in tag:
 	datafile = "outputs/{}/{}/data.root".format(ntuple_version, tag)	
  
     p.dump_plot(fnames=bkgfiles,

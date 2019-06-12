@@ -55,9 +55,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 		cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
 		cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY );
 		cutflow.addCutToLastActiveCut("CutLowMll34", [&](){ return this->CutLowMll34(); }, UNITY );
-		cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY );
 		cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY );
 		cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY );
+		cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, UNITY );
 		cutflow.addCutToLastActiveCut("ChannelZZOnShell", [&](){ return this->ChannelZZOnShell(); }, UNITY );
 
 	}
@@ -76,13 +76,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 	{
 		cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY );
 		cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY );
+		cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu() ; }, UNITY );
 		cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY );
+		cutflow.addCutToLastActiveCut("CutLowMll34", [&](){ return this->CutLowMll34(); }, UNITY );
 		cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY );
 		cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY );
-		//cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY );
-		cutflow.addCutToLastActiveCut("CutLowMll34", [&](){ return this->CutLowMll34(); }, UNITY );
 		cutflow.addCutToLastActiveCut("Cut4LepBSelection", [&](){ return this->Cut4LepBSelection(); }, UNITY );
-		cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu() ; }, UNITY );
 	}
 	else{//signal region
 		cutflow.getCut("Weight");
@@ -130,6 +129,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("RelIso5th", 200, 0, 0.4, [&](){ return this->VarRelIso5th(); });
         histograms.addHistogram("Pt5th", 200, 0, 200, [&](){ return this->VarPt5th(); });
         histograms.addHistogram("Njet", 4, 0, 4, [&](){ return this->VarNjet(); });
+        histograms.addHistogram("Nbjet", 4, 0, 4, [&](){ return this->VarNbjet(); });
         histograms.addHistogram("Mll2l", 200, 0, 300, [&](){ return this->VarMll2l(); });
         histograms.addHistogram("lepZPt0", 200, 0, 200, [&](){ return wvz.lep_pt()[lep_ZCand_idx1]; });
         histograms.addHistogram("lepZPt1", 200, 0, 200, [&](){ return wvz.lep_pt()[lep_ZCand_idx2]; });
@@ -281,7 +281,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 //______________________________________________________________________________________________
 void Analysis::loadScaleFactors()
 {
-    histmap_purwegt = new RooUtil::HistMap(TString::Format("scalefactors/puWeight%d.root/pileupWeight", year));
+    histmap_purwegt = new RooUtil::HistMap(TString::Format("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/puWeight%d.root:pileupWeight", year));
 }
 
 //______________________________________________________________________________________________
@@ -373,9 +373,11 @@ void Analysis::selectNominalLeptons()
         if (jj == (unsigned int) lep_ZCand_idx2)
             continue;
 
+	//if(tagName.Contains("ZZonshell") || tagName.Contains("HZZ4l") || tagName.Contains("ttZ"))
 	if(tagName.Contains("ZZonshell") || tagName.Contains("HZZ4l"))
 	{
 		if (not passZCandLeptonID(jj))	
+		//if (not passNominalLeptonID(jj))
 		    continue;
 	}
 	else
@@ -647,11 +649,11 @@ float Analysis::EventWeight()
     else
     {
         if (year == 2016)
-            return evt_scale1fb * 35.9;// * histmap_purwegt->eval(wvz.nTrueInt());
+            return evt_scale1fb * 35.9 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2017)
-            return evt_scale1fb * 41.3;// * histmap_purwegt->eval(wvz.nTrueInt());
+            return evt_scale1fb * 41.3 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2018)
-            return evt_scale1fb * 59.74;// * histmap_purwegt->eval(wvz.nTrueInt());
+            return evt_scale1fb * 59.74 * histmap_purwegt->eval(wvz.nTrueInt());
         else
             return evt_scale1fb * 137;
     }
@@ -818,6 +820,8 @@ bool Analysis::IsTwoOSLeptonEvent()
 //______________________________________________________________________________________________
 bool Analysis::IsChannelEMu()
 {
+    if (lep_Nom_idx1 == -999) return false;
+    if (lep_Nom_idx2 == -999) return false;
     if (lep_id->at(lep_Nom_idx1) * lep_id->at(lep_Nom_idx2) == -143)
         return true;
     else
@@ -999,6 +1003,12 @@ float Analysis::VarPt5th()
 float Analysis::VarNjet()
 {
     return nj;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarNbjet()
+{
+    return nb;
 }
 
 //______________________________________________________________________________________________

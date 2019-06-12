@@ -217,6 +217,7 @@ public:
     float VarRelIso5th();
     float VarPt5th();
     float VarNjet();
+    float VarNbjet();
     float VarMll2l();
 
 };

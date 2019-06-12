@@ -38,7 +38,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     TFile* output_file = new TFile(output_path + "/" + output_tfile_name, "RECREATE");
 
     // Load scale factor histograms
-    //loadScaleFactors();
+    loadScaleFactors();
 
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);

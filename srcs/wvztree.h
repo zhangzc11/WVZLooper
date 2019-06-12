@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2018_v0.0.9/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZMVA2016_v0.1.0/wzz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -178,6 +178,9 @@ class wvztree {
   vector<float> *lep_mva_;
   TBranch *lep_mva_branch;
   bool     lep_mva_isLoaded;
+  vector<float> *lep_mvaIso_;
+  TBranch *lep_mvaIso_branch;
+  bool     lep_mvaIso_isLoaded;
   vector<float> *lep_relIso04DB_;
   TBranch *lep_relIso04DB_branch;
   bool     lep_relIso04DB_isLoaded;
@@ -217,6 +220,27 @@ class wvztree {
   vector<int> *lep_isMediumPOG_;
   TBranch *lep_isMediumPOG_branch;
   bool     lep_isMediumPOG_isLoaded;
+  vector<int> *lep_isMVAwp80NoIsoPOG_;
+  TBranch *lep_isMVAwp80NoIsoPOG_branch;
+  bool     lep_isMVAwp80NoIsoPOG_isLoaded;
+  vector<int> *lep_isMVAwp90NoIsoPOG_;
+  TBranch *lep_isMVAwp90NoIsoPOG_branch;
+  bool     lep_isMVAwp90NoIsoPOG_isLoaded;
+  vector<int> *lep_isMVAwpLooseNoIsoPOG_;
+  TBranch *lep_isMVAwpLooseNoIsoPOG_branch;
+  bool     lep_isMVAwpLooseNoIsoPOG_isLoaded;
+  vector<int> *lep_isMVAwp80IsoPOG_;
+  TBranch *lep_isMVAwp80IsoPOG_branch;
+  bool     lep_isMVAwp80IsoPOG_isLoaded;
+  vector<int> *lep_isMVAwp90IsoPOG_;
+  TBranch *lep_isMVAwp90IsoPOG_branch;
+  bool     lep_isMVAwp90IsoPOG_isLoaded;
+  vector<int> *lep_isMVAwpLooseIsoPOG_;
+  TBranch *lep_isMVAwpLooseIsoPOG_branch;
+  bool     lep_isMVAwpLooseIsoPOG_isLoaded;
+  vector<int> *lep_isMVAwpHZZIsoPOG_;
+  TBranch *lep_isMVAwpHZZIsoPOG_branch;
+  bool     lep_isMVAwpHZZIsoPOG_isLoaded;
   vector<int> *lep_isCutBasedNoIsoVetoPOG_;
   TBranch *lep_isCutBasedNoIsoVetoPOG_branch;
   bool     lep_isCutBasedNoIsoVetoPOG_isLoaded;
@@ -384,6 +408,7 @@ void LoadAllBranches();
   const vector<float> &lep_phi();
   const vector<float> &lep_energy();
   const vector<float> &lep_mva();
+  const vector<float> &lep_mvaIso();
   const vector<float> &lep_relIso04DB();
   const vector<float> &lep_relIso03EA();
   const vector<float> &lep_relIso03EAwLep();
@@ -397,6 +422,13 @@ void LoadAllBranches();
   const vector<int> &lep_id();
   const vector<int> &lep_isTightPOG();
   const vector<int> &lep_isMediumPOG();
+  const vector<int> &lep_isMVAwp80NoIsoPOG();
+  const vector<int> &lep_isMVAwp90NoIsoPOG();
+  const vector<int> &lep_isMVAwpLooseNoIsoPOG();
+  const vector<int> &lep_isMVAwp80IsoPOG();
+  const vector<int> &lep_isMVAwp90IsoPOG();
+  const vector<int> &lep_isMVAwpLooseIsoPOG();
+  const vector<int> &lep_isMVAwpHZZIsoPOG();
   const vector<int> &lep_isCutBasedNoIsoVetoPOG();
   const vector<int> &lep_isCutBasedNoIsoLoosePOG();
   const vector<int> &lep_isCutBasedNoIsoMediumPOG();
@@ -495,6 +527,7 @@ namespace tas {
   const vector<float> &lep_phi();
   const vector<float> &lep_energy();
   const vector<float> &lep_mva();
+  const vector<float> &lep_mvaIso();
   const vector<float> &lep_relIso04DB();
   const vector<float> &lep_relIso03EA();
   const vector<float> &lep_relIso03EAwLep();
@@ -508,6 +541,13 @@ namespace tas {
   const vector<int> &lep_id();
   const vector<int> &lep_isTightPOG();
   const vector<int> &lep_isMediumPOG();
+  const vector<int> &lep_isMVAwp80NoIsoPOG();
+  const vector<int> &lep_isMVAwp90NoIsoPOG();
+  const vector<int> &lep_isMVAwpLooseNoIsoPOG();
+  const vector<int> &lep_isMVAwp80IsoPOG();
+  const vector<int> &lep_isMVAwp90IsoPOG();
+  const vector<int> &lep_isMVAwpLooseIsoPOG();
+  const vector<int> &lep_isMVAwpHZZIsoPOG();
   const vector<int> &lep_isCutBasedNoIsoVetoPOG();
   const vector<int> &lep_isCutBasedNoIsoLoosePOG();
   const vector<int> &lep_isCutBasedNoIsoMediumPOG();

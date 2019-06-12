@@ -150,12 +150,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
     ch->Add(fTTree->GetCurrentFile()->GetName());
-    RooUtil::Looper<wvztree> looper(ch, &wvz, -1); // -1 means process 
-    while (looper.nextEvent())
+    looper = new RooUtil::Looper<wvztree>(ch, &wvz, -1); // -1 means process all events
+    while (looper->nextEvent())
     {
         // Once it enters loop it's 1, and then 2, and so on.
         // So need to subtract one and set it to 'ii' so fTTree can load event
-        int ii = looper.getNEventsProcessed() - 1; 
+        int ii = looper->getNEventsProcessed() - 1; 
         // Load the entry
         fTTree->GetEntry(ii, 0);
         readLeptons();
@@ -568,7 +568,14 @@ bool Analysis::passNominalElectronID(int idx)
     if (not (passZCandElectronID(idx))) return false;
 
     // Cut-based IsoMedium
-    if (not (wvz.lep_isCutBasedIsoMediumPOG()[idx])) return false;
+    if (looper->getCurrentFileName().Contains("WVZMVA"))
+    {
+        if (not (wvz.lep_isMVAwp80IsoPOG()[idx])) return false;
+    }
+    else
+    {
+        if (not (wvz.lep_isCutBasedIsoMediumPOG()[idx])) return false;
+    }
 
     return true;
 }

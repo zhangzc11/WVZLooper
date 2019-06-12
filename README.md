@@ -16,8 +16,8 @@
 
     # Hadding the histogram outputs by each year
     sh scripts/hadd.sh WVZ2016_v0.0.9 baseline_y2016_0520 # The last two arguments must match the last two arguments from previous command
-    sh scripts/hadd.sh WVZ2017_v0.0.9 baseline_y2016_0520 # The last two arguments must match the last two arguments from previous command
-    sh scripts/hadd.sh WVZ2018_v0.0.9 baseline_y2016_0520 # The last two arguments must match the last two arguments from previous command
+    sh scripts/hadd.sh WVZ2017_v0.0.9 baseline_y2017_0520 # The last two arguments must match the last two arguments from previous command
+    sh scripts/hadd.sh WVZ2018_v0.0.9 baseline_y2018_0520 # The last two arguments must match the last two arguments from previous command
 
     # Hadding the entire Run 2 into a single histograms (NOTE: Must be ran after each year has alreday been hadded)
     sh scripts/haddallyears.sh WVZ2016_v0.0.9 baseline_y2016_0520 WVZ2017_v0.0.9 baseline_y2017_0520 WVZ2018_v0.0.9 baseline_y2018_0520

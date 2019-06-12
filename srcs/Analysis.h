@@ -145,6 +145,9 @@ public:
     // Scale factors
     RooUtil::HistMap* histmap_purwegt;
 
+    // Looper
+    RooUtil::Looper<wvztree>* looper;
+
 //*******functions********//
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
@@ -226,6 +229,9 @@ Analysis::Analysis(const char* ifileName, const char* RootName)
     TString TypeName = TString(RootName).Contains("Run201") ? "DATA" : "MC";
 
     output_tfile_name = TypeName + "_" + (TString)RootName +  "_results.root";
+
+    // Initializing
+    looper = 0;
 
     // myhists->bookHists(output_tfile_name);
 

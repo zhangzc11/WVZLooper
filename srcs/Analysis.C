@@ -237,7 +237,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 //______________________________________________________________________________________________
 void Analysis::loadScaleFactors()
 {
-    histmap_purwegt = new RooUtil::HistMap(TString::Format("scalefactors/puWeight%d.root:pileupWeight", year));
+    histmap_purwegt = new RooUtil::HistMap(TString::Format("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/puWeight%d.root:pileupWeight", year));
 }
 
 //______________________________________________________________________________________________

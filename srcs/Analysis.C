@@ -539,6 +539,9 @@ bool Analysis::passZCandElectronID(int idx)
     // Must pass Veto ID
     if (not (passVetoElectronID(idx))) return false;
 
+    // One addition on top of veto ID
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+
     return true;
 
 }
@@ -548,6 +551,9 @@ bool Analysis::passZCandMuonID(int idx)
 {
     // Must pass ZCand ID
     if (not (passVetoMuonID(idx))) return false;
+
+    // One addition on top of veto ID
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }

@@ -117,7 +117,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 		cutflow.addCutToLastActiveCut("ThreeLeptons", [&](){ return this->Is3LeptonEvent(); }, UNITY );
 		cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY );
 		cutflow.addCutToLastActiveCut("FindOneNominalLepton", [&](){ return this->FindOneNominalLepton(); }, UNITY );
-		cutflow.addCutToLastActiveCut("Cut3LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY );
+		cutflow.addCutToLastActiveCut("Cut3LepLeptonPt", [&](){ return this->Cut3LepLeptonPt(); }, UNITY );
 		cutflow.addCutToLastActiveCut("CutBSelection", [&](){ return this->CutBSelection(); }, UNITY );
 		cutflow.addCutToLastActiveCut("ChannelNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
 	}

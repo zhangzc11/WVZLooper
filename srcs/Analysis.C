@@ -842,8 +842,8 @@ bool Analysis::Cut3LepLeptonPt()
     leptonPtVector.push_back(lepZpt2);
     leptonPtVector.push_back(lepNpt1);
     std::sort(leptonPtVector.begin(), leptonPtVector.end());
-    float leadLeptonPt = leptonPtVector[3];
-    float subleadLeptonPt = leptonPtVector[2];
+    float leadLeptonPt = leptonPtVector[2];
+    float subleadLeptonPt = leptonPtVector[1];
     if(!(leadLeptonPt > 25 && subleadLeptonPt > 15)) return false;
 
     return true;

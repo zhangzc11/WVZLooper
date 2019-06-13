@@ -122,10 +122,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepZIP3D1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_ZCand_idx2]); });
         histograms.addHistogram("lepNIP3D0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_Nom_idx1]); });
         histograms.addHistogram("lepNIP3D1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_Nom_idx2]); });
-        histograms.addHistogram("lepZsMotherIDv2", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_ZCand_idx1]); });
-        histograms.addHistogram("lepZsMotherIDv2", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_ZCand_idx2]); });
-        histograms.addHistogram("lepNsMotherIDv2", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_Nom_idx1]); });
-        histograms.addHistogram("lepNsMotherIDv2", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_Nom_idx2]); });
+        histograms.addHistogram("lepZsMotherID0", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZsMotherID1", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNsMotherID0", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNsMotherID1", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_Nom_idx2]); });
     }
     else if (ntupleVersion.Contains("Dilep"))
     {

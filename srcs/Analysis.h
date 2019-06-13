@@ -183,16 +183,19 @@ public:
     bool passVetoMuonID(int idx);
 
     bool Is4LeptonEvent();
+    bool Is3LeptonEvent();
     bool Is5LeptonEvent();
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
+    bool FindOneNominalLepton();
 
     bool Cut4LepLeptonPt();
+    bool Cut3LepLeptonPt();
     bool CutHLT();
     bool Cut4LepLowMll();
     bool Cut4LepBVeto();
-    bool Cut4LepBSelection();
+    bool CutBSelection();
     bool CutLowMll34();
 
     bool IsChannelEMu();
@@ -285,7 +288,7 @@ void Analysis::Initial(const char* RootName, int RootNumber)
         file = new TFile(RootName);
     tree = (TTree *)gDirectory->Get("t");
     if (tree == NULL)
-        cout << "No Such Tree!!!" << endl;
+        cout << "No Such Tree!!! --- "<< RootName << endl;
     else  cout << "Tree succeeded taking out" << endl;
     fTTree = tree;
     //output: got a new rootfile

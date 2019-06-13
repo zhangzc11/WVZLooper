@@ -570,7 +570,7 @@ bool Analysis::passNominalElectronID(int idx)
     // Cut-based IsoMedium
     if (looper->getCurrentFileName().Contains("WVZMVA"))
     {
-        if (not (wvz.lep_isMVAwp80IsoPOG()[idx])) return false;
+        if (not (wvz.lep_isMVAwp90IsoPOG()[idx])) return false;
     }
     else
     {

@@ -37,7 +37,7 @@ fi
 
 mkdir -p outputs/${1}_${3}_${5}/${2}_${4}_${6}
 
-if [[ $1 == *"WVZ"* ]]; then
+if [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/zz.root       outputs/${1}/${2}/zz.root       outputs/${3}/${4}/zz.root       outputs/${5}/${6}/zz.root
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/ttz.root      outputs/${1}/${2}/ttz.root      outputs/${3}/${4}/ttz.root      outputs/${5}/${6}/ttz.root
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/twz.root      outputs/${1}/${2}/twz.root      outputs/${3}/${4}/twz.root      outputs/${5}/${6}/twz.root

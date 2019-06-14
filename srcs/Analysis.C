@@ -42,7 +42,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     // There are two types of NtupleVersion
     // 1. WVZ201*_v* which only contains events with 4 or more leptons
     // 2. Dilep201*_v* which contains dilepton events
-    if (ntupleVersion.Contains("WVZ"))
+    if (ntupleVersion.Contains("WVZ") or ntupleVersion.Contains("Trilep"))
     {
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
@@ -79,7 +79,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 
     // Histogram object contains histogram definitions and the lambda to be used for histogram filling
     RooUtil::Histograms histograms;
-    if (ntupleVersion.Contains("WVZ"))
+    if (ntupleVersion.Contains("WVZ") or ntupleVersion.Contains("Trilep"))
     {
         histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
         histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });

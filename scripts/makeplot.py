@@ -304,6 +304,8 @@ if __name__ == "__main__":
     # Run different make plot script based on what dataset the looper ran on
     if "WVZ" in ntuple_version:
         main_analysis_make_plot()
+    elif "Trilep" in ntuple_version:
+        main_analysis_make_plot()
     elif "Dilep" in ntuple_version:
         dilep_analysis_make_plot()
 

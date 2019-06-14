@@ -28,7 +28,7 @@ if [[ $1 == *"Dilep"* ]]; then
     hadd -f wj.root MC_wjets_incl_madgraph_1_results.root
     hadd -f ww.root MC_ww_2l_powheg_1_results.root
     hadd -f data.root DATA_data_Run*mm*.root
-elif [[ $1 == *"WVZ"* ]]; then
+elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     hadd -f zz.root MC_zz_4l_powheg_1_results.root MC_zz_2l2q_powheg_1_results.root MC_zz_2l2v_powheg_1_results.root MC_ggzz_*.root
     hadd -f ttz.root MC_ttz_ll_mll1_amcatnlo_1_results.root MC_ttz_llvv_mll10_amcatnlo_1_results.root
     hadd -f twz.root MC_twz_ll_madgraph_1_results.root

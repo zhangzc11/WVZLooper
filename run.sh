@@ -65,4 +65,5 @@ for i in $(ls /nfs-7/userdata/phchang/babies/${NTUPLETYPE}${YEAR}_${NTUPLEVERSIO
     fi
 done
 
+mkdir -p outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}
 sh rooutil/xargs.sh .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}.txt

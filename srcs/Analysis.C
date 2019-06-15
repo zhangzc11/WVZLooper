@@ -491,7 +491,7 @@ bool Analysis::passVetoElectronID(int idx)
     // return true;
 
     // One addition on top of veto ID
-    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -522,7 +522,7 @@ bool Analysis::passVetoMuonID(int idx)
     // return true;
 
     // One addition on top of veto ID
-    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }

@@ -605,14 +605,19 @@ float Analysis::EventWeight()
     }
     else
     {
+        float fixXsec = 1;
+        if (looper->getCurrentFileName().Contains("v0.1.1")
+                and looper->getCurrentFileName().Contains("2017")
+                and looper->getCurrentFileName().Contains("ggh_hzz4l"))
+            fixXsec = 1.236e-05 / 5.617e-05; // Error from wrong scale1fb setting
         if (year == 2016)
-            return evt_scale1fb * 35.9 * histmap_purwegt->eval(wvz.nTrueInt());
+            return fixXsec * evt_scale1fb * 35.9 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2017)
-            return evt_scale1fb * 41.3 * histmap_purwegt->eval(wvz.nTrueInt());
+            return fixXsec * evt_scale1fb * 41.3 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2018)
-            return evt_scale1fb * 59.74 * histmap_purwegt->eval(wvz.nTrueInt());
+            return fixXsec * evt_scale1fb * 59.74 * histmap_purwegt->eval(wvz.nTrueInt());
         else
-            return evt_scale1fb * 137;
+            return fixXsec * evt_scale1fb * 137;
     }
 }
 

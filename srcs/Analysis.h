@@ -194,6 +194,7 @@ public:
     bool Cut3LepLeptonPt();
     bool CutHLT();
     bool Cut4LepLowMll();
+    bool Cut3LepLowMll();
     bool Cut4LepBVeto();
     bool CutBSelection();
     bool CutLowMll34();
@@ -204,9 +205,12 @@ public:
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
+    bool IsNjetGeq3();
+    bool IsNjetGeq4();
 
     bool ChannelEMuHighMll();
     bool ChannelOffZHighMET();
+    bool ChannelMET20();
     bool ChannelZZOnShell();
     bool ChannelHZZ();
     bool ChannelHZZTightMass();

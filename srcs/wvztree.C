@@ -115,6 +115,8 @@ void wvztree::Init(TTree *tree) {
   if (lep_energy_branch) lep_energy_branch->SetAddress(&lep_energy_);
   lep_mva_branch = tree->GetBranch("lep_mva");
   if (lep_mva_branch) lep_mva_branch->SetAddress(&lep_mva_);
+  lep_mvaIso_branch = tree->GetBranch("lep_mvaIso");
+  if (lep_mvaIso_branch) lep_mvaIso_branch->SetAddress(&lep_mvaIso_);
   lep_relIso04DB_branch = tree->GetBranch("lep_relIso04DB");
   if (lep_relIso04DB_branch) lep_relIso04DB_branch->SetAddress(&lep_relIso04DB_);
   lep_relIso03EA_branch = tree->GetBranch("lep_relIso03EA");
@@ -141,6 +143,20 @@ void wvztree::Init(TTree *tree) {
   if (lep_isTightPOG_branch) lep_isTightPOG_branch->SetAddress(&lep_isTightPOG_);
   lep_isMediumPOG_branch = tree->GetBranch("lep_isMediumPOG");
   if (lep_isMediumPOG_branch) lep_isMediumPOG_branch->SetAddress(&lep_isMediumPOG_);
+  lep_isMVAwp80NoIsoPOG_branch = tree->GetBranch("lep_isMVAwp80NoIsoPOG");
+  if (lep_isMVAwp80NoIsoPOG_branch) lep_isMVAwp80NoIsoPOG_branch->SetAddress(&lep_isMVAwp80NoIsoPOG_);
+  lep_isMVAwp90NoIsoPOG_branch = tree->GetBranch("lep_isMVAwp90NoIsoPOG");
+  if (lep_isMVAwp90NoIsoPOG_branch) lep_isMVAwp90NoIsoPOG_branch->SetAddress(&lep_isMVAwp90NoIsoPOG_);
+  lep_isMVAwpLooseNoIsoPOG_branch = tree->GetBranch("lep_isMVAwpLooseNoIsoPOG");
+  if (lep_isMVAwpLooseNoIsoPOG_branch) lep_isMVAwpLooseNoIsoPOG_branch->SetAddress(&lep_isMVAwpLooseNoIsoPOG_);
+  lep_isMVAwp80IsoPOG_branch = tree->GetBranch("lep_isMVAwp80IsoPOG");
+  if (lep_isMVAwp80IsoPOG_branch) lep_isMVAwp80IsoPOG_branch->SetAddress(&lep_isMVAwp80IsoPOG_);
+  lep_isMVAwp90IsoPOG_branch = tree->GetBranch("lep_isMVAwp90IsoPOG");
+  if (lep_isMVAwp90IsoPOG_branch) lep_isMVAwp90IsoPOG_branch->SetAddress(&lep_isMVAwp90IsoPOG_);
+  lep_isMVAwpLooseIsoPOG_branch = tree->GetBranch("lep_isMVAwpLooseIsoPOG");
+  if (lep_isMVAwpLooseIsoPOG_branch) lep_isMVAwpLooseIsoPOG_branch->SetAddress(&lep_isMVAwpLooseIsoPOG_);
+  lep_isMVAwpHZZIsoPOG_branch = tree->GetBranch("lep_isMVAwpHZZIsoPOG");
+  if (lep_isMVAwpHZZIsoPOG_branch) lep_isMVAwpHZZIsoPOG_branch->SetAddress(&lep_isMVAwpHZZIsoPOG_);
   lep_isCutBasedNoIsoVetoPOG_branch = tree->GetBranch("lep_isCutBasedNoIsoVetoPOG");
   if (lep_isCutBasedNoIsoVetoPOG_branch) lep_isCutBasedNoIsoVetoPOG_branch->SetAddress(&lep_isCutBasedNoIsoVetoPOG_);
   lep_isCutBasedNoIsoLoosePOG_branch = tree->GetBranch("lep_isCutBasedNoIsoLoosePOG");
@@ -268,6 +284,7 @@ void wvztree::GetEntry(unsigned int idx) {
   lep_phi_isLoaded = false;
   lep_energy_isLoaded = false;
   lep_mva_isLoaded = false;
+  lep_mvaIso_isLoaded = false;
   lep_relIso04DB_isLoaded = false;
   lep_relIso03EA_isLoaded = false;
   lep_relIso03EAwLep_isLoaded = false;
@@ -281,6 +298,13 @@ void wvztree::GetEntry(unsigned int idx) {
   lep_id_isLoaded = false;
   lep_isTightPOG_isLoaded = false;
   lep_isMediumPOG_isLoaded = false;
+  lep_isMVAwp80NoIsoPOG_isLoaded = false;
+  lep_isMVAwp90NoIsoPOG_isLoaded = false;
+  lep_isMVAwpLooseNoIsoPOG_isLoaded = false;
+  lep_isMVAwp80IsoPOG_isLoaded = false;
+  lep_isMVAwp90IsoPOG_isLoaded = false;
+  lep_isMVAwpLooseIsoPOG_isLoaded = false;
+  lep_isMVAwpHZZIsoPOG_isLoaded = false;
   lep_isCutBasedNoIsoVetoPOG_isLoaded = false;
   lep_isCutBasedNoIsoLoosePOG_isLoaded = false;
   lep_isCutBasedNoIsoMediumPOG_isLoaded = false;
@@ -374,6 +398,7 @@ void wvztree::LoadAllBranches() {
   if (lep_phi_branch != 0) lep_phi();
   if (lep_energy_branch != 0) lep_energy();
   if (lep_mva_branch != 0) lep_mva();
+  if (lep_mvaIso_branch != 0) lep_mvaIso();
   if (lep_relIso04DB_branch != 0) lep_relIso04DB();
   if (lep_relIso03EA_branch != 0) lep_relIso03EA();
   if (lep_relIso03EAwLep_branch != 0) lep_relIso03EAwLep();
@@ -387,6 +412,13 @@ void wvztree::LoadAllBranches() {
   if (lep_id_branch != 0) lep_id();
   if (lep_isTightPOG_branch != 0) lep_isTightPOG();
   if (lep_isMediumPOG_branch != 0) lep_isMediumPOG();
+  if (lep_isMVAwp80NoIsoPOG_branch != 0) lep_isMVAwp80NoIsoPOG();
+  if (lep_isMVAwp90NoIsoPOG_branch != 0) lep_isMVAwp90NoIsoPOG();
+  if (lep_isMVAwpLooseNoIsoPOG_branch != 0) lep_isMVAwpLooseNoIsoPOG();
+  if (lep_isMVAwp80IsoPOG_branch != 0) lep_isMVAwp80IsoPOG();
+  if (lep_isMVAwp90IsoPOG_branch != 0) lep_isMVAwp90IsoPOG();
+  if (lep_isMVAwpLooseIsoPOG_branch != 0) lep_isMVAwpLooseIsoPOG();
+  if (lep_isMVAwpHZZIsoPOG_branch != 0) lep_isMVAwpHZZIsoPOG();
   if (lep_isCutBasedNoIsoVetoPOG_branch != 0) lep_isCutBasedNoIsoVetoPOG();
   if (lep_isCutBasedNoIsoLoosePOG_branch != 0) lep_isCutBasedNoIsoLoosePOG();
   if (lep_isCutBasedNoIsoMediumPOG_branch != 0) lep_isCutBasedNoIsoMediumPOG();
@@ -1102,6 +1134,19 @@ const vector<float> &wvztree::lep_mva() {
   return *lep_mva_;
 }
 
+const vector<float> &wvztree::lep_mvaIso() {
+  if (not lep_mvaIso_isLoaded) {
+    if (lep_mvaIso_branch != 0) {
+      lep_mvaIso_branch->GetEntry(index);
+    } else {
+      printf("branch lep_mvaIso_branch does not exist!\n");
+      exit(1);
+    }
+    lep_mvaIso_isLoaded = true;
+  }
+  return *lep_mvaIso_;
+}
+
 const vector<float> &wvztree::lep_relIso04DB() {
   if (not lep_relIso04DB_isLoaded) {
     if (lep_relIso04DB_branch != 0) {
@@ -1269,6 +1314,97 @@ const vector<int> &wvztree::lep_isMediumPOG() {
     lep_isMediumPOG_isLoaded = true;
   }
   return *lep_isMediumPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwp80NoIsoPOG() {
+  if (not lep_isMVAwp80NoIsoPOG_isLoaded) {
+    if (lep_isMVAwp80NoIsoPOG_branch != 0) {
+      lep_isMVAwp80NoIsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwp80NoIsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwp80NoIsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwp80NoIsoPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwp90NoIsoPOG() {
+  if (not lep_isMVAwp90NoIsoPOG_isLoaded) {
+    if (lep_isMVAwp90NoIsoPOG_branch != 0) {
+      lep_isMVAwp90NoIsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwp90NoIsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwp90NoIsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwp90NoIsoPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwpLooseNoIsoPOG() {
+  if (not lep_isMVAwpLooseNoIsoPOG_isLoaded) {
+    if (lep_isMVAwpLooseNoIsoPOG_branch != 0) {
+      lep_isMVAwpLooseNoIsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwpLooseNoIsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwpLooseNoIsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwpLooseNoIsoPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwp80IsoPOG() {
+  if (not lep_isMVAwp80IsoPOG_isLoaded) {
+    if (lep_isMVAwp80IsoPOG_branch != 0) {
+      lep_isMVAwp80IsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwp80IsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwp80IsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwp80IsoPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwp90IsoPOG() {
+  if (not lep_isMVAwp90IsoPOG_isLoaded) {
+    if (lep_isMVAwp90IsoPOG_branch != 0) {
+      lep_isMVAwp90IsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwp90IsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwp90IsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwp90IsoPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwpLooseIsoPOG() {
+  if (not lep_isMVAwpLooseIsoPOG_isLoaded) {
+    if (lep_isMVAwpLooseIsoPOG_branch != 0) {
+      lep_isMVAwpLooseIsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwpLooseIsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwpLooseIsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwpLooseIsoPOG_;
+}
+
+const vector<int> &wvztree::lep_isMVAwpHZZIsoPOG() {
+  if (not lep_isMVAwpHZZIsoPOG_isLoaded) {
+    if (lep_isMVAwpHZZIsoPOG_branch != 0) {
+      lep_isMVAwpHZZIsoPOG_branch->GetEntry(index);
+    } else {
+      printf("branch lep_isMVAwpHZZIsoPOG_branch does not exist!\n");
+      exit(1);
+    }
+    lep_isMVAwpHZZIsoPOG_isLoaded = true;
+  }
+  return *lep_isMVAwpHZZIsoPOG_;
 }
 
 const vector<int> &wvztree::lep_isCutBasedNoIsoVetoPOG() {
@@ -1827,6 +1963,7 @@ const vector<float> &lep_eta() { return wvz.lep_eta(); }
 const vector<float> &lep_phi() { return wvz.lep_phi(); }
 const vector<float> &lep_energy() { return wvz.lep_energy(); }
 const vector<float> &lep_mva() { return wvz.lep_mva(); }
+const vector<float> &lep_mvaIso() { return wvz.lep_mvaIso(); }
 const vector<float> &lep_relIso04DB() { return wvz.lep_relIso04DB(); }
 const vector<float> &lep_relIso03EA() { return wvz.lep_relIso03EA(); }
 const vector<float> &lep_relIso03EAwLep() { return wvz.lep_relIso03EAwLep(); }
@@ -1840,6 +1977,13 @@ const vector<int> &lep_idx() { return wvz.lep_idx(); }
 const vector<int> &lep_id() { return wvz.lep_id(); }
 const vector<int> &lep_isTightPOG() { return wvz.lep_isTightPOG(); }
 const vector<int> &lep_isMediumPOG() { return wvz.lep_isMediumPOG(); }
+const vector<int> &lep_isMVAwp80NoIsoPOG() { return wvz.lep_isMVAwp80NoIsoPOG(); }
+const vector<int> &lep_isMVAwp90NoIsoPOG() { return wvz.lep_isMVAwp90NoIsoPOG(); }
+const vector<int> &lep_isMVAwpLooseNoIsoPOG() { return wvz.lep_isMVAwpLooseNoIsoPOG(); }
+const vector<int> &lep_isMVAwp80IsoPOG() { return wvz.lep_isMVAwp80IsoPOG(); }
+const vector<int> &lep_isMVAwp90IsoPOG() { return wvz.lep_isMVAwp90IsoPOG(); }
+const vector<int> &lep_isMVAwpLooseIsoPOG() { return wvz.lep_isMVAwpLooseIsoPOG(); }
+const vector<int> &lep_isMVAwpHZZIsoPOG() { return wvz.lep_isMVAwpHZZIsoPOG(); }
 const vector<int> &lep_isCutBasedNoIsoVetoPOG() { return wvz.lep_isCutBasedNoIsoVetoPOG(); }
 const vector<int> &lep_isCutBasedNoIsoLoosePOG() { return wvz.lep_isCutBasedNoIsoLoosePOG(); }
 const vector<int> &lep_isCutBasedNoIsoMediumPOG() { return wvz.lep_isCutBasedNoIsoMediumPOG(); }

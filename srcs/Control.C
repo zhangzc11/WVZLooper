@@ -39,8 +39,36 @@ int main(int argc, char** argv)
     // N.B. without .root
     //
 
-    ifstream infile;
-    infile.open(argv[1], ios::in);
+    TString InputOptionString = argv[1];
+
+    // Input file name list
+    std::vector<TString> filenamelist;
+
+    // If the input option string for the first argument
+    // contains ".root" it means it's not a text file of
+    // list of file names but rather the literal file
+    // name to be run over in the input directory
+    if (InputOptionString.Contains(".root"))
+    {
+        TString filename = InputOptionString;
+        filename.ReplaceAll(".root","");
+        filenamelist.push_back(filename);
+    }
+    else
+    {
+        ifstream infile;
+        infile.open(argv[1], ios::in);
+        // parsing the input file and obtaining file name list
+        TString InputRoot;
+        while (infile >> InputRoot)
+        {
+
+            // Form full path to the input root file
+            TString RootName = InputRoot;
+            filenamelist.push_back(RootName);
+
+        }
+    }
 
     int count = 0; // To keep track of how many input files were ran over
 
@@ -49,8 +77,10 @@ int main(int argc, char** argv)
     cout << "*************************" << endl;
     cout << endl;
 
-    TString InputRoot;
-    while (infile >> InputRoot)
+    // if argv[1] is of the format "file.root" with a ".root" extension
+    // take the argument as the file name to be run over
+
+    for (auto& InputRoot : filenamelist)
     {
 
         // Form full path to the input root file

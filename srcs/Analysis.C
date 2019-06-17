@@ -42,7 +42,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     // There are two types of NtupleVersion
     // 1. WVZ201*_v* which only contains events with 4 or more leptons
     // 2. Dilep201*_v* which contains dilepton events
-    if (ntupleVersion.Contains("WVZ"))
+    if (ntupleVersion.Contains("WVZ") or ntupleVersion.Contains("Trilep"))
     {
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, UNITY ); 
@@ -79,7 +79,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 
     // Histogram object contains histogram definitions and the lambda to be used for histogram filling
     RooUtil::Histograms histograms;
-    if (ntupleVersion.Contains("WVZ"))
+    if (ntupleVersion.Contains("WVZ") or ntupleVersion.Contains("Trilep"))
     {
         histograms.addHistogram("Mll", 180, 0, 300, [&](){ return this->VarMll(); });
         histograms.addHistogram("MET", 180, 0, 300, [&](){ return this->VarMET(); });
@@ -122,6 +122,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepZIP3D1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_ZCand_idx2]); });
         histograms.addHistogram("lepNIP3D0", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_Nom_idx1]); });
         histograms.addHistogram("lepNIP3D1", 180, 0, 0.2, [&](){ return fabs(wvz.lep_ip3d()[lep_Nom_idx2]); });
+        histograms.addHistogram("lepZsMotherID0", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZsMotherID1", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNsMotherID0", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNsMotherID1", 7, -4, 3, [&](){ return fabs(wvz.lep_motherIdv2()[lep_Nom_idx2]); });
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -150,12 +154,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
     ch->Add(fTTree->GetCurrentFile()->GetName());
-    RooUtil::Looper<wvztree> looper(ch, &wvz, -1); // -1 means process 
-    while (looper.nextEvent())
+    looper = new RooUtil::Looper<wvztree>(ch, &wvz, -1); // -1 means process all events
+    while (looper->nextEvent())
     {
         // Once it enters loop it's 1, and then 2, and so on.
         // So need to subtract one and set it to 'ii' so fTTree can load event
-        int ii = looper.getNEventsProcessed() - 1; 
+        int ii = looper->getNEventsProcessed() - 1; 
         // Load the entry
         fTTree->GetEntry(ii, 0);
         readLeptons();
@@ -237,7 +241,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
 //______________________________________________________________________________________________
 void Analysis::loadScaleFactors()
 {
-    histmap_purwegt = new RooUtil::HistMap(TString::Format("scalefactors/puWeight%d.root/pileupWeight", year));
+    histmap_purwegt = new RooUtil::HistMap(TString::Format("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/puWeight%d.root:pileupWeight", year));
 }
 
 //______________________________________________________________________________________________
@@ -487,7 +491,7 @@ bool Analysis::passVetoElectronID(int idx)
     // return true;
 
     // One addition on top of veto ID
-    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 
@@ -518,7 +522,7 @@ bool Analysis::passVetoMuonID(int idx)
     // return true;
 
     // One addition on top of veto ID
-    // if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
     return true;
 }
@@ -568,7 +572,14 @@ bool Analysis::passNominalElectronID(int idx)
     if (not (passZCandElectronID(idx))) return false;
 
     // Cut-based IsoMedium
-    if (not (wvz.lep_isCutBasedIsoMediumPOG()[idx])) return false;
+    if (looper->getCurrentFileName().Contains("WVZMVA"))
+    {
+        if (not (wvz.lep_isMVAwp80IsoPOG()[idx])) return false;
+    }
+    else
+    {
+        if (not (wvz.lep_isCutBasedIsoMediumPOG()[idx])) return false;
+    }
 
     return true;
 }
@@ -594,14 +605,19 @@ float Analysis::EventWeight()
     }
     else
     {
+        float fixXsec = 1;
+        if (looper->getCurrentFileName().Contains("v0.1.1")
+                and looper->getCurrentFileName().Contains("2017")
+                and looper->getCurrentFileName().Contains("ggh_hzz4l"))
+            fixXsec = 1.236e-05 / 5.617e-05; // Error from wrong scale1fb setting
         if (year == 2016)
-            return evt_scale1fb * 35.9 * histmap_purwegt->eval(wvz.nTrueInt());
+            return fixXsec * evt_scale1fb * 35.9 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2017)
-            return evt_scale1fb * 41.3 * histmap_purwegt->eval(wvz.nTrueInt());
+            return fixXsec * evt_scale1fb * 41.3 * histmap_purwegt->eval(wvz.nTrueInt());
         else if (year == 2018)
-            return evt_scale1fb * 59.74 * histmap_purwegt->eval(wvz.nTrueInt());
+            return fixXsec * evt_scale1fb * 59.74 * histmap_purwegt->eval(wvz.nTrueInt());
         else
-            return evt_scale1fb * 137;
+            return fixXsec * evt_scale1fb * 137;
     }
 }
 

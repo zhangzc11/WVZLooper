@@ -59,4 +59,6 @@ if [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/rare.root     outputs/${1}/${2}/rare.root     outputs/${3}/${4}/rare.root     outputs/${5}/${6}/rare.root
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/higgs.root    outputs/${1}/${2}/higgs.root    outputs/${3}/${4}/higgs.root    outputs/${5}/${6}/higgs.root
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/data.root     outputs/${1}/${2}/data.root     outputs/${3}/${4}/data.root     outputs/${5}/${6}/data.root
+    hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/dy.root       outputs/${1}/${2}/dy.root       outputs/${3}/${4}/dy.root       outputs/${5}/${6}/dy.root      
+    hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/ttbar.root    outputs/${1}/${2}/ttbar.root    outputs/${3}/${4}/ttbar.root    outputs/${5}/${6}/ttbar.root   
 fi

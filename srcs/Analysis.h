@@ -128,6 +128,10 @@ public:
     TLorentzVector leptons[10];
     std::vector<int> lep_veto_idxs;
     int nVetoLeptons;
+    int lep_Veto_idx1;
+    int lep_Veto_idx2;
+    int lep_Veto_idx3;
+    int lep_Veto_idx4;
     int lep_ZCand_idx1;
     int lep_ZCand_idx2;
     int nNominalLeptons;
@@ -137,6 +141,11 @@ public:
     int lep_2ndZCand_idx1;
     int lep_2ndZCand_idx2;
     int lep_WCand_idx1;
+    int nDFOS;
+    int lep_FakeCand_idx1;
+    int lep_FakeCand_idx2;
+    int lep_FakeCand_MaxIso_idx;
+    int lep_NonFakeCand_idx;
     TLorentzVector dilepZCand;
     TLorentzVector dilepNominal;
     TString output_tfile_name;
@@ -167,6 +176,7 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
@@ -185,11 +195,13 @@ public:
     bool passVetoElectronID(int idx);
     bool passVetoMuonID(int idx);
 
+    bool Is3LeptonEvent();
     bool Is4LeptonEvent();
     bool Is5LeptonEvent();
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
+    bool IsEMuPlusX();
 
     bool Cut4LepLeptonPt();
     bool CutHLT();
@@ -215,6 +227,7 @@ public:
     float VarPt5th();
     float VarNjet();
     float VarMll2l();
+    float VarNSFOS();
 
 };
 #endif

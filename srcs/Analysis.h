@@ -146,6 +146,7 @@ public:
     int lep_FakeCand_idx2;
     int lep_FakeCand_MaxIso_idx;
     int lep_NonFakeCand_idx;
+    int lep_VetoButNotNom_idx;
     TLorentzVector dilepZCand;
     TLorentzVector dilepNominal;
     TString output_tfile_name;
@@ -180,6 +181,12 @@ public:
     RooUtil::HistMap* histmap_2018_muon_id_lowpt_sf;
     RooUtil::HistMap* histmap_2018_muon_tightiso_sf;
     RooUtil::HistMap* histmap_2018_muon_looseiso_sf;
+    RooUtil::HistMap* histmap_2016_fake_rate_el;
+    RooUtil::HistMap* histmap_2016_fake_rate_mu;
+    RooUtil::HistMap* histmap_2017_fake_rate_el;
+    RooUtil::HistMap* histmap_2017_fake_rate_mu;
+    RooUtil::HistMap* histmap_2018_fake_rate_el;
+    RooUtil::HistMap* histmap_2018_fake_rate_mu;
 
     // Looper
     RooUtil::Looper<wvztree>* looper;
@@ -205,6 +212,7 @@ public:
     void selectNominalLeptons();
     void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
+    void selectVetoButNotNomLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
 
@@ -229,21 +237,22 @@ public:
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
+    bool FindOSOneNomOneVbntLeptons();
     bool IsEMuPlusX();
 
-    bool Cut4LepLeptonPt();
+    bool Cut4LepLeptonPt(bool=true);
     bool CutHLT();
-    bool Cut4LepLowMll();
+    bool Cut4LepLowMll(bool=true);
     bool Cut4LepBVeto();
 
-    bool IsChannelEMu();
-    bool IsChannelOnZ();
-    bool IsChannelOffZ();
+    bool IsChannelEMu(bool=true);
+    bool IsChannelOnZ(bool=true);
+    bool IsChannelOffZ(bool=true);
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
 
-    bool ChannelEMuHighMll();
+    bool ChannelEMuHighMll(bool=true);
     bool ChannelOffZHighMET();
 
     float VarMll();

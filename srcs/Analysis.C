@@ -67,6 +67,23 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
+
+        cutflow.getCut("FindZCandLeptons");
+        cutflow.addCutToLastActiveCut("FindOSOneNomOneVbntLeptons", [&](){ return this->FindOSOneNomOneVbntLeptons(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("ARCut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(true); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("ARCutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("ARCut4LepLowMll", [&](){ return this->Cut4LepLowMll(true); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("ARCut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return wvz.weight_btagsf(); } ); 
+
+        cutflow.getCut("ARCut4LepBVeto");
+        cutflow.addCutToLastActiveCut("ARChannelEMu", [&](){ return this->IsChannelEMu(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(true); }, UNITY );
+        cutflow.getCut("ARCut4LepBVeto");
+        cutflow.addCutToLastActiveCut("ARChannelOnZ", [&](){ return this->IsChannelOnZ(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
+        cutflow.getCut("ARCut4LepBVeto");
+        cutflow.addCutToLastActiveCut("ARChannelOffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -156,6 +173,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepZsMotherID1", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_ZCand_idx2]; });
         histograms.addHistogram("lepNsMotherID0", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_Nom_idx1]; });
         histograms.addHistogram("lepNsMotherID1", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_Nom_idx2]; });
+        histograms.addHistogram("lepVetoButNotNomMotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_VetoButNotNom_idx]; });
+        histograms.addHistogram("lepVetoButNotNomMCID", 7, -4, 3, [&](){ return wvz.lep_mc_id()[lep_VetoButNotNom_idx]; });
         if (ntupleVersion.Contains("Trilep"))
         {
             histograms.addHistogram("lepFakeCand2MotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_FakeCand_idx2]; });
@@ -214,6 +233,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         selectZCandLeptons();
         selectNominalLeptons();
         select2ndZCandAndWCandLeptons();
+        selectVetoButNotNomLeptons();
         sortLeptonIndex();
         selectFakeStudyLeptons();
         setDilepMasses();
@@ -317,6 +337,12 @@ void Analysis::loadScaleFactors()
     histmap_2018_muon_id_lowpt_sf       = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2018_rootfiles_lowpt_RunABCD_SF_ID.root:NUM_MediumID_DEN_genTracks_pt_abseta"); // x=pt, y=abseta
     histmap_2018_muon_tightiso_sf       = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2018_rootfiles_RunABCD_SF_ISO.root:NUM_TightRelIso_DEN_MediumID_pt_abseta"); // x=pt, y=abseta
     histmap_2018_muon_looseiso_sf       = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2018_rootfiles_RunABCD_SF_ISO.root:NUM_LooseRelIso_DEN_MediumID_pt_abseta"); // x=pt, y=abseta
+    histmap_2016_fake_rate_el           = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/fake_rate_el_2016.root:fake_rate_el_data");
+    histmap_2016_fake_rate_mu           = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/fake_rate_mu_2016.root:fake_rate_mu_data");
+    histmap_2017_fake_rate_el           = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/fake_rate_el_2017.root:fake_rate_el_data");
+    histmap_2017_fake_rate_mu           = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/fake_rate_mu_2017.root:fake_rate_mu_data");
+    histmap_2018_fake_rate_el           = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/fake_rate_el_2018.root:fake_rate_el_data");
+    histmap_2018_fake_rate_mu           = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/fake_rate_mu_2018.root:fake_rate_mu_data");
 }
 
 //______________________________________________________________________________________________
@@ -560,6 +586,62 @@ void Analysis::select2ndZCandAndWCandLeptons()
     {
         RooUtil::error("I should not be here!", "select2ndZCandAndWCandLeptons");
     }
+}
+
+//______________________________________________________________________________________________
+void Analysis::selectVetoButNotNomLeptons()
+{
+    lep_VetoButNotNom_idx = -999;
+    if (nVetoLeptons != 4 and nVetoLeptons != 5) // Only select for 4 or 5 lepton regions
+        return;
+
+    // When this runs the nNominalLeptons should already been filled
+    // Then check whether the z candidate is found
+    if (lep_ZCand_idx1 == -999)
+        return;
+
+    // and check whether the number of nominal found is appropriate
+    if (nVetoLeptons == 4 and nNominalLeptons != 1)
+        return;
+
+    // and check whether the number of nominal found is appropriate
+    if (nVetoLeptons == 5 and nNominalLeptons != 2)
+        return;
+
+    // Loop over the leptons and find that one lepton that failed nominal but passed veto
+    std::vector<int> good_idx;
+    for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
+    {
+
+        if (jj == (unsigned int) lep_ZCand_idx1)
+            continue;
+
+        if (jj == (unsigned int) lep_ZCand_idx2)
+            continue;
+
+        if (not passVetoLeptonID(jj))
+            continue;
+
+        if (passNominalLeptonID(jj))
+            continue;
+
+        good_idx.push_back(jj);
+    }
+
+    // Sanity check that I found only one loose but not tight
+    if (not (good_idx.size() == 1))
+    {
+        std::cout << "ERROR! I should never be here!" << std::endl;
+        std::cout << "I specifically requested that there be a presence of only one Veto-but-not-Nominal lepton but found something other than 1" << std::endl;
+        std::cout << " good_idx.size(): " << good_idx.size() <<  std::endl;
+        std::cout << " wvz.run(): " << wvz.run() <<  " wvz.lumi(): " << wvz.lumi() <<  " wvz.evt(): " << wvz.evt() <<  std::endl;
+        abort();
+        return;
+    }
+
+    lep_VetoButNotNom_idx = good_idx[0];
+    return;
+
 }
 
 //______________________________________________________________________________________________
@@ -961,14 +1043,31 @@ bool Analysis::FindTwoOSNominalLeptons()
 }
 
 //______________________________________________________________________________________________
-bool Analysis::Cut4LepLowMll()
+bool Analysis::FindOSOneNomOneVbntLeptons()
 {
-    if (nNominalLeptons != 2 or lep_ZCand_idx1 == -999)
+    if (lep_Nom_idx1 == -999)
+        return false;
+    if (lep_VetoButNotNom_idx == -999)
+        return false;
+    if (nNominalLeptons != 1)
+        return false;
+    if (lep_id->at(lep_Nom_idx1) * lep_id->at(lep_VetoButNotNom_idx) > 0)
+        return false;
+    return true;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::Cut4LepLowMll(bool isAR)
+{
+    if (nVetoLeptons < 4)
         return false;
 
     std::vector<int> indices;
     indices.push_back(lep_Nom_idx1);
-    indices.push_back(lep_Nom_idx2);
+    if (isAR)
+        indices.push_back(lep_VetoButNotNom_idx);
+    else
+        indices.push_back(lep_Nom_idx2);
     indices.push_back(lep_ZCand_idx1);
     indices.push_back(lep_ZCand_idx2);
 
@@ -999,15 +1098,19 @@ bool Analysis::Cut4LepBVeto()
 }
 
 //______________________________________________________________________________________________
-bool Analysis::Cut4LepLeptonPt()
+bool Analysis::Cut4LepLeptonPt(bool isAR)
 {
-    if (nNominalLeptons != 2 or lep_ZCand_idx1 == -999)
+    if (nVetoLeptons < 4)
         return false;
 
     float lepZpt1 = leptons[lep_ZCand_idx1].Pt();
     float lepZpt2 = leptons[lep_ZCand_idx2].Pt();
     float lepNpt1 = leptons[lep_Nom_idx1].Pt();
-    float lepNpt2 = leptons[lep_Nom_idx2].Pt();
+    float lepNpt2 = isAR ? leptons[lep_VetoButNotNom_idx].Pt() : leptons[lep_Nom_idx2].Pt();
+    float tmp1 = lepNpt1;
+    float tmp2 = lepNpt2;
+    lepNpt1 = lepNpt1 > lepNpt2 ? tmp1 : tmp2;
+    lepNpt2 = lepNpt1 > lepNpt2 ? tmp2 : tmp1;
 
     if (lepZpt1 > 25. and lepZpt2 > 10. and lepNpt1 > 25. and lepNpt2 > 10.)
         return true;
@@ -1018,18 +1121,18 @@ bool Analysis::Cut4LepLeptonPt()
 //______________________________________________________________________________________________
 bool Analysis::CutHLT()
 {
-    if (nNominalLeptons != 2 or lep_ZCand_idx1 == -999)
+    if (nVetoLeptons < 2)
         return false;
     if (wvz.isData())
         if (not wvz.pass_duplicate_mm_em_ee())
             return false;
-    if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 11 and abs(wvz.lep_id()[lep_Nom_idx1]) == 11)
+    if (abs(wvz.lep_id()[lep_Veto_idx1]) == 11 and abs(wvz.lep_id()[lep_Veto_idx2]) == 11)
         return wvz.HLT_DoubleEl();
-    else if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 13 and abs(wvz.lep_id()[lep_Nom_idx1]) == 11)
+    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 13 and abs(wvz.lep_id()[lep_Veto_idx2]) == 11)
         return wvz.HLT_MuEG();
-    else if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 11 and abs(wvz.lep_id()[lep_Nom_idx1]) == 13)
+    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 11 and abs(wvz.lep_id()[lep_Veto_idx2]) == 13)
         return wvz.HLT_MuEG();
-    else if (abs(wvz.lep_id()[lep_ZCand_idx1]) == 13 and abs(wvz.lep_id()[lep_Nom_idx1]) == 13)
+    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 13 and abs(wvz.lep_id()[lep_Veto_idx2]) == 13)
         return wvz.HLT_DoubleMu();
     else
         return false;
@@ -1113,27 +1216,30 @@ bool Analysis::IsTwoOSLeptonEvent()
 }
 
 //______________________________________________________________________________________________
-bool Analysis::IsChannelEMu()
+bool Analysis::IsChannelEMu(bool isAR)
 {
-    if (lep_id->at(lep_Nom_idx1) * lep_id->at(lep_Nom_idx2) == -143)
+    int idx2 = isAR ? lep_VetoButNotNom_idx : lep_Nom_idx2;
+    if (lep_id->at(lep_Nom_idx1) * lep_id->at(idx2) == -143)
         return true;
     else
         return false;
 }
 
 //______________________________________________________________________________________________
-bool Analysis::IsChannelOnZ()
+bool Analysis::IsChannelOnZ(bool isAR)
 {
-    if (fabs(dilepNominal.M() - 91.1876) < 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // must be SFOS
+    int idx2 = isAR ? lep_VetoButNotNom_idx : lep_Nom_idx2;
+    if (fabs(dilepNominal.M() - 91.1876) < 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(idx2)) // must be SFOS
         return true;
     else
         return false;
 }
 
 //______________________________________________________________________________________________
-bool Analysis::IsChannelOffZ()
+bool Analysis::IsChannelOffZ(bool isAR)
 {
-    if (fabs(dilepNominal.M() - 91.1876) >= 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(lep_Nom_idx2)) // must be SFOS
+    int idx2 = isAR ? lep_VetoButNotNom_idx : lep_Nom_idx2;
+    if (fabs(dilepNominal.M() - 91.1876) >= 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(idx2)) // must be SFOS
         return true;
     else
         return false;
@@ -1149,9 +1255,10 @@ bool Analysis::Is2ndOnZFiveLepton()
 }
 
 //______________________________________________________________________________________________
-bool Analysis::ChannelEMuHighMll()
+bool Analysis::ChannelEMuHighMll(bool isAR)
 {
-    if (dilepNominal.M() > 120.)
+    float mll = isAR ? (leptons[lep_Nom_idx1]+leptons[lep_VetoButNotNom_idx]).M() : dilepNominal.M();
+    if (mll > 120.)
         return true;
     else
         return false;

@@ -177,6 +177,54 @@ def plot_cen_fwd_in_one_canvas(fr_mc_fwd, fr_data_fwd, fr_mc_cen, fr_data_cen, o
            legend_labels=["MC t#bar{t} fake-rate (|#eta|#geq1.6)"],
            options=alloptions)
 
+#____________________________________________________________________________________
+def save_fake_rate(fr_mc_fwd, fr_data_fwd, fr_mc_cen, fr_data_cen, output_name):
+
+    # Parse the input arguments
+    try:
+        ntuple_version = sys.argv[1]
+        tag = sys.argv[2]
+    except:
+        usage()
+
+    if "2016" in ntuple_version: lumi = 35.9
+    if "2017" in ntuple_version: lumi = 41.3
+    if "2018" in ntuple_version: lumi = 59.74
+
+    basedir = "plots/{}/{}/fake/".format(ntuple_version, tag)
+
+    of = r.TFile(basedir+output_name+".root", "recreate")
+
+    ptbounds = [0., 10., 20., 70.]
+    etabounds = [0., 1.6, 2.5]
+    fr_data = r.TH2F(output_name+"_data", "", len(ptbounds)-1, array('d',ptbounds), len(etabounds)-1, array('d',etabounds))
+    fr_mc = r.TH2F(output_name+"_mc", "", len(ptbounds)-1, array('d',ptbounds), len(etabounds)-1, array('d',etabounds))
+
+    for i in xrange(1, len(ptbounds)):
+        fr_data_fwd_val = fr_data_fwd.GetBinContent(i)
+        fr_data_cen_val = fr_data_cen.GetBinContent(i)
+        fr_data_fwd_err = fr_data_fwd.GetBinError(i)
+        fr_data_cen_err = fr_data_cen.GetBinError(i)
+        fr_data.SetBinContent(i, 1, fr_data_cen_val)
+        fr_data.SetBinError(i, 1, fr_data_cen_err)
+        fr_data.SetBinContent(i, 2, fr_data_fwd_val)
+        fr_data.SetBinError(i, 2, fr_data_fwd_err)
+
+    for i in xrange(1, len(ptbounds)):
+        fr_mc_fwd_val = fr_mc_fwd.GetBinContent(i)
+        fr_mc_cen_val = fr_mc_cen.GetBinContent(i)
+        fr_mc_fwd_err = fr_mc_fwd.GetBinError(i)
+        fr_mc_cen_err = fr_mc_cen.GetBinError(i)
+        fr_mc.SetBinContent(i, 1, fr_mc_cen_val)
+        fr_mc.SetBinError(i, 1, fr_mc_cen_err)
+        fr_mc.SetBinContent(i, 2, fr_mc_fwd_val)
+        fr_mc.SetBinError(i, 2, fr_mc_fwd_err)
+        fr_mc.SetBinContent(i, 3, fr_mc_fwd_val) # to populate overflow bins
+        fr_mc.SetBinError(i, 3, fr_mc_fwd_err) # to populate overflow bins
+
+    fr_data.Write()
+    fr_mc.Write()
+
 
 #____________________________________________________________________________________
 def main():
@@ -187,9 +235,11 @@ def main():
     mu_fr_mc_fwd, mu_fr_data_fwd = main_fake_rate_measurement("EMuPlusXFakeMu", "fake_rate_mu_fwd", "Fwd")
     mu_fr_mc_cen, mu_fr_data_cen = main_fake_rate_measurement("EMuPlusXFakeMu", "fake_rate_mu_cen", "Cen")
     plot_cen_fwd_in_one_canvas(mu_fr_mc_fwd, mu_fr_data_fwd, mu_fr_mc_cen, mu_fr_data_cen, "fake_rate_mu_both")
+    save_fake_rate(mu_fr_mc_fwd, mu_fr_data_fwd, mu_fr_mc_cen, mu_fr_data_cen, "fake_rate_mu")
     el_fr_mc_fwd, el_fr_data_fwd = main_fake_rate_measurement("EMuPlusXFakeEl", "fake_rate_el_fwd", "Fwd")
     el_fr_mc_cen, el_fr_data_cen = main_fake_rate_measurement("EMuPlusXFakeEl", "fake_rate_el_cen", "Cen")
     plot_cen_fwd_in_one_canvas(el_fr_mc_fwd, el_fr_data_fwd, el_fr_mc_cen, el_fr_data_cen, "fake_rate_el_both")
+    save_fake_rate(el_fr_mc_fwd, el_fr_data_fwd, el_fr_mc_cen, el_fr_data_cen, "fake_rate_el")
 
 
 if __name__ == "__main__":

@@ -878,13 +878,13 @@ float Analysis::LeptonScaleFactor()
                 }
                 if (passNominalMuonID(lep_idx))
                 {
-                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval(eta, pt)  // x=eta, y=pt
-                                  +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval(eta, pt); // x=eta, y=pt 0.450 of 2016 data
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
                 }
                 else
                 {
-                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval(eta, pt)  // x=eta, y=pt
-                                  +0.450 * histmap_2016_muon_GH_looseiso_sf    ->eval(eta, pt); // x=eta, y=pt 0.450 of 2016 data
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_looseiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
                 }
             }
             else if (year == 2017)
@@ -899,11 +899,11 @@ float Analysis::LeptonScaleFactor()
                 }
                 if (passNominalMuonID(lep_idx))
                 {
-                    scalefactor *= histmap_2017_muon_tightiso_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                    scalefactor *= histmap_2017_muon_tightiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
                 }
                 else
                 {
-                    scalefactor *= histmap_2017_muon_looseiso_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                    scalefactor *= histmap_2017_muon_looseiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
                 }
             }
             else if (year == 2018)
@@ -918,11 +918,11 @@ float Analysis::LeptonScaleFactor()
                 }
                 if (passNominalMuonID(lep_idx))
                 {
-                    scalefactor *= histmap_2018_muon_tightiso_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                    scalefactor *= histmap_2018_muon_tightiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
                 }
                 else
                 {
-                    scalefactor *= histmap_2018_muon_looseiso_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                    scalefactor *= histmap_2018_muon_looseiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
                 }
             }
         }

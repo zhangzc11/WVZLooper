@@ -241,6 +241,27 @@ def main_analysis_make_plot():
     #             }
     #         )
 
+    # p.dump_plot(fnames=bkgfilesfake,
+    #         sig_fnames=sigfiles,
+    #         data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
+    #         usercolors=colors,
+    #         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma", "t#bar{t}"],
+    #         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
+    #         dirname="plots/{}/{}/fake".format(ntuple_version, tag),
+    #         filter_pattern="ThreeLeptons",
+    #         dogrep=True,
+    #         extraoptions={
+    #             "print_yield":True,
+    #             "nbins":15,
+    #             "signal_scale": 1,
+    #             "legend_scalex":1.8,
+    #             "legend_scaley":1.1,
+    #             "legend_ncolumns": 3,
+    #             "ymax_scale": 1.2,
+    #             "lumi_value":lumi,
+    #             }
+    #         )
+
     p.dump_plot(fnames=bkgfilesfake,
             sig_fnames=sigfiles,
             data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),

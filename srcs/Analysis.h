@@ -153,6 +153,29 @@ public:
 
     // Scale factors
     RooUtil::HistMap* histmap_purwegt;
+    RooUtil::HistMap* histmap_2016_elec_reco_highpt_sf;
+    RooUtil::HistMap* histmap_2016_elec_reco_lowpt_sf;
+    RooUtil::HistMap* histmap_2016_elec_medium_sf;
+    RooUtil::HistMap* histmap_2016_elec_veto_sf;
+    RooUtil::HistMap* histmap_2017_elec_reco_highpt_sf;
+    RooUtil::HistMap* histmap_2017_elec_reco_lowpt_sf;
+    RooUtil::HistMap* histmap_2017_elec_medium_sf;
+    RooUtil::HistMap* histmap_2017_elec_veto_sf;
+    RooUtil::HistMap* histmap_2018_elec_reco_sf;
+    RooUtil::HistMap* histmap_2018_elec_medium_sf;
+    RooUtil::HistMap* histmap_2018_elec_veto_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_id_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_tightiso_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_looseiso_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_id_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_tightiso_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_looseiso_sf;
+    RooUtil::HistMap* histmap_2017_muon_id_sf;
+    RooUtil::HistMap* histmap_2017_muon_tightiso_sf;
+    RooUtil::HistMap* histmap_2017_muon_looseiso_sf;
+    RooUtil::HistMap* histmap_2018_muon_id_sf;
+    RooUtil::HistMap* histmap_2018_muon_tightiso_sf;
+    RooUtil::HistMap* histmap_2018_muon_looseiso_sf;
 
     // Looper
     RooUtil::Looper<wvztree>* looper;
@@ -182,6 +205,7 @@ public:
     void setDilepMasses();
 
     float EventWeight();
+    float LeptonScaleFactor();
 
     bool passZCandLeptonID(int idx);
     bool passZCandElectronID(int idx);

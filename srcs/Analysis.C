@@ -662,6 +662,9 @@ bool Analysis::passVetoMuonID(int idx)
     // }
     // return true;
 
+    // Try Medium POG ID
+    if (not (wvz.lep_isMediumPOG()[idx])) return false;
+
     // One addition on top of veto ID
     if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 

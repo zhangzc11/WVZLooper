@@ -883,6 +883,8 @@ float Analysis::EventWeight()
 //______________________________________________________________________________________________
 float Analysis::LeptonScaleFactor()
 {
+    if (wvz.isData())
+        return 1.;
     // Based on lep_Veto indices
     float scalefactor = 1;
     for (auto& lep_idx : lep_veto_idxs)

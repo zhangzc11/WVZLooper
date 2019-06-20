@@ -175,6 +175,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepNsMotherID1", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_Nom_idx2]; });
         histograms.addHistogram("lepVetoButNotNomMotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomMCID", 7, -4, 3, [&](){ return wvz.lep_mc_id()[lep_VetoButNotNom_idx]; });
+        histograms.addHistogram("lepVetoButNotNomrelIso03EA", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_VetoButNotNom_idx]; });
+        histograms.addHistogram("lepVetoButNotNomrelIso04DB", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_VetoButNotNom_idx]; });
         if (ntupleVersion.Contains("Trilep"))
         {
             histograms.addHistogram("lepFakeCand2MotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_FakeCand_idx2]; });
@@ -1191,9 +1193,11 @@ bool Analysis::IsEMuPlusX()
     if (not (nDFOS == 2))
         return false;
 
-    // Ask for the emu to pass "tight" ID
-    // std::cout <<  " lep_E_idx: " << lep_E_idx <<  " lep_Mu_idx: " << lep_Mu_idx <<  std::endl;
-    // std::cout <<  " lep_Veto_idx1: " << lep_Veto_idx1 <<  " lep_Veto_idx2: " << lep_Veto_idx2 <<  " lep_Veto_idx3: " << lep_Veto_idx3 <<  " lep_Veto_idx4: " << lep_Veto_idx4 <<  std::endl;
+    // Ask for the different flavor lepton to be tight
+    if (not (passNominalLeptonID(lep_NonFakeCand_idx)))
+        return false;
+
+    // Ask for the leading leg of the same-sign pair is tight
     if (not (passNominalLeptonID(lep_FakeCand_idx1)))
         return false;
 

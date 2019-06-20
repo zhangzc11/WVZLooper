@@ -1126,35 +1126,37 @@ bool Analysis::CutHLT()
     if (wvz.isData())
         if (not wvz.pass_duplicate_mm_em_ee())
             return false;
-    if (abs(wvz.lep_id()[lep_Veto_idx1]) == 11 and abs(wvz.lep_id()[lep_Veto_idx2]) == 11)
-        return wvz.HLT_DoubleEl();
-    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 13 and abs(wvz.lep_id()[lep_Veto_idx2]) == 11)
-        return wvz.HLT_MuEG();
-    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 11 and abs(wvz.lep_id()[lep_Veto_idx2]) == 13)
-        return wvz.HLT_MuEG();
-    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 13 and abs(wvz.lep_id()[lep_Veto_idx2]) == 13)
-        return wvz.HLT_DoubleMu();
-    else
-        return false;
+    bool passTrigger = false;
+    for (auto& lep_idx : lep_veto_idxs)
+    {
+        for (auto& lep_jdx : lep_veto_idxs)
+        {
+            if (lep_idx == lep_jdx)
+                continue;
+            // Check if any of the combination of leptons pass the trigger thresholds
+            // Ele 23 12
+            // El23 Mu8
+            // Mu23 El12
+            // Mu 17 8
+            // The thresholds are rounded up to 25, 15, or 10
+            if (abs(wvz.lep_id()[lep_idx]) == 11 and abs(wvz.lep_id()[lep_jdx]) == 11)
+                passTrigger |= (wvz.HLT_DoubleEl() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 15);
+            else if (abs(wvz.lep_id()[lep_idx]) == 13 and abs(wvz.lep_id()[lep_jdx]) == 11)
+                passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 10);
+            else if (abs(wvz.lep_id()[lep_idx]) == 11 and abs(wvz.lep_id()[lep_jdx]) == 13)
+                passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 15);
+            else if (abs(wvz.lep_id()[lep_idx]) == 13 and abs(wvz.lep_id()[lep_jdx]) == 13)
+                passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 20 and wvz.lep_pt()[lep_jdx] > 10);
+        }
+    }
+    return passTrigger;
 }
 
 //______________________________________________________________________________________________
 bool Analysis::Is3LeptonEvent()
 {
     if (not (nVetoLeptons == 3)) return false;
-    if (wvz.isData())
-        if (not wvz.pass_duplicate_mm_em_ee())
-            return false;
-    if (abs(wvz.lep_id()[lep_Veto_idx1]) == 11 and abs(wvz.lep_id()[lep_Veto_idx2]) == 11)
-        return wvz.HLT_DoubleEl();
-    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 13 and abs(wvz.lep_id()[lep_Veto_idx2]) == 11)
-        return wvz.HLT_MuEG();
-    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 11 and abs(wvz.lep_id()[lep_Veto_idx2]) == 13)
-        return wvz.HLT_MuEG();
-    else if (abs(wvz.lep_id()[lep_Veto_idx1]) == 13 and abs(wvz.lep_id()[lep_Veto_idx2]) == 13)
-        return wvz.HLT_DoubleMu();
-    else
-        return false;
+    if (not (CutHLT())) return false;
     return true;
 }
 

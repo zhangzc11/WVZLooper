@@ -1142,9 +1142,9 @@ bool Analysis::CutHLT()
             if (abs(wvz.lep_id()[lep_idx]) == 11 and abs(wvz.lep_id()[lep_jdx]) == 11)
                 passTrigger |= (wvz.HLT_DoubleEl() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 15);
             else if (abs(wvz.lep_id()[lep_idx]) == 13 and abs(wvz.lep_id()[lep_jdx]) == 11)
-                passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 10);
-            else if (abs(wvz.lep_id()[lep_idx]) == 11 and abs(wvz.lep_id()[lep_jdx]) == 13)
                 passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 15);
+            else if (abs(wvz.lep_id()[lep_idx]) == 11 and abs(wvz.lep_id()[lep_jdx]) == 13)
+                passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 25 and wvz.lep_pt()[lep_jdx] > 10);
             else if (abs(wvz.lep_id()[lep_idx]) == 13 and abs(wvz.lep_id()[lep_jdx]) == 13)
                 passTrigger |= (wvz.HLT_MuEG() and wvz.lep_pt()[lep_idx] > 20 and wvz.lep_pt()[lep_jdx] > 10);
         }

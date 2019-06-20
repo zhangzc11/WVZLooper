@@ -240,19 +240,19 @@ public:
     bool FindOSOneNomOneVbntLeptons();
     bool IsEMuPlusX();
 
-    bool Cut4LepLeptonPt(bool=true);
+    bool Cut4LepLeptonPt(bool=false);
     bool CutHLT();
-    bool Cut4LepLowMll(bool=true);
+    bool Cut4LepLowMll(bool=false);
     bool Cut4LepBVeto();
 
-    bool IsChannelEMu(bool=true);
-    bool IsChannelOnZ(bool=true);
-    bool IsChannelOffZ(bool=true);
+    bool IsChannelEMu(bool=false);
+    bool IsChannelOnZ(bool=false);
+    bool IsChannelOffZ(bool=false);
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
 
-    bool ChannelEMuHighMll(bool=true);
+    bool ChannelEMuHighMll(bool=false);
     bool ChannelOffZHighMET();
 
     float VarMll();

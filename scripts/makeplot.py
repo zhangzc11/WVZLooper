@@ -241,89 +241,47 @@ def main_analysis_make_plot():
     #             }
     #         )
 
-    # p.dump_plot(fnames=bkgfilesfake,
-    #         sig_fnames=sigfiles,
-    #         data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
-    #         usercolors=colors,
-    #         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma", "t#bar{t}"],
-    #         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-    #         dirname="plots/{}/{}/fake".format(ntuple_version, tag),
-    #         filter_pattern="CutMuMuEl__",
-    #         dogrep=True,
-    #         extraoptions={
-    #             "print_yield":True,
-    #             "nbins":15,
-    #             "signal_scale": 1,
-    #             "legend_scalex":1.8,
-    #             "legend_scaley":1.1,
-    #             "legend_ncolumns": 3,
-    #             "ymax_scale": 1.2,
-    #             "lumi_value":lumi,
-    #             }
-    #         )
+    p.dump_plot(fnames=bkgfilesfake,
+            sig_fnames=sigfiles,
+            data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
+            usercolors=colors,
+            legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma", "t#bar{t}"],
+            signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
+            dirname="plots/{}/{}/fake".format(ntuple_version, tag),
+            filter_pattern="EMuPlusXFakeMu*__*FakeCand2PtVarBin",
+            dogrep=True,
+            extraoptions={
+                "print_yield":True,
+                "nbins":15,
+                "signal_scale": 1,
+                "legend_scalex":1.8,
+                "legend_scaley":1.1,
+                "legend_ncolumns": 3,
+                "ymax_scale": 1.2,
+                "lumi_value":lumi,
+                }
+            )
 
-    # p.dump_plot(fnames=bkgfilesfake,
-    #         sig_fnames=sigfiles,
-    #         data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
-    #         usercolors=colors,
-    #         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma", "t#bar{t}"],
-    #         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-    #         dirname="plots/{}/{}/fake".format(ntuple_version, tag),
-    #         filter_pattern="ThreeLeptons",
-    #         dogrep=True,
-    #         extraoptions={
-    #             "print_yield":True,
-    #             "nbins":15,
-    #             "signal_scale": 1,
-    #             "legend_scalex":1.8,
-    #             "legend_scaley":1.1,
-    #             "legend_ncolumns": 3,
-    #             "ymax_scale": 1.2,
-    #             "lumi_value":lumi,
-    #             }
-    #         )
-
-    # p.dump_plot(fnames=bkgfilesfake,
-    #         sig_fnames=sigfiles,
-    #         data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
-    #         usercolors=colors,
-    #         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma", "t#bar{t}"],
-    #         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-    #         dirname="plots/{}/{}/fake".format(ntuple_version, tag),
-    #         filter_pattern="EMuPlusXFakeMu",
-    #         dogrep=True,
-    #         extraoptions={
-    #             "print_yield":True,
-    #             "nbins":15,
-    #             "signal_scale": 1,
-    #             "legend_scalex":1.8,
-    #             "legend_scaley":1.1,
-    #             "legend_ncolumns": 3,
-    #             "ymax_scale": 1.2,
-    #             "lumi_value":lumi,
-    #             }
-    #         )
-
-    # p.dump_plot(fnames=bkgfilesfake,
-    #         sig_fnames=sigfiles,
-    #         data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
-    #         usercolors=colors,
-    #         legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
-    #         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-    #         dirname="plots/{}/{}/fake".format(ntuple_version, tag),
-    #         filter_pattern="EMuPlusXFakeEl",
-    #         dogrep=True,
-    #         extraoptions={
-    #             "print_yield":True,
-    #             "nbins":15,
-    #             "signal_scale": 1,
-    #             "legend_scalex":1.8,
-    #             "legend_scaley":1.1,
-    #             "legend_ncolumns": 3,
-    #             "ymax_scale": 1.2,
-    #             "lumi_value":lumi,
-    #             }
-    #         )
+    p.dump_plot(fnames=bkgfilesfake,
+            sig_fnames=sigfiles,
+            data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag),
+            usercolors=colors,
+            legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
+            signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
+            dirname="plots/{}/{}/fake".format(ntuple_version, tag),
+            filter_pattern="EMuPlusXFakeEl*__*FakeCand2PtVarBin",
+            dogrep=True,
+            extraoptions={
+                "print_yield":True,
+                "nbins":15,
+                "signal_scale": 1,
+                "legend_scalex":1.8,
+                "legend_scaley":1.1,
+                "legend_ncolumns": 3,
+                "ymax_scale": 1.2,
+                "lumi_value":lumi,
+                }
+            )
 
     # p.dump_plot(fnames=bkgfiles,
     #         sig_fnames=sigfiles,
@@ -345,45 +303,45 @@ def main_analysis_make_plot():
     #             }
     #         )
 
-    # p.dump_plot(fnames=bkgfiles,
-    #         sig_fnames=sigfiles,
-    #         usercolors=colors,
-    #         legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
-    #         signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
-    #         dirname="plots/{}/{}/cutflow".format(ntuple_version, tag),
-    #         filter_pattern="_cutflow",
-    #         dogrep=True,
-    #         extraoptions={
-    #             "print_yield":True,
-    #             "nbins":15,
-    #             "signal_scale": 1,
-    #             "legend_scalex":1.8,
-    #             "legend_scaley":1.1,
-    #             "legend_ncolumns": 3,
-    #             "ymax_scale": 1.2,
-    #             "lumi_value":lumi,
-    #             }
-    #         )
+    p.dump_plot(fnames=bkgfiles,
+            sig_fnames=sigfiles,
+            usercolors=colors,
+            legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
+            signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
+            dirname="plots/{}/{}/cutflow".format(ntuple_version, tag),
+            filter_pattern="_cutflow",
+            dogrep=True,
+            extraoptions={
+                "print_yield":True,
+                "nbins":15,
+                "signal_scale": 1,
+                "legend_scalex":1.8,
+                "legend_scaley":1.1,
+                "legend_ncolumns": 3,
+                "ymax_scale": 1.2,
+                "lumi_value":lumi,
+                }
+            )
 
-    # p.dump_plot(fnames=bkgfiles,
-    #         sig_fnames=sigfiles_detail,
-    #         usercolors=colors,
-    #         legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
-    #         signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
-    #         dirname="plots/{}/{}/cutflow_detail".format(ntuple_version, tag),
-    #         filter_pattern="_cutflow",
-    #         dogrep=True,
-    #         extraoptions={
-    #             "print_yield":True,
-    #             "nbins":15,
-    #             "signal_scale": 1,
-    #             "legend_scalex":1.8,
-    #             "legend_scaley":1.1,
-    #             "legend_ncolumns": 3,
-    #             "ymax_scale": 1.2,
-    #             "lumi_value":lumi,
-    #             }
-    #         )
+    p.dump_plot(fnames=bkgfiles,
+            sig_fnames=sigfiles_detail,
+            usercolors=colors,
+            legend_labels=["ttz", "zz", "wz", "twz", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
+            signal_labels=["WWZ", "ZH#rightarrowWWZ", "WZZ", "WH#rightarrowZZ", "ZZZ", "ZH#rightarrowZZ", "VVV"],
+            dirname="plots/{}/{}/cutflow_detail".format(ntuple_version, tag),
+            filter_pattern="_cutflow",
+            dogrep=True,
+            extraoptions={
+                "print_yield":True,
+                "nbins":15,
+                "signal_scale": 1,
+                "legend_scalex":1.8,
+                "legend_scaley":1.1,
+                "legend_ncolumns": 3,
+                "ymax_scale": 1.2,
+                "lumi_value":lumi,
+                }
+            )
 
     # p.dump_plot(fnames=bkgfiles,
     #         sig_fnames=sigfiles_detail,

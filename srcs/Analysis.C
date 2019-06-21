@@ -5,7 +5,7 @@
 // e.g.
 // NtupleVersion = "WVZ2018_v0.0.9"
 // TagName = "LoopTag1"
-void Analysis::Loop(const char* NtupleVersion, const char* TagName)
+void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
 {
 
     //==================
@@ -20,6 +20,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     // Because TString is better than const char*
     TString ntupleVersion = NtupleVersion;
 
+    doFakeEst = dofake;
+    std::cout <<  " doFakeEst: " << doFakeEst <<  std::endl;
+
     // Parsing year
     if (ntupleVersion.Contains("v0.0.5")) year = -1; // Meaning use this sets to scale it up to 137
     else if (ntupleVersion.Contains("2016")) year = 2016;
@@ -30,7 +33,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
     // Creating output directory and output files where histograms will be
     TString output_path = TString::Format("outputs/%s/%s", NtupleVersion, TagName);
     gSystem->Exec(TString::Format("mkdir -p %s", output_path.Data()));
-    TFile* output_file = new TFile(output_path + "/" + output_tfile_name, "RECREATE");
+    TString prefix = doFakeEst ? "FAKE_" : "";
+    TFile* output_file = new TFile(output_path + "/" + prefix + output_tfile_name, "RECREATE");
 
     // Load scale factor histograms
     loadScaleFactors();
@@ -47,7 +51,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, [&](){ return this->LeptonScaleFactor(); } ); 
         cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, [&]() { return this->FakeFactor(); } ); 
         cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
@@ -173,10 +177,20 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName)
         histograms.addHistogram("lepZsMotherID1", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_ZCand_idx2]; });
         histograms.addHistogram("lepNsMotherID0", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_Nom_idx1]; });
         histograms.addHistogram("lepNsMotherID1", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_Nom_idx2]; });
+        histograms.addHistogram("lepZid0", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_ZCand_idx1]); });
+        histograms.addHistogram("lepZid1", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_ZCand_idx2]); });
+        histograms.addHistogram("lepNid0", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Nom_idx1]); });
+        histograms.addHistogram("lepNid1", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Nom_idx2]); });
+        histograms.addHistogram("lepVid0", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx1]); });
+        histograms.addHistogram("lepVid1", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx2]); });
+        histograms.addHistogram("lepVid2", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx3]); });
+        histograms.addHistogram("lepVid3", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx4]); });
         histograms.addHistogram("lepVetoButNotNomMotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomMCID", 7, -4, 3, [&](){ return wvz.lep_mc_id()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomrelIso03EA", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomrelIso04DB", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_VetoButNotNom_idx]; });
+        histograms.addHistogram("lepVetoButNotNompt", 180, 0, 70, [&](){ return wvz.lep_pt()[lep_VetoButNotNom_idx]; });
+        histograms.addHistogram("lepVetoButNotNomid", 5, 10, 15, [&](){ return abs(wvz.lep_id()[lep_VetoButNotNom_idx]); });
         if (ntupleVersion.Contains("Trilep"))
         {
             histograms.addHistogram("lepFakeCand2MotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_FakeCand_idx2]; });
@@ -448,6 +462,45 @@ void Analysis::selectNominalLeptons()
     if (nNominalLeptons > 0) lep_Nom_idx1 = good_idx[0];
     if (nNominalLeptons > 1) lep_Nom_idx2 = good_idx[1];
     if (nNominalLeptons > 2) lep_Nom_idx3 = good_idx[2];
+
+    if (doFakeEst) // if do fake overwrite the lep_Nom_idx for fake
+    {
+
+        std::vector<int> lbnt_idx; // index of good nominal leptons
+
+        // Loop over the leptons
+        for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
+        {
+
+            if (jj == (unsigned int) lep_ZCand_idx1)
+                continue;
+
+            if (jj == (unsigned int) lep_ZCand_idx2)
+                continue;
+
+            if (not passVetoLeptonID(jj))
+                continue;
+
+            if (passNominalLeptonID(jj))
+                continue;
+
+            lbnt_idx.push_back(jj);
+
+        }
+
+        if (lbnt_idx.size() == 1)
+        {
+            if (nNominalLeptons == 1)
+            {
+                lep_Nom_idx2 = lbnt_idx[0];
+            }
+            else if (nNominalLeptons == 2)
+            {
+                lep_Nom_idx3 = lbnt_idx[0];
+            }
+        }
+
+    }
 
 }
 
@@ -1016,6 +1069,48 @@ float Analysis::LeptonScaleFactor()
     return scalefactor;
 }
 
+//______________________________________________________________________________________________
+float Analysis::FakeFactor()
+{
+    if (doFakeEst)
+    {
+        float fr = 0;
+        if (year == 2016)
+        {
+            if (abs(wvz.lep_id()[lep_VetoButNotNom_idx]) == 11)
+                fr = histmap_2016_fake_rate_el->eval(std::min((double) leptons[lep_VetoButNotNom_idx].Pt(), 69.999), fabs(leptons[lep_VetoButNotNom_idx].Eta()));
+            else
+                fr = histmap_2016_fake_rate_mu->eval(std::min((double) leptons[lep_VetoButNotNom_idx].Pt(), 69.999), fabs(leptons[lep_VetoButNotNom_idx].Eta()));
+        }
+        else if (year == 2017)
+        {
+            if (abs(wvz.lep_id()[lep_VetoButNotNom_idx]) == 11)
+                fr = histmap_2017_fake_rate_el->eval(std::min((double) leptons[lep_VetoButNotNom_idx].Pt(), 69.999), fabs(leptons[lep_VetoButNotNom_idx].Eta()));
+            else
+                fr = histmap_2017_fake_rate_mu->eval(std::min((double) leptons[lep_VetoButNotNom_idx].Pt(), 69.999), fabs(leptons[lep_VetoButNotNom_idx].Eta()));
+        }
+        else if (year == 2018)
+        {
+            if (abs(wvz.lep_id()[lep_VetoButNotNom_idx]) == 11)
+                fr = histmap_2018_fake_rate_el->eval(std::min((double) leptons[lep_VetoButNotNom_idx].Pt(), 69.999), fabs(leptons[lep_VetoButNotNom_idx].Eta()));
+            else
+                fr = histmap_2018_fake_rate_mu->eval(std::min((double) leptons[lep_VetoButNotNom_idx].Pt(), 69.999), fabs(leptons[lep_VetoButNotNom_idx].Eta()));
+        }
+        if (wvz.isData())
+        {
+            return fr / (1. - fr);
+        }
+        else
+        {
+            return - fr / (1. - fr);
+        }
+    }
+    else
+    {
+        return 1.;
+    }
+}
+
 //==============================================================================================
 //
 //
@@ -1039,8 +1134,16 @@ bool Analysis::FindTwoOSNominalLeptons()
         return false;
     if (lep_Nom_idx2 == -999)
         return false;
-    if (nNominalLeptons != 2)
-        return false;
+    if (doFakeEst)
+    {
+        if (not (nNominalLeptons == 1))
+            return false;
+    }
+    else
+    {
+        if (not (nNominalLeptons == 2))
+            return false;
+    }
     if (lep_id->at(lep_Nom_idx1) * lep_id->at(lep_Nom_idx2) > 0)
         return false;
     return true;
@@ -1237,7 +1340,8 @@ bool Analysis::IsChannelEMu(bool isAR)
 bool Analysis::IsChannelOnZ(bool isAR)
 {
     int idx2 = isAR ? lep_VetoButNotNom_idx : lep_Nom_idx2;
-    if (fabs(dilepNominal.M() - 91.1876) < 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(idx2)) // must be SFOS
+    float mll = isAR ? (leptons[lep_VetoButNotNom_idx]+leptons[lep_Nom_idx1]).M() : dilepNominal.M();
+    if (fabs(mll - 91.1876) < 10. and lep_id->at(lep_Nom_idx1) == -lep_id->at(idx2)) // must be SFOS
         return true;
     else
         return false;

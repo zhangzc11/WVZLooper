@@ -125,6 +125,7 @@ public:
 
     bool isRead;
     bool isDamaged;
+    bool doFakeEst;
     TLorentzVector leptons[10];
     std::vector<int> lep_veto_idxs;
     int nVetoLeptons;
@@ -195,7 +196,7 @@ public:
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
     virtual void  Initial(const char* RootName, int RootNumber);
-    virtual void  Loop(const char* NtupleVersion, const char* TagName);
+    virtual void  Loop(const char* NtupleVersion, const char* TagName, bool dofake);
     virtual void  End(int RootNumber);
     virtual void  Finish(int RootNumber);
     virtual void  Output();
@@ -218,6 +219,7 @@ public:
 
     float EventWeight();
     float LeptonScaleFactor();
+    float FakeFactor();
 
     bool passZCandLeptonID(int idx);
     bool passZCandElectronID(int idx);

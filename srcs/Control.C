@@ -2,14 +2,15 @@
 #include "makeHists.h"
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 using namespace std;
 int main(int argc, char** argv)
 {
     //usage output
-    if (argc != 4)
+    if (argc < 4)
     {
-        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag" << std::endl;
+        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag dofake" << std::endl;
         return 0;
     }
 
@@ -103,7 +104,7 @@ int main(int argc, char** argv)
         //
         // Loop!
         //
-        Run.Loop(argv[2], argv[3]);
+        Run.Loop(argv[2], argv[3], (argc>=5));
 
         // Done
         Run.End(count);

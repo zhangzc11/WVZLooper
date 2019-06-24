@@ -59,7 +59,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
 
         cutflow.getCut("Cut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
-        cutflow.addCutToLastActiveCut("ChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelEMuHighMT", [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))) > 40. and sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi()))) > 20.; }, UNITY );
         cutflow.getCut("Cut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
         cutflow.addCutToLastActiveCut("ChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
@@ -78,16 +78,17 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("ARCutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("ARCut4LepLowMll", [&](){ return this->Cut4LepLowMll(true); }, UNITY ); 
         cutflow.addCutToLastActiveCut("ARCut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return wvz.weight_btagsf(); } ); 
+        // cutflow.addCutToLastActiveCut("ARCut4LepBVeto", UNITY, UNITY);
 
         cutflow.getCut("ARCut4LepBVeto");
-        cutflow.addCutToLastActiveCut("ARChannelEMu", [&](){ return this->IsChannelEMu(true); }, UNITY );
-        cutflow.addCutToLastActiveCut("ARChannelEMuHighMll", [&](){ return this->ChannelEMuHighMll(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelAREMu", [&](){ return this->IsChannelEMu(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelAREMuHighMT", [&](){ return this->ChannelEMuHighMll(true); }, UNITY );
         cutflow.getCut("ARCut4LepBVeto");
-        cutflow.addCutToLastActiveCut("ARChannelOnZ", [&](){ return this->IsChannelOnZ(true); }, UNITY );
-        cutflow.addCutToLastActiveCut("ARChannelOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelAROnZ", [&](){ return this->IsChannelOnZ(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelAROnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
         cutflow.getCut("ARCut4LepBVeto");
-        cutflow.addCutToLastActiveCut("ARChannelOffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
-        cutflow.addCutToLastActiveCut("ARChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelAROffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelAROffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -122,6 +123,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("EMuPlusXFakeElFake", [&]() { return wvz.lep_motherIdv2()[lep_FakeCand_idx2] < 1; }, UNITY );
         cutflow.getCut("EMuPlusXFakeElTight");
         cutflow.addCutToLastActiveCut("EMuPlusXFakeElTightFake", [&]() { return wvz.lep_motherIdv2()[lep_FakeCand_idx2] < 1; }, UNITY );
+        cutflow.getCut("ThreeLeptons");
+        cutflow.addCutToLastActiveCut("Channel1SFOS", [&]() { return this->VarNSFOS() == 1; }, UNITY );
+        cutflow.getCut("ThreeLeptons");
+        cutflow.addCutToLastActiveCut("Channel2SFOS", [&]() { return this->VarNSFOS() == 2; }, UNITY );
     }
 
     // Book Cutflow
@@ -191,6 +196,11 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         histograms.addHistogram("lepVetoButNotNomrelIso04DB", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNompt", 180, 0, 70, [&](){ return wvz.lep_pt()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomid", 5, 10, 15, [&](){ return abs(wvz.lep_id()[lep_VetoButNotNom_idx]); });
+        histograms.addHistogram("MTNom0", 180, 0, 180, [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))); });
+        histograms.addHistogram("MTNom1", 180, 0, 150, [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi()))); });
+        histograms.addHistogram("MTNomMax", 180, 0, 180, [&](){ return std::max(sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))),sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi())))); });
+        histograms.addHistogram("MTNomMin", 180, 0, 180, [&](){ return std::min(sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))),sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi())))); });
+        histograms.addHistogram("MllNomWindow", 180, 0, 50, [&](){ return fabs((wvz.lep_p4()[lep_Nom_idx1]+wvz.lep_p4()[lep_Nom_idx2]).M()-91.1876); });
         if (ntupleVersion.Contains("Trilep"))
         {
             histograms.addHistogram("lepFakeCand2MotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_FakeCand_idx2]; });
@@ -231,8 +241,6 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     // // Book event list
     // cutflow.bookEventLists();
 
-    //e+e-mu+
-
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
     ch->Add(fTTree->GetCurrentFile()->GetName());
@@ -255,7 +263,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         setDilepMasses();
         // cutflow.setEventID(wvz.run(), wvz.lumi(), wvz.evt());
         cutflow.fill();
-        // if (cutflow.getCut("ChannelEMu").pass)
+        // if (cutflow.getCut("ChannelEMuHighMT").pass)
         // {
         //     std::cout << wvz.lep_motherIdv2()[lep_ZCand_idx1] << " ";
         //     std::cout << wvz.lep_motherIdv2()[lep_ZCand_idx2] << " ";
@@ -315,7 +323,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         // }
     }
 
-    // cutflow.getCut("ChannelEMu").printEventList();
+    // cutflow.getCut("ChannelEMuHighMT").printEventList();
 
     cutflow.saveOutput();
 
@@ -782,24 +790,20 @@ bool Analysis::passVetoLeptonID(int idx)
 bool Analysis::passVetoElectronID(int idx)
 {
 
-    //-------------------------------------------------
-    // What is already applied at the baby making stage
-    //-------------------------------------------------
-
-    // if (!( cms3.els_p4()[idx].pt() > 10.          )) return false;
-    // if (!( isVetoElectronPOGfall17_v2(idx)        )) return false;
-    // if (!( fabs(cms3.els_p4()[idx].eta()) < 2.5   )) return false;
-    // if (fabs(cms3.els_etaSC()[idx]) <= 1.479)
+    if (!( wvz.lep_p4()[idx].pt() > 10.           )) return false;
+    if (!( fabs(wvz.lep_p4()[idx].eta()) < 2.5    )) return false;
+    if (!( wvz.lep_isCutBasedIsoVetoPOG()[idx]    )) return false;
+    // following is already applied in the baby making stage
+    // if (fabs(wvz.els_etaSC()[idx]) <= 1.479)
     // {
-    //     if (!( fabs(cms3.els_dzPV()[idx]) < 0.1       )) return false;
-    //     if (!( fabs(cms3.els_dxyPV()[idx]) < 0.05     )) return false;
+    //     if (!( fabs(wvz.lep_dz()[idx]) < 0.1      )) return false;
+    //     if (!( fabs(wvz.lep_dxy()[idx]) < 0.05    )) return false;
     // }
     // else
     // {
-    //     if (!( fabs(cms3.els_dzPV()[idx]) < 0.2       )) return false;
-    //     if (!( fabs(cms3.els_dxyPV()[idx]) < 0.1      )) return false;
+    //     if (!( fabs(wvz.lep_dz()[idx]) < 0.2      )) return false;
+    //     if (!( fabs(wvz.lep_dxy()[idx]) < 0.1     )) return false;
     // }
-    // return true;
 
     // One addition on top of veto ID
     if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
@@ -812,14 +816,10 @@ bool Analysis::passVetoElectronID(int idx)
 bool Analysis::passVetoMuonID(int idx)
 {
 
-    //-------------------------------------------------
-    // What is already applied at the baby making stage
-    //-------------------------------------------------
-
-    // if (!( cms3.mus_p4()[idx].pt() > 10.        )) return false;
-    // if (!( isLooseMuonPOG(idx)                  )) return false;
-    // if (!( fabs(cms3.mus_p4()[idx].eta()) < 2.4 )) return false;
-    // if (!( muRelIso04DB(idx)  < 0.25            )) return false;
+    if (!( wvz.lep_p4()[idx].pt() > 10.        )) return false;
+    if (!( fabs(wvz.lep_p4()[idx].eta()) < 2.4 )) return false;
+    if (!( wvz.lep_relIso04DB()[idx] < 0.25    )) return false;
+    // following is already applied in the baby making stage
     // if (fabs(cms3.mus_p4()[idx].eta()) <= 1.479)
     // {
     //     if (!( fabs(cms3.mus_dzPV()[idx]) < 0.1       )) return false;
@@ -830,7 +830,6 @@ bool Analysis::passVetoMuonID(int idx)
     //     if (!( fabs(cms3.mus_dzPV()[idx]) < 0.2       )) return false;
     //     if (!( fabs(cms3.mus_dxyPV()[idx]) < 0.1      )) return false;
     // }
-    // return true;
 
     // Try Medium POG ID
     if (not (wvz.lep_isMediumPOG()[idx])) return false;
@@ -854,6 +853,7 @@ bool Analysis::passZCandLeptonID(int idx)
 bool Analysis::passZCandElectronID(int idx)
 {
 
+    if (!( wvz.lep_isCutBasedIsoVetoPOG()[idx]    )) return false;
     // Must pass Veto ID
     if (not (passVetoElectronID(idx))) return false;
 
@@ -864,6 +864,7 @@ bool Analysis::passZCandElectronID(int idx)
 //______________________________________________________________________________________________
 bool Analysis::passZCandMuonID(int idx)
 {
+    if (!( wvz.lep_relIso04DB()[idx] < 0.25    )) return false;
     // Must pass ZCand ID
     if (not (passVetoMuonID(idx))) return false;
 
@@ -1102,7 +1103,10 @@ float Analysis::FakeFactor()
         }
         else
         {
-            return - fr / (1. - fr);
+            if (wvz.lep_motherIdv2()[lep_VetoButNotNom_idx] >= 1)
+                return - fr / (1. - fr);
+            else
+                return 0;
         }
     }
     else
@@ -1379,7 +1383,7 @@ bool Analysis::ChannelEMuHighMll(bool isAR)
 //______________________________________________________________________________________________
 bool Analysis::ChannelOffZHighMET()
 {
-    if (met_pt > 120.)
+    if (met_pt > 100.)
         return true;
     else
         return false;

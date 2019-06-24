@@ -63,6 +63,7 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     fi
     hadd -f higgs.root MC_ggh_hzz4l_powheg_1_results.root MC_vh_nonbbwwzz_amcatnlo_1_results.root MC_tth_nonbb_powheg_1_results.root
     hadd -f data.root DATA_data_Run*.root
+    hadd -f ddfake.root FAKE_*.root
 fi
 
 cd - > /dev/null

@@ -19,6 +19,7 @@ def main_analysis_make_plot_userfilter():
     parser.add_argument('-d' , '--dirname'         , dest='dirname'         , help='plots/<sample_set_name>/<tag>/<dirname> for plot output'                                                          , required=True)
     parser.add_argument('-p' , '--filter_pattern'  , dest='filter_pattern'  , help='To filter out plot'                                                                                               , required=True)
     parser.add_argument('-u' , '--unblind'         , dest='unblind'         , help='To unblind data'     , default=False, action='store_true'                                                                        )
+    parser.add_argument('-f' , '--dofakes'         , dest='dofakes'         , help='Do data-driven fakes', default=False, action='store_true'                                                                        )
     
     args = parser.parse_args()
 
@@ -43,6 +44,7 @@ def main_analysis_make_plot_userfilter():
             "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag),
             "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
             ]
+    bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"]
     sigfiles = [
             "outputs/{}/{}/wwz.root".format(ntuple_version, tag),
             "outputs/{}/{}/wzz.root".format(ntuple_version, tag),
@@ -66,9 +68,10 @@ def main_analysis_make_plot_userfilter():
             "outputs/{}/{}/wz.root".format(ntuple_version, tag),
             "outputs/{}/{}/twz.root".format(ntuple_version, tag),
             "outputs/{}/{}/rare.root".format(ntuple_version, tag),
-            "outputs/{}/{}/dy.root".format(ntuple_version, tag),
+            "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
             "outputs/{}/{}/ttbar.root".format(ntuple_version, tag),
             ]
+    bkgnamesddfake = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Higgs", "t#bar{t}"]
 
 
     colors = [2005, 2001, 2003, 2007, 920, 2012, 2011]
@@ -76,12 +79,13 @@ def main_analysis_make_plot_userfilter():
     if "2016" in ntuple_version: lumi = 35.9
     if "2017" in ntuple_version: lumi = 41.3
     if "2018" in ntuple_version: lumi = 59.74
+    if "2016" in ntuple_version and "2017" in ntuple_version and "2018" in ntuple_version: lumi = 137
 
-    p.dump_plot(fnames=bkgfiles,
+    p.dump_plot(fnames=bkgfilesfake if args.dofakes else bkgfiles,
             sig_fnames=sigfiles,
             data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag) if unblind else None,
             usercolors=colors,
-            legend_labels=["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"],
+            legend_labels=bkgnamesddfake if args.dofakes else bkgnames,
             signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
             dirname="plots/{}/{}/{}".format(ntuple_version, tag, dirname),
             filter_pattern=filter_pattern,
@@ -95,7 +99,8 @@ def main_analysis_make_plot_userfilter():
                 "legend_ncolumns": 3,
                 "ymax_scale": 1.2,
                 "lumi_value":lumi,
-                }
+                },
+            # _plotter=p.plot_cut_scan,
             )
 
 if __name__ == "__main__":

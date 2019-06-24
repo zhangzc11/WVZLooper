@@ -19,12 +19,14 @@ usage()
   echo "  -2    skip hadder stage      (e.g. -2)"
   echo "  -d    plot output directory  (e.g. -d cr)"
   echo "  -p    plot filter pattern    (e.g. -p _cutflow)"
+  echo "  -n    use data-driven fakes  (e.g. -n)"
+  echo "  -u    unblind                (e.g. -u)"
   echo
   exit
 }
 
 # Command-line opts
-while getopts ":b:t:v:d:p:f12h" OPTION; do
+while getopts ":b:t:v:d:p:f12nuh" OPTION; do
   case $OPTION in
     b) BASELINE=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;
@@ -34,6 +36,8 @@ while getopts ":b:t:v:d:p:f12h" OPTION; do
     f) FORCE=true;;
     1) SKIPLOOPER=true;;
     2) SKIPHADDER=true;;
+    n) DOFAKES=" -f";;
+    u) UNBLIND=" -u";;
     h) usage;;
     :) usage;;
   esac
@@ -47,6 +51,8 @@ if [ -z ${SKIPLOOPER}  ]; then SKIPLOOPER=false; fi
 if [ -z ${SKIPHADDER}  ]; then SKIPHADDER=false; fi
 if [ -z ${DIRNAME}  ]; then DIRNAME="cutflow"; fi
 if [ -z ${PATTERN}  ]; then PATTERN="_cutflow"; fi
+if [ -z ${DOFAKES}  ]; then DOFAKES=""; fi
+if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 
 # to shift away the parsed options
 shift $(($OPTIND - 1))
@@ -65,6 +71,8 @@ echo "SKIPLOOPER     : ${SKIPLOOPER}"
 echo "SKIPHADDER     : ${SKIPHADDER}"
 echo "DIRNAME        : ${DIRNAME}"
 echo "PATTERN        : ${PATTERN}"
+echo "DOFAKES        : ${DOFAKES}"
+echo "UNBLIND        : ${UNBLIND}"
 echo "================================================"
 
 # Sanity check that the sample referred exists
@@ -111,17 +119,17 @@ fi
 if [ -n ${DIRNAME} ] && [ -n ${PATTERN} ]; then
 
     # Plotting the output histograms by each year
-    python ./scripts/plot.py -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} # The last two arguments must match the last two arguments from previous command
-    python ./scripts/plot.py -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} # The last two arguments must match the last two arguments from previous command
-    python ./scripts/plot.py -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} # The last two arguments must match the last two arguments from previous command
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # The last two arguments must match the last two arguments from previous command
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # The last two arguments must match the last two arguments from previous command
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # The last two arguments must match the last two arguments from previous command
     
     # Plotting the output histograms of all year
-    python ./scripts/plot.py -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} # Basically the tags are just concatenated with "_"
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # Basically the tags are just concatenated with "_"
 
 fi
 
 if [[ ${PATTERN} == *"PtVarBin"* ]]; then
-    if [[ $1 == *"Trilep"* ]]; then
+    if [[ ${NTUPLETYPE} == *"Trilep"* ]]; then
         # Plotting the output histograms by each year
         python ./scripts/fakerate.py ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # The last two arguments must match the last two arguments from previous command
         python ./scripts/fakerate.py ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # The last two arguments must match the last two arguments from previous command
@@ -133,6 +141,12 @@ if [[ ${PATTERN} == *"PtVarBin"* ]]; then
 fi
 
 if [[ ${PATTERN} == *"cutflow"* ]]; then
+
+    # pretty_print each year
+    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
+    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
+    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+
     # Printing in to text format for easy keynote export
     sh ./scripts/pretty_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"
 fi

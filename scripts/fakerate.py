@@ -118,7 +118,7 @@ def main_fake_rate_measurement(prefix, output_name, etaregion=""):
                "hist_line_none": True,
                "show_bkg_errors": True,
                "lumi_value" : lumi,
-               "yaxis_range": [0., 1],
+               # "yaxis_range": [0., 1],
                }
 
     p.plot_hist(
@@ -164,7 +164,7 @@ def plot_cen_fwd_in_one_canvas(fr_mc_fwd, fr_data_fwd, fr_mc_cen, fr_data_cen, o
                "hist_line_none": True,
                "show_bkg_errors": True,
                "lumi_value" : lumi,
-               "yaxis_range": [0., 1.5] if "_mu" in output_name else [0., 1.0],
+               # "yaxis_range": [0., 1.5] if "_mu" in output_name else [0., 1.0],
                "legend_datalabel": "Data fake-rate (|#eta|#geq1.6)"
                }
 

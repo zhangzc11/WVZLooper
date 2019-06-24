@@ -61,4 +61,5 @@ if [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/data.root     outputs/${1}/${2}/data.root     outputs/${3}/${4}/data.root     outputs/${5}/${6}/data.root
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/dy.root       outputs/${1}/${2}/dy.root       outputs/${3}/${4}/dy.root       outputs/${5}/${6}/dy.root      
     hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/ttbar.root    outputs/${1}/${2}/ttbar.root    outputs/${3}/${4}/ttbar.root    outputs/${5}/${6}/ttbar.root   
+    hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/ddfake.root   outputs/${1}/${2}/ddfake.root   outputs/${3}/${4}/ddfake.root   outputs/${5}/${6}/ddfake.root  
 fi

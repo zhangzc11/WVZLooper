@@ -41,7 +41,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
 
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
-    cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } ); 
+    cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } );
 
     // There are two types of NtupleVersion
     // 1. WVZ201*_v* which only contains events with 4 or more leptons
@@ -49,13 +49,13 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     if (ntupleVersion.Contains("WVZ") or ntupleVersion.Contains("Trilep"))
     {
         cutflow.getCut("Weight");
-        cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, [&](){ return this->LeptonScaleFactor(); } ); 
-        cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, [&]() { return this->FakeFactor(); } ); 
-        cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return this->BTagSF(); } ); 
+        cutflow.addCutToLastActiveCut("FourLeptons", [&](){ return this->Is4LeptonEvent(); }, [&](){ return this->LeptonScaleFactor(); } );
+        cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY );
+        cutflow.addCutToLastActiveCut("FindTwoOSNominalLeptons", [&](){ return this->FindTwoOSNominalLeptons(); }, [&]() { return this->FakeFactor(); } );
+        cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY );
+        cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY );
+        cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY );
+        cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return this->BTagSF(); } );
 
         cutflow.getCut("Cut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
@@ -73,17 +73,17 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("ChannelOnZHighMET", [&](){ return wvz.met_pt() > 100.; }, UNITY );
 
         cutflow.getCut("Weight");
-        cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th", [&](){ return this->VarMT5th() > 30.; }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th", [&](){ return this->VarMT5th() > 30.; }, UNITY );
 
         cutflow.getCut("FindZCandLeptons");
-        cutflow.addCutToLastActiveCut("FindOSOneNomOneVbntLeptons", [&](){ return this->FindOSOneNomOneVbntLeptons(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("ARCut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(true); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("ARCutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("ARCut4LepLowMll", [&](){ return this->Cut4LepLowMll(true); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("ARCut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return this->BTagSF(); } ); 
+        cutflow.addCutToLastActiveCut("FindOSOneNomOneVbntLeptons", [&](){ return this->FindOSOneNomOneVbntLeptons(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARCut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARCutHLT", [&](){ return this->CutHLT(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARCut4LepLowMll", [&](){ return this->Cut4LepLowMll(true); }, UNITY );
+        cutflow.addCutToLastActiveCut("ARCut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return this->BTagSF(); } );
 
         cutflow.getCut("ARCut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelAREMu", [&](){ return this->IsChannelEMu(true); }, UNITY );
@@ -96,7 +96,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("ChannelAROffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
 
         cutflow.getCut("Cut4LepLowMll");
-        cutflow.addCutToLastActiveCut("Cut4LepBTag", [&](){ return wvz.nb() >= 1; }, [&](){ return this->BTagSF(); } ); 
+        cutflow.addCutToLastActiveCut("Cut4LepBTag", [&](){ return wvz.nb() >= 1; }, [&](){ return this->BTagSF(); } );
 
         cutflow.getCut("Cut4LepBTag");
         cutflow.addCutToLastActiveCut("ChannelBTagEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
@@ -108,12 +108,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("ChannelBTagOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
         cutflow.addCutToLastActiveCut("ChannelBTagOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
 
-        // cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
+        // cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY );
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
         cutflow.getCut("Weight");
-        cutflow.addCutToLastActiveCut("TwoOSLeptons", [&](){ return this->IsTwoOSLeptonEvent(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("TwoOSLeptons", [&](){ return this->IsTwoOSLeptonEvent(); }, UNITY );
     }
 
     if (ntupleVersion.Contains("Trilep"))
@@ -290,7 +290,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     {
         // Once it enters loop it's 1, and then 2, and so on.
         // So need to subtract one and set it to 'ii' so fTTree can load event
-        int ii = looper->getNEventsProcessed() - 1; 
+        int ii = looper->getNEventsProcessed() - 1;
         // Load the entry
         fTTree->GetEntry(ii, 0);
         readLeptons();

@@ -55,7 +55,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("Cut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("CutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("Cut4LepLowMll", [&](){ return this->Cut4LepLowMll(); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return wvz.weight_btagsf(); } ); 
+        cutflow.addCutToLastActiveCut("Cut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return this->BTagSF(); } ); 
 
         cutflow.getCut("Cut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
@@ -67,6 +67,11 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("ChannelOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
         cutflow.addCutToLastActiveCut("ChannelOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
 
+        cutflow.getCut("ChannelOnZ");
+        cutflow.addCutToLastActiveCut("ChannelOnZHighMT", [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))) > 40. and sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi()))) > 20.; }, UNITY );
+        cutflow.getCut("ChannelOnZ");
+        cutflow.addCutToLastActiveCut("ChannelOnZHighMET", [&](){ return wvz.met_pt() > 100.; }, UNITY );
+
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
@@ -77,8 +82,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("ARCut4LepLeptonPt", [&](){ return this->Cut4LepLeptonPt(true); }, UNITY ); 
         cutflow.addCutToLastActiveCut("ARCutHLT", [&](){ return this->CutHLT(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("ARCut4LepLowMll", [&](){ return this->Cut4LepLowMll(true); }, UNITY ); 
-        cutflow.addCutToLastActiveCut("ARCut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return wvz.weight_btagsf(); } ); 
-        // cutflow.addCutToLastActiveCut("ARCut4LepBVeto", UNITY, UNITY);
+        cutflow.addCutToLastActiveCut("ARCut4LepBVeto", [&](){ return this->Cut4LepBVeto(); }, [&](){ return this->BTagSF(); } ); 
 
         cutflow.getCut("ARCut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelAREMu", [&](){ return this->IsChannelEMu(true); }, UNITY );
@@ -89,6 +93,21 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.getCut("ARCut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelAROffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
         cutflow.addCutToLastActiveCut("ChannelAROffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
+
+        cutflow.getCut("Cut4LepLowMll");
+        cutflow.addCutToLastActiveCut("Cut4LepBTag", [&](){ return wvz.nb() >= 1; }, [&](){ return this->BTagSF(); } ); 
+
+        cutflow.getCut("Cut4LepBTag");
+        cutflow.addCutToLastActiveCut("ChannelBTagEMu", [&](){ return this->IsChannelEMu(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelBTagEMuHighMT", [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))) > 40. and sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi()))) > 20.; }, UNITY );
+        cutflow.getCut("Cut4LepBTag");
+        cutflow.addCutToLastActiveCut("ChannelBTagOnZ", [&](){ return this->IsChannelOnZ(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelBTagOnZNjet", [&](){ return this->IsNjetGeq2(); }, UNITY );
+        cutflow.getCut("Cut4LepBTag");
+        cutflow.addCutToLastActiveCut("ChannelBTagOffZ", [&](){ return this->IsChannelOffZ(); }, UNITY );
+        cutflow.addCutToLastActiveCut("ChannelBTagOffZHighMET", [&](){ return this->ChannelOffZHighMET(); }, UNITY );
+
+        // cutflow.addCutToLastActiveCut("FindZCandLeptons", [&](){ return this->FindZCandLeptons(); }, UNITY ); 
     }
     else if (ntupleVersion.Contains("Dilep"))
     {
@@ -152,6 +171,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         histograms.addHistogram("MllZCand", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).M(); });
         histograms.addHistogram("MllNom", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2]).M(); });
         histograms.addHistogram("M4l", 180, 0, 450, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2] + wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).M(); });
+        histograms.addHistogram("M4lZoom", 180, 100, 150, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2] + wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).M(); });
         histograms.addHistogram("PtllZCand", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_ZCand_idx1] + wvz.lep_p4()[lep_ZCand_idx2]).Pt(); });
         histograms.addHistogram("PtllNom", 180, 0, 200, [&](){ return (wvz.lep_p4()[lep_Nom_idx1] + wvz.lep_p4()[lep_Nom_idx2]).Pt(); });
         histograms.addHistogram("lepZrelIso03EA0", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_ZCand_idx1]; });
@@ -190,17 +210,37 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         histograms.addHistogram("lepVid1", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx2]); });
         histograms.addHistogram("lepVid2", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx3]); });
         histograms.addHistogram("lepVid3", 5, 10, 15, [&](){ return fabs(wvz.lep_id()[lep_Veto_idx4]); });
+        histograms.addHistogram("lepVpt0", 180, 0, 200, [&](){ return fabs(wvz.lep_pt()[lep_Veto_idx1]); });
+        histograms.addHistogram("lepVpt1", 180, 0, 200, [&](){ return fabs(wvz.lep_pt()[lep_Veto_idx2]); });
+        histograms.addHistogram("lepVpt2", 180, 0, 200, [&](){ return fabs(wvz.lep_pt()[lep_Veto_idx3]); });
+        histograms.addHistogram("lepVpt3", 180, 0, 200, [&](){ return fabs(wvz.lep_pt()[lep_Veto_idx4]); });
+        histograms.addHistogram("lepVrelIso03EA0", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso03EA()[lep_Veto_idx1]); });
+        histograms.addHistogram("lepVrelIso03EA1", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso03EA()[lep_Veto_idx2]); });
+        histograms.addHistogram("lepVrelIso03EA2", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso03EA()[lep_Veto_idx3]); });
+        histograms.addHistogram("lepVrelIso03EA3", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso03EA()[lep_Veto_idx4]); });
+        histograms.addHistogram("lepVrelIso04DB0", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso04DB()[lep_Veto_idx1]); });
+        histograms.addHistogram("lepVrelIso04DB1", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso04DB()[lep_Veto_idx2]); });
+        histograms.addHistogram("lepVrelIso04DB2", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso04DB()[lep_Veto_idx3]); });
+        histograms.addHistogram("lepVrelIso04DB3", 180, 0, 0.4, [&](){ return fabs(wvz.lep_relIso04DB()[lep_Veto_idx4]); });
+        // histograms.addHistogram("lepVmotherid0", 30, 0, 30, [&](){ return fabs(wvz.lep_mc_motherid()[lep_Veto_idx1]); });
+        // histograms.addHistogram("lepVmotherid1", 30, 0, 30, [&](){ return fabs(wvz.lep_mc_motherid()[lep_Veto_idx2]); });
+        // histograms.addHistogram("lepVmotherid2", 30, 0, 30, [&](){ return fabs(wvz.lep_mc_motherid()[lep_Veto_idx3]); });
+        // histograms.addHistogram("lepVmotherid3", 30, 0, 30, [&](){ return fabs(wvz.lep_mc_motherid()[lep_Veto_idx4]); });
+        // histograms.addHistogram("lepNTauLep", 5, 0, 5, [&](){ return (abs(wvz.lep_mc_motherid()[lep_Veto_idx1])==15)+(abs(wvz.lep_mc_motherid()[lep_Veto_idx2])==15)+(abs(wvz.lep_mc_motherid()[lep_Veto_idx3])==15)+(abs(wvz.lep_mc_motherid()[lep_Veto_idx4])==15); });
         histograms.addHistogram("lepVetoButNotNomMotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomMCID", 7, -4, 3, [&](){ return wvz.lep_mc_id()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomrelIso03EA", 180, 0, 0.4, [&](){ return wvz.lep_relIso03EA()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomrelIso04DB", 180, 0, 0.4, [&](){ return wvz.lep_relIso04DB()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNompt", 180, 0, 70, [&](){ return wvz.lep_pt()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("lepVetoButNotNomid", 5, 10, 15, [&](){ return abs(wvz.lep_id()[lep_VetoButNotNom_idx]); });
+        histograms.addHistogram("lepVetoButNotNometa", 180, -2.5, 2.5, [&](){ return wvz.lep_eta()[lep_VetoButNotNom_idx]; });
+        histograms.addHistogram("lepVetoButNotNomphi", 180, -3.1416, 3.1416, [&](){ return wvz.lep_phi()[lep_VetoButNotNom_idx]; });
         histograms.addHistogram("MTNom0", 180, 0, 180, [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))); });
         histograms.addHistogram("MTNom1", 180, 0, 150, [&](){ return sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi()))); });
         histograms.addHistogram("MTNomMax", 180, 0, 180, [&](){ return std::max(sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))),sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi())))); });
         histograms.addHistogram("MTNomMin", 180, 0, 180, [&](){ return std::min(sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx1].Et() * (1.0 - cos(leptons[lep_Nom_idx1].Phi() - wvz.met_phi()))),sqrt(2 * wvz.met_pt() * leptons[lep_Nom_idx2].Et() * (1.0 - cos(leptons[lep_Nom_idx2].Phi() - wvz.met_phi())))); });
         histograms.addHistogram("MllNomWindow", 180, 0, 50, [&](){ return fabs((wvz.lep_p4()[lep_Nom_idx1]+wvz.lep_p4()[lep_Nom_idx2]).M()-91.1876); });
+        histograms.addHistogram("Yield", 1, 0, 1, [&](){ return 0; });
         if (ntupleVersion.Contains("Trilep"))
         {
             histograms.addHistogram("lepFakeCand2MotherID", 7, -4, 3, [&](){ return wvz.lep_motherIdv2()[lep_FakeCand_idx2]; });
@@ -238,7 +278,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     // Book histograms
     cutflow.bookHistograms(histograms);
 
-    // // Book event list
+    // Book event list
     // cutflow.bookEventLists();
 
     // Looper class to facilitate various things
@@ -323,7 +363,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         // }
     }
 
-    // cutflow.getCut("ChannelEMuHighMT").printEventList();
+    // cutflow.getCut("ChannelOnZ").printEventList();
 
     cutflow.saveOutput();
 
@@ -348,11 +388,11 @@ void Analysis::loadScaleFactors()
     histmap_2016_muon_BCDEF_id_sf       = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunBCDEF_SF_ID.root:NUM_MediumID_DEN_genTracks_eta_pt"); // x=eta, y=pt
     histmap_2016_muon_BCDEF_id_lowpt_sf = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_lowpt_RunBCDEF_SF_ID.root:NUM_MediumID_DEN_genTracks_pt_abseta"); // x=pt, y=abseta
     histmap_2016_muon_BCDEF_tightiso_sf = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunBCDEF_SF_ISO.root:NUM_TightRelIso_DEN_MediumID_eta_pt"); // x=eta, y=pt
-    histmap_2016_muon_BCDEF_looseiso_sf = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunBCDEF_SF_ISO.root:NUM_TightRelIso_DEN_MediumID_eta_pt"); // x=eta, y=pt
+    histmap_2016_muon_BCDEF_looseiso_sf = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunBCDEF_SF_ISO.root:NUM_LooseRelIso_DEN_MediumID_eta_pt"); // x=eta, y=pt
     histmap_2016_muon_GH_id_sf          = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunGH_SF_ID.root:NUM_MediumID_DEN_genTracks_eta_pt"); // x=eta, y=pt 45% of 2016 data
     histmap_2016_muon_GH_id_lowpt_sf    = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_lowpt_RunGH_SF_ID.root:NUM_MediumID_DEN_genTracks_pt_abseta"); // x=pt, y=abseta 45% of 2016 data
     histmap_2016_muon_GH_tightiso_sf    = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunGH_SF_ISO.root:NUM_TightRelIso_DEN_MediumID_eta_pt"); // x=eta, y=pt 45% of 2016 data
-    histmap_2016_muon_GH_looseiso_sf    = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunGH_SF_ISO.root:NUM_TightRelIso_DEN_MediumID_eta_pt"); // x=eta, y=pt 45% of 2016 data
+    histmap_2016_muon_GH_looseiso_sf    = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2016_rootfiles_RunGH_SF_ISO.root:NUM_LooseRelIso_DEN_MediumID_eta_pt"); // x=eta, y=pt 45% of 2016 data
     histmap_2017_muon_id_sf             = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2017_rootfiles_RunBCDEF_SF_ID.root:NUM_MediumID_DEN_genTracks_pt_abseta"); // x=pt, y=abseta
     histmap_2017_muon_id_lowpt_sf       = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2017_rootfiles_lowpt_RunBCDEF_SF_ID_JPsi.root:NUM_MediumID_DEN_genTracks_pt_abseta"); // x=pt, y=abseta
     histmap_2017_muon_tightiso_sf       = new RooUtil::HistMap("/nfs-7/userdata/phchang/analysis_data/scalefactors/wvz/v1/EfficiencyStudies_2017_rootfiles_RunBCDEF_SF_ISO.root:NUM_TightRelIso_DEN_MediumID_pt_abseta"); // x=pt, y=abseta
@@ -937,7 +977,7 @@ float Analysis::EventWeight()
 }
 
 //______________________________________________________________________________________________
-float Analysis::LeptonScaleFactor()
+float Analysis::LeptonScaleFactorv1()
 {
     if (wvz.isData())
         return 1.;
@@ -1068,6 +1108,161 @@ float Analysis::LeptonScaleFactor()
         }
     }
     return scalefactor;
+}
+
+//______________________________________________________________________________________________
+float Analysis::LeptonScaleFactor()
+{
+    if (wvz.isData())
+        return 1.;
+    // Based on lep_Veto indices
+    float scalefactor = 1;
+    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx1, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx1, true);
+    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx2, true);
+    return scalefactor;
+}
+
+//______________________________________________________________________________________________
+float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal)
+{
+    if (wvz.isData())
+        return 1.;
+    // Based on lep_Veto indices
+    float scalefactor = 1;
+    if (lep_idx < 0)
+        return 1;
+    int absid = abs(wvz.lep_id()[lep_idx]);
+    float pt = absid == 11 ? std::min((double) wvz.lep_pt()[lep_idx], 499.9) : std::min((double) wvz.lep_pt()[lep_idx], 119.9);
+    float eta = wvz.lep_eta()[lep_idx];
+    float abseta = fabs(eta);
+    if (absid == 11)
+    {
+        if (year == 2016)
+        {
+            if (pt > 20)
+            {
+                scalefactor *= histmap_2016_elec_reco_highpt_sf    ->eval(eta, pt); // x=eta, y=pt
+            }
+            else
+            {
+                scalefactor *= histmap_2016_elec_reco_lowpt_sf     ->eval(eta, pt); // x=eta, y=pt
+            }
+            if (isNominal)
+            {
+                scalefactor *= histmap_2016_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+            }
+            else
+            {
+                scalefactor *= histmap_2016_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+            }
+        }
+        else if (year == 2017)
+        {
+            if (pt > 20)
+            {
+                scalefactor *= histmap_2017_elec_reco_highpt_sf    ->eval(eta, pt); // x=eta, y=pt
+            }
+            else
+            {
+                scalefactor *= histmap_2017_elec_reco_lowpt_sf     ->eval(eta, pt); // x=eta, y=pt
+            }
+            if (isNominal)
+            {
+                scalefactor *= histmap_2017_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+            }
+            else
+            {
+                scalefactor *= histmap_2017_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+            }
+        }
+        else if (year == 2018)
+        {
+            scalefactor *= histmap_2018_elec_reco_sf           ->eval(eta, pt); // x=eta, y=pt
+            if (isNominal)
+            {
+                scalefactor *= histmap_2018_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+            }
+            else
+            {
+                scalefactor *= histmap_2018_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+            }
+        }
+    }
+    else if (absid == 13)
+    {
+        if (year == 2016)
+        {
+            if (pt > 20)
+            {
+                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_sf       ->eval(eta, pt)  // x=eta, y=pt
+                    +0.450 * histmap_2016_muon_GH_id_sf          ->eval(eta, pt); // x=eta, y=pt 0.450 of 2016 data
+            }
+            else
+            {
+                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_lowpt_sf ->eval(pt, abseta)  // x=pt, y=abseta
+                    +0.450 * histmap_2016_muon_GH_id_lowpt_sf    ->eval(pt, abseta); // x=pt, y=abseta 0.450 of 2016 data
+            }
+            if (isNominal)
+            {
+                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                    +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+            }
+            else
+            {
+                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                    +0.450 * histmap_2016_muon_GH_looseiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+            }
+        }
+        else if (year == 2017)
+        {
+            if (pt > 20)
+            {
+                scalefactor *= histmap_2017_muon_id_sf             ->eval(pt, abseta); // x=pt, y=abseta
+            }
+            else
+            {
+                scalefactor *= histmap_2017_muon_id_lowpt_sf       ->eval(pt, abseta); // x=pt, y=abseta
+            }
+            if (isNominal)
+            {
+                scalefactor *= histmap_2017_muon_tightiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+            }
+            else
+            {
+                scalefactor *= histmap_2017_muon_looseiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+            }
+        }
+        else if (year == 2018)
+        {
+            if (pt > 20)
+            {
+                scalefactor *= histmap_2018_muon_id_sf             ->eval(pt, abseta); // x=pt, y=abseta
+            }
+            else
+            {
+                scalefactor *= histmap_2018_muon_id_lowpt_sf       ->eval(pt, abseta); // x=pt, y=abseta
+            }
+            if (isNominal)
+            {
+                scalefactor *= histmap_2018_muon_tightiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+            }
+            else
+            {
+                scalefactor *= histmap_2018_muon_looseiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+            }
+        }
+    }
+    return scalefactor;
+}
+
+//______________________________________________________________________________________________
+float Analysis::BTagSF()
+{
+    if (wvz.isData())
+        return 1.;
+    return wvz.weight_btagsf();
 }
 
 //______________________________________________________________________________________________

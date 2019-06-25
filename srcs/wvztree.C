@@ -131,6 +131,8 @@ void wvztree::Init(TTree *tree) {
   if (lep_dxy_branch) lep_dxy_branch->SetAddress(&lep_dxy_);
   lep_dz_branch = tree->GetBranch("lep_dz");
   if (lep_dz_branch) lep_dz_branch->SetAddress(&lep_dz_);
+  lep_mc_motherid_branch = tree->GetBranch("lep_mc_motherid");
+  if (lep_mc_motherid_branch) lep_mc_motherid_branch->SetAddress(&lep_mc_motherid_);
   lep_mc_id_branch = tree->GetBranch("lep_mc_id");
   if (lep_mc_id_branch) lep_mc_id_branch->SetAddress(&lep_mc_id_);
   lep_motherIdv2_branch = tree->GetBranch("lep_motherIdv2");
@@ -292,6 +294,7 @@ void wvztree::GetEntry(unsigned int idx) {
   lep_sip3d_isLoaded = false;
   lep_dxy_isLoaded = false;
   lep_dz_isLoaded = false;
+  lep_mc_motherid_isLoaded = false;
   lep_mc_id_isLoaded = false;
   lep_motherIdv2_isLoaded = false;
   lep_idx_isLoaded = false;
@@ -406,6 +409,7 @@ void wvztree::LoadAllBranches() {
   if (lep_sip3d_branch != 0) lep_sip3d();
   if (lep_dxy_branch != 0) lep_dxy();
   if (lep_dz_branch != 0) lep_dz();
+  if (lep_mc_motherid_branch != 0) lep_mc_motherid();
   if (lep_mc_id_branch != 0) lep_mc_id();
   if (lep_motherIdv2_branch != 0) lep_motherIdv2();
   if (lep_idx_branch != 0) lep_idx();
@@ -1238,6 +1242,19 @@ const vector<float> &wvztree::lep_dz() {
   return *lep_dz_;
 }
 
+const vector<int> &wvztree::lep_mc_motherid() {
+  if (not lep_mc_motherid_isLoaded) {
+    if (lep_mc_motherid_branch != 0) {
+      lep_mc_motherid_branch->GetEntry(index);
+    } else {
+      printf("branch lep_mc_motherid_branch does not exist!\n");
+      exit(1);
+    }
+    lep_mc_motherid_isLoaded = true;
+  }
+  return *lep_mc_motherid_;
+}
+
 const vector<int> &wvztree::lep_mc_id() {
   if (not lep_mc_id_isLoaded) {
     if (lep_mc_id_branch != 0) {
@@ -1971,6 +1988,7 @@ const vector<float> &lep_ip3d() { return wvz.lep_ip3d(); }
 const vector<float> &lep_sip3d() { return wvz.lep_sip3d(); }
 const vector<float> &lep_dxy() { return wvz.lep_dxy(); }
 const vector<float> &lep_dz() { return wvz.lep_dz(); }
+const vector<int> &lep_mc_motherid() { return wvz.lep_mc_motherid(); }
 const vector<int> &lep_mc_id() { return wvz.lep_mc_id(); }
 const vector<int> &lep_motherIdv2() { return wvz.lep_motherIdv2(); }
 const vector<int> &lep_idx() { return wvz.lep_idx(); }

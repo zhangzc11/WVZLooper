@@ -19,14 +19,14 @@ usage()
   echo "  -2    skip hadder stage      (e.g. -2)"
   echo "  -d    plot output directory  (e.g. -d cr)"
   echo "  -p    plot filter pattern    (e.g. -p _cutflow)"
-  echo "  -n    use data-driven fakes  (e.g. -n)"
+  echo "  -n    nbins                  (e.g. -n)"
   echo "  -u    unblind                (e.g. -u)"
   echo
   exit
 }
 
 # Command-line opts
-while getopts ":b:t:v:d:p:f12nuh" OPTION; do
+while getopts ":b:t:v:d:p:n:f12uh" OPTION; do
   case $OPTION in
     b) BASELINE=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;
@@ -36,7 +36,7 @@ while getopts ":b:t:v:d:p:f12nuh" OPTION; do
     f) FORCE=true;;
     1) SKIPLOOPER=true;;
     2) SKIPHADDER=true;;
-    n) DOFAKES=" -f";;
+    n) NBINS=" -n "${OPTARG};;
     u) UNBLIND=" -u";;
     h) usage;;
     :) usage;;
@@ -51,7 +51,7 @@ if [ -z ${SKIPLOOPER}  ]; then SKIPLOOPER=false; fi
 if [ -z ${SKIPHADDER}  ]; then SKIPHADDER=false; fi
 if [ -z ${DIRNAME}  ]; then DIRNAME="cutflow"; fi
 if [ -z ${PATTERN}  ]; then PATTERN="_cutflow"; fi
-if [ -z ${DOFAKES}  ]; then DOFAKES=""; fi
+if [ -z ${NBINS} ]; then NBINS=""; fi
 if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 
 # to shift away the parsed options
@@ -71,7 +71,7 @@ echo "SKIPLOOPER     : ${SKIPLOOPER}"
 echo "SKIPHADDER     : ${SKIPHADDER}"
 echo "DIRNAME        : ${DIRNAME}"
 echo "PATTERN        : ${PATTERN}"
-echo "DOFAKES        : ${DOFAKES}"
+echo "NBINS          : ${NBINS}"
 echo "UNBLIND        : ${UNBLIND}"
 echo "================================================"
 
@@ -95,9 +95,9 @@ if ! ${SKIPLOOPER}; then
     sh ./run.sh -y 2016 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2016_${BASELINE} &
     sh ./run.sh -y 2017 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2017_${BASELINE} &
     sh ./run.sh -y 2018 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2018_${BASELINE} &
-    sh ./run.sh -F -y 2016 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2016_${BASELINE} &
-    sh ./run.sh -F -y 2017 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2017_${BASELINE} &
-    sh ./run.sh -F -y 2018 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2018_${BASELINE} &
+    # sh ./run.sh -F -y 2016 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2016_${BASELINE} &
+    # sh ./run.sh -F -y 2017 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2017_${BASELINE} &
+    # sh ./run.sh -F -y 2018 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2018_${BASELINE} &
     wait
 
 fi
@@ -119,12 +119,12 @@ fi
 if [ -n ${DIRNAME} ] && [ -n ${PATTERN} ]; then
 
     # Plotting the output histograms by each year
-    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # The last two arguments must match the last two arguments from previous command
-    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # The last two arguments must match the last two arguments from previous command
-    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # The last two arguments must match the last two arguments from previous command
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
     
     # Plotting the output histograms of all year
-    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${DOFAKES} # Basically the tags are just concatenated with "_"
+    python ./scripts/plot.py ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
 
 fi
 

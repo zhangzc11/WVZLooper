@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZMVA2016_v0.1.0/wzz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/home/users/phchang/public_html/analysis/wvz/WVZBabyMaker/output_0.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -202,6 +202,9 @@ class wvztree {
   vector<float> *lep_dz_;
   TBranch *lep_dz_branch;
   bool     lep_dz_isLoaded;
+  vector<int> *lep_mc_motherid_;
+  TBranch *lep_mc_motherid_branch;
+  bool     lep_mc_motherid_isLoaded;
   vector<int> *lep_mc_id_;
   TBranch *lep_mc_id_branch;
   bool     lep_mc_id_isLoaded;
@@ -416,6 +419,7 @@ void LoadAllBranches();
   const vector<float> &lep_sip3d();
   const vector<float> &lep_dxy();
   const vector<float> &lep_dz();
+  const vector<int> &lep_mc_motherid();
   const vector<int> &lep_mc_id();
   const vector<int> &lep_motherIdv2();
   const vector<int> &lep_idx();
@@ -535,6 +539,7 @@ namespace tas {
   const vector<float> &lep_sip3d();
   const vector<float> &lep_dxy();
   const vector<float> &lep_dz();
+  const vector<int> &lep_mc_motherid();
   const vector<int> &lep_mc_id();
   const vector<int> &lep_motherIdv2();
   const vector<int> &lep_idx();

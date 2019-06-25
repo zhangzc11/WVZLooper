@@ -20,6 +20,7 @@ def main_analysis_make_plot_userfilter():
     parser.add_argument('-p' , '--filter_pattern'  , dest='filter_pattern'  , help='To filter out plot'                                                                                               , required=True)
     parser.add_argument('-u' , '--unblind'         , dest='unblind'         , help='To unblind data'     , default=False, action='store_true'                                                                        )
     parser.add_argument('-f' , '--dofakes'         , dest='dofakes'         , help='Do data-driven fakes', default=False, action='store_true'                                                                        )
+    parser.add_argument('-n' , '--nbins'           , dest='nbins'           , help='# of bins'           , default=15                                                                                                )
     
     args = parser.parse_args()
 
@@ -74,7 +75,7 @@ def main_analysis_make_plot_userfilter():
     bkgnamesddfake = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Higgs", "t#bar{t}"]
 
 
-    colors = [2005, 2001, 2003, 2007, 920, 2012, 2011]
+    colors = [2005, 2001, 2003, 2007, 920, 2012, 2011, 2002]
 
     if "2016" in ntuple_version: lumi = 35.9
     if "2017" in ntuple_version: lumi = 41.3
@@ -92,7 +93,7 @@ def main_analysis_make_plot_userfilter():
             dogrep=True,
             extraoptions={
                 "print_yield":True,
-                "nbins":15,
+                "nbins":int(args.nbins),
                 "signal_scale": 1,
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,

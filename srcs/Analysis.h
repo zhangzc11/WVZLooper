@@ -219,7 +219,10 @@ public:
 
     float EventWeight();
     float LeptonScaleFactor();
+    float LeptonScaleFactorv1();
+    float IndividualLeptonScaleFactor(int, bool);
     float FakeFactor();
+    float BTagSF();
 
     bool passZCandLeptonID(int idx);
     bool passZCandElectronID(int idx);

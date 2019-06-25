@@ -13,7 +13,7 @@
 
     sh runall.sh -b test -t WVZ -v v0.1.6
 
-## Long run (may be outdated
+## Long run (may be outdated)
 
     # Running the code
     ./Analysis.exe <(for i in $(ls /nfs-7/userdata/phchang/babies/WVZ2016_v0.0.9/); do echo ${i/.root/}; done) WVZ2016_v0.0.9 baseline_y2016_0520

@@ -76,6 +76,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         cutflow.addCutToLastActiveCut("FiveLeptons", [&](){ return this->Is5LeptonEvent(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("FiveLeptonsMllZ", [&](){ return this->Is2ndOnZFiveLepton(); }, UNITY ); 
         cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th", [&](){ return this->Is5thNominal(); }, UNITY ); 
+        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th", [&](){ return this->VarMT5th() > 30.; }, UNITY ); 
 
         cutflow.getCut("FindZCandLeptons");
         cutflow.addCutToLastActiveCut("FindOSOneNomOneVbntLeptons", [&](){ return this->FindOSOneNomOneVbntLeptons(); }, UNITY ); 
@@ -1475,7 +1476,9 @@ bool Analysis::Is4LeptonEvent()
 //______________________________________________________________________________________________
 bool Analysis::Is5LeptonEvent()
 {
-    return nVetoLeptons == 5;
+    if (not (nVetoLeptons == 5)) return false;
+    if (not (CutHLT())) return false;
+    return true;
 }
 
 //______________________________________________________________________________________________

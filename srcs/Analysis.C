@@ -853,7 +853,7 @@ void Analysis::sortLeptonIndex()
     int tmp1 = lep_ZCand_idx1;
     int tmp2 = lep_ZCand_idx2;
     lep_ZCand_idx1 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? tmp1 : tmp2;
-    lep_ZCand_idx2 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? tmp1 : tmp2;
+    lep_ZCand_idx2 = leptons[lep_ZCand_idx1].Pt() > leptons[lep_ZCand_idx2].Pt() ? tmp2 : tmp1;
 
 }
 

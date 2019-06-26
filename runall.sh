@@ -49,8 +49,8 @@ if [ -z ${NTUPLEVERSION}  ]; then usage; fi
 if [ -z ${FORCE}  ]; then FORCE=false; fi
 if [ -z ${SKIPLOOPER}  ]; then SKIPLOOPER=false; fi
 if [ -z ${SKIPHADDER}  ]; then SKIPHADDER=false; fi
-if [ -z ${DIRNAME}  ]; then DIRNAME="cutflow"; fi
-if [ -z ${PATTERN}  ]; then PATTERN="_cutflow"; fi
+if [ -z ${DIRNAME}  ]; then DIRNAME="yield"; fi
+if [ -z ${PATTERN}  ]; then PATTERN="ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZCR__Yield,ChannelBTagEMuCR__Yield"; fi
 if [ -z ${NBINS} ]; then NBINS=""; fi
 if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 
@@ -140,13 +140,13 @@ if [[ ${PATTERN} == *"PtVarBin"* ]]; then
     fi
 fi
 
-if [[ ${PATTERN} == *"cutflow"* ]]; then
+if [[ ${PATTERN} == *"ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZCR__Yield,ChannelBTagEMuCR__Yield"* ]]; then
 
     # pretty_print each year
-    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
-    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
-    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+    sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
+    sh ./scripts/yield_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
+    sh ./scripts/yield_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
 
     # Printing in to text format for easy keynote export
-    sh ./scripts/pretty_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+    sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"
 fi

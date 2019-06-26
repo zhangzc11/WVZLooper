@@ -100,6 +100,7 @@ def main_analysis_make_plot_userfilter():
                 "legend_ncolumns": 3,
                 "ymax_scale": 1.2,
                 "lumi_value":lumi,
+                "xaxis_ndivisions":505,
                 },
             # _plotter=p.plot_cut_scan,
             )

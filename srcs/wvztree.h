@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/home/users/phchang/public_html/analysis/wvz/WVZBabyMaker/output_0.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.7/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -328,9 +328,21 @@ class wvztree {
   int      nj_;
   TBranch *nj_branch;
   bool     nj_isLoaded;
+  int      nj_up_;
+  TBranch *nj_up_branch;
+  bool     nj_up_isLoaded;
+  int      nj_dn_;
+  TBranch *nj_dn_branch;
+  bool     nj_dn_isLoaded;
   int      nb_;
   TBranch *nb_branch;
   bool     nb_isLoaded;
+  int      nb_up_;
+  TBranch *nb_up_branch;
+  bool     nb_up_isLoaded;
+  int      nb_dn_;
+  TBranch *nb_dn_branch;
+  bool     nb_dn_isLoaded;
   int      nbmed_;
   TBranch *nbmed_branch;
   bool     nbmed_isLoaded;
@@ -340,6 +352,12 @@ class wvztree {
   int      nj_cen_;
   TBranch *nj_cen_branch;
   bool     nj_cen_isLoaded;
+  int      nj_cen_up_;
+  TBranch *nj_cen_up_branch;
+  bool     nj_cen_up_isLoaded;
+  int      nj_cen_dn_;
+  TBranch *nj_cen_dn_branch;
+  bool     nj_cen_dn_isLoaded;
   float    weight_btagsf_;
   TBranch *weight_btagsf_branch;
   bool     weight_btagsf_isLoaded;
@@ -461,10 +479,16 @@ void LoadAllBranches();
   const vector<float> &jets_cen_phi();
   const vector<float> &jets_cen_mass();
   const int &nj();
+  const int &nj_up();
+  const int &nj_dn();
   const int &nb();
+  const int &nb_up();
+  const int &nb_dn();
   const int &nbmed();
   const float &ht();
   const int &nj_cen();
+  const int &nj_cen_up();
+  const int &nj_cen_dn();
   const float &weight_btagsf();
   const float &weight_btagsf_heavy_DN();
   const float &weight_btagsf_heavy_UP();
@@ -581,10 +605,16 @@ namespace tas {
   const vector<float> &jets_cen_phi();
   const vector<float> &jets_cen_mass();
   const int &nj();
+  const int &nj_up();
+  const int &nj_dn();
   const int &nb();
+  const int &nb_up();
+  const int &nb_dn();
   const int &nbmed();
   const float &ht();
   const int &nj_cen();
+  const int &nj_cen_up();
+  const int &nj_cen_dn();
   const float &weight_btagsf();
   const float &weight_btagsf_heavy_DN();
   const float &weight_btagsf_heavy_UP();

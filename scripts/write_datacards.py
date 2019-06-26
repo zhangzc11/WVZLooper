@@ -27,7 +27,7 @@ def write_datacards(ntuple_version, tag):
 
     # ntuple_version = args.sample_set_name
     # tag = args.tag
-    
+
     fname_sig     = "outputs/{}/{}/sig.root".format(ntuple_version, tag)
     fname_ttz     = "outputs/{}/{}/ttz.root".format(ntuple_version, tag)
     fname_zz      = "outputs/{}/{}/zz.root".format(ntuple_version, tag)
@@ -37,60 +37,60 @@ def write_datacards(ntuple_version, tag):
     fname_dyttbar = "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag)
     fname_higgs   = "outputs/{}/{}/higgs.root".format(ntuple_version, tag)
     fname_data    = "outputs/{}/{}/data.root".format(ntuple_version, tag)
-    
+
     year = "2" + ntuple_version.split("_")[0].split("2")[1]
     prefix = "{}/{}".format(ntuple_version, tag)
-    
+
     files = [fname_sig, fname_ttz, fname_zz, fname_wz, fname_twz, fname_rare, fname_dyttbar, fname_higgs]
     nonzzbkg = [fname_sig, fname_ttz, fname_wz, fname_twz, fname_rare, fname_dyttbar, fname_higgs]
     nonttzbkg = [fname_sig, fname_zz, fname_wz, fname_twz, fname_rare, fname_dyttbar, fname_higgs]
-    
+
     ofile = r.TFile("stat_input.root", "recreate")
-    
+
     ##########################
     # OnZ Control region gmN syst line
     ##########################
-    
-    onz_zz_h = pr.get_summed_histogram([fname_zz], "ChannelOnZ__Yield")
-    onz_data_h = pr.get_summed_histogram([fname_data], "ChannelOnZ__Yield")
-    onz_nonzz_h = pr.get_summed_histogram(nonzzbkg, "ChannelOnZ__Yield")
+
+    onz_zz_h = pr.get_summed_histogram([fname_zz], "ChannelOnZCR__Yield")
+    onz_data_h = pr.get_summed_histogram([fname_data], "ChannelOnZCR__Yield")
+    onz_nonzz_h = pr.get_summed_histogram(nonzzbkg, "ChannelOnZCR__Yield")
     zz_sf = pr.get_sf(onz_zz_h, onz_data_h, onz_nonzz_h).GetBinContent(1)
     expected_nevt_zz = onz_data_h.GetBinContent(1)
-    
+
     ##########################
     # BTag Control region gmN syst line
     ##########################
-    
-    bcr_ttz_h = pr.get_summed_histogram([fname_ttz], "ChannelBTagEMu__Yield")
-    bcr_data_h = pr.get_summed_histogram([fname_data], "ChannelBTagEMu__Yield")
-    bcr_nonttz_h = pr.get_summed_histogram(nonttzbkg, "ChannelBTagEMu__Yield")
+
+    bcr_ttz_h = pr.get_summed_histogram([fname_ttz], "ChannelBTagEMuCR__Yield")
+    bcr_data_h = pr.get_summed_histogram([fname_data], "ChannelBTagEMuCR__Yield")
+    bcr_nonttz_h = pr.get_summed_histogram(nonttzbkg, "ChannelBTagEMuCR__Yield")
     ttz_sf = pr.get_sf(bcr_ttz_h, bcr_data_h, bcr_nonttz_h).GetBinContent(1)
     expected_nevt_ttz = bcr_data_h.GetBinContent(1)
-    
+
     ##########################
     # EMu channel
     ##########################
-    
+
     tfiles = []
     procnames = []
     hists = []
-    
+
     for index, s in enumerate(files):
-    
+
         # ROOT file
         f = r.TFile(s)
         tfiles.append(f)
-    
+
         # Name of the process
         basename = os.path.basename(s)
         procname = basename.replace(".root", "")
-    
+
         # List of procnames
         procnames.append(procname)
-    
+
         # EMu channel
         h = f.Get("ChannelEMuHighMT__MllNom")
-    
+
         # Bin it to 5 bin
         h.Rebin(36)
         bin5 = E(h.GetBinContent(5), h.GetBinError(5))
@@ -100,7 +100,7 @@ def write_datacards(ntuple_version, tag):
         h.SetBinError(6, 0)
         h.SetBinContent(5, bin5plus6.val)
         h.SetBinError(5, bin5plus6.err)
-    
+
         # If index == 0 then write data
         if index == 0:
             d = h.Clone("emu{}_data_obs".format(year))
@@ -113,25 +113,25 @@ def write_datacards(ntuple_version, tag):
             ofile.cd()
             d.Write()
             hists.append(d)
-    
-        if index == 2: # this is ttZ process
-            hists[2].Scale(ttz_sf)
-            print year, "ttz_sf", ttz_sf
-    
-        if index == 3: # this is ZZ process
-            hists[3].Scale(zz_sf)
-            print year, "zz_sf", zz_sf
-    
+
         # Aggregate histograms
         hists.append(h.Clone("emu{}_".format(year) + procname))
         hists[-1].SetTitle("emu{}_".format(year) + procname)
-    
+
+        if index == 1: # this is ttZ process
+            hists[-1].Scale(ttz_sf)
+            print year, "ttz_sf", ttz_sf
+
+        if index == 2: # this is ZZ process
+            hists[-1].Scale(zz_sf)
+            print year, "zz_sf", zz_sf
+
         # Write to ofile
         ofile.cd()
         hists[-1].Write()
-    
+
     systs = []
-    
+
     # ZZ CR systematic line
     onz_cr_hist = r.TH1F("onz_cr", "", 5, 0, 5)
     onz_cr_hist.SetBinContent(1, expected_nevt_zz)
@@ -142,7 +142,7 @@ def write_datacards(ntuple_version, tag):
     alpha = hists[3].Clone("alpha") # The index 3 == zz (the order is data, sig, ttz, zz, ...)
     alpha.Divide(onz_cr_hist)
     systs.append( ("CRZZ{}".format(year), "gmN", [onz_cr_hist], {"emu{}_sig".format(year):0, "emu{}_ttz".format(year):0, "emu{}_zz".format(year):[ "{:4f}".format(alpha.GetBinContent(i)) for i in range(1,6) ], "emu{}_wz".format(year):0, "emu{}_twz".format(year):0, "emu{}_rare".format(year):0, "emu{}_dyttbar".format(year):0, "emu{}_higgs".format(year):0}) )
-    
+
     # ttZ CR systematic line
     btag_cr_hist = r.TH1F("btag_cr", "", 5, 0, 5)
     btag_cr_hist.SetBinContent(1, expected_nevt_ttz)
@@ -153,54 +153,54 @@ def write_datacards(ntuple_version, tag):
     alpha = hists[2].Clone("alpha") # The index 2 == ttz (the order is data, sig, ttz, zz, ...)
     alpha.Divide(btag_cr_hist)
     systs.append( ("CRTTZ{}".format(year), "gmN", [btag_cr_hist], {"emu{}_sig".format(year):0, "emu{}_ttz".format(year):[ "{:4f}".format(alpha.GetBinContent(i)) for i in range(1,6) ], "emu{}_zz".format(year):0, "emu{}_wz".format(year):0, "emu{}_twz".format(year):0, "emu{}_rare".format(year):0, "emu{}_dyttbar".format(year):0, "emu{}_higgs".format(year):0}) )
-    
+
     # Now create data card writer
     d = dw.DataCardWriter(sig=hists[1], bgs=hists[2:], data=hists[0], systs=systs, no_stat_procs=["emu{}_zz".format(year), "emu{}_ttz".format(year)])
-    
+
     d.set_bin(1)
     d.set_region_name("bin1")
     d.write("stats/{}/emu_datacard_bin1.txt".format(prefix))
-    
+
     d.set_bin(2)
     d.set_region_name("bin2")
     d.write("stats/{}/emu_datacard_bin2.txt".format(prefix))
-    
+
     d.set_bin(3)
     d.set_region_name("bin3")
     d.write("stats/{}/emu_datacard_bin3.txt".format(prefix))
-    
+
     d.set_bin(4)
     d.set_region_name("bin4")
     d.write("stats/{}/emu_datacard_bin4.txt".format(prefix))
-    
+
     d.set_bin(5)
     d.set_region_name("bin5")
     d.write("stats/{}/emu_datacard_bin5.txt".format(prefix))
-    
+
     ##########################
     # OffZ channel
     ##########################
-    
+
     tfiles = []
     procnames = []
     hists = []
-    
+
     for index, s in enumerate(files):
-    
+
         # ROOT file
         f = r.TFile(s)
         tfiles.append(f)
-    
+
         # Name of the process
         basename = os.path.basename(s)
         procname = basename.replace(".root", "")
-    
+
         # List of procnames
         procnames.append(procname)
-    
+
         # EMu channel
         h = f.Get("ChannelOffZHighMET__Yield")
-    
+
         # If index == 0 then write data
         if index == 0:
             d = h.Clone("offz{}_data_obs".format(year))
@@ -209,40 +209,40 @@ def write_datacards(ntuple_version, tag):
             ofile.cd()
             d.Write()
             hists.append(d)
-    
-        if index == 2: # this is ttZ process
-            hists[2].Scale(ttz_sf)
-    
-        if index == 3: # this is ZZ process
-            hists[3].Scale(zz_sf)
-    
+
         # Aggregate histograms
         hists.append(h.Clone("offz{}_".format(year) + procname))
         hists[-1].SetTitle("offz{}_".format(year) + procname)
-    
+
+        if index == 1: # this is ttZ process
+            hists[-1].Scale(ttz_sf)
+
+        if index == 2: # this is ZZ process
+            hists[-1].Scale(zz_sf)
+
         # Write to ofile
         ofile.cd()
         hists[-1].Write()
-    
+
     systs = []
-    
+
     # If procname == zz
     onz_cr_hist = r.TH1F("onz_cr", "", 1, 0, 1)
     onz_cr_hist.SetBinContent(1, expected_nevt_zz)
     alpha = hists[3].Clone("alpha") # The index 3 == zz (the order is data, sig, ttz, zz, ...)
     alpha.Divide(onz_cr_hist)
     systs.append( ("CRZZ{}".format(year), "gmN", [onz_cr_hist], {"offz{}_sig".format(year):0, "offz{}_ttz".format(year):0, "offz{}_zz".format(year):[ "{:4f}".format(alpha.GetBinContent(1)) ], "offz{}_wz".format(year):0, "offz{}_twz".format(year):0, "offz{}_rare".format(year):0, "offz{}_dyttbar".format(year):0, "offz{}_higgs".format(year):0}) )
-    
+
     # ttZ CR systematic line
     btag_cr_hist = r.TH1F("btag_cr", "", 1, 0, 1)
     btag_cr_hist.SetBinContent(1, expected_nevt_ttz)
     alpha = hists[2].Clone("alpha") # The index 2 == ttz (the order is data, sig, ttz, zz, ...)
     alpha.Divide(btag_cr_hist)
     systs.append( ("CRTTZ{}".format(year), "gmN", [btag_cr_hist], {"offz{}_sig".format(year):0, "offz{}_ttz".format(year):[ "{:4f}".format(alpha.GetBinContent(1)) ], "offz{}_zz".format(year):0, "offz{}_wz".format(year):0, "offz{}_twz".format(year):0, "offz{}_rare".format(year):0, "offz{}_dyttbar".format(year):0, "offz{}_higgs".format(year):0}) )
-    
+
     # Now create data card writer
     d = dw.DataCardWriter(sig=hists[1], bgs=hists[2:], data=hists[0], systs=systs, no_stat_procs=["offz{}_zz".format(year), "offz{}_ttz".format(year)])
-    
+
     d.set_bin(1)
     d.set_region_name("bin1")
     d.write("stats/{}/offz_datacard_bin1.txt".format(prefix))

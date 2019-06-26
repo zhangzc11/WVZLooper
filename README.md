@@ -11,19 +11,19 @@
 
 ## Quick run
 
-    sh runall.sh -b test -t WVZ -v v0.1.6
+    sh runall.sh -b test -t WVZ -v v0.1.7
 
 ## Statistical interpretation
 
     # In another terminal
     source setup.sh
-    python scripts/write_datacards.py -t WVZ -v v0.1.6 -b test
+    python scripts/write_datacards.py -t WVZ -v v0.1.7 -b test
 
     # In another new terminal
     cd stats/
     source setup_higgs_combine.sh
     cd ../
-    sh stats/combine.sh -t WVZ -v v0.1.6 -b test
+    sh stats/combine.sh -t WVZ -v v0.1.7 -b test
     sh stats/doSensitivity.sh stats/stat.txt
 
 ## Long run (may be outdated)

@@ -154,7 +154,6 @@ public:
     int year;
 
     // Scale factors
-    RooUtil::HistMap* histmap_purwegt;
     RooUtil::HistMap* histmap_2016_elec_reco_highpt_sf;
     RooUtil::HistMap* histmap_2016_elec_reco_lowpt_sf;
     RooUtil::HistMap* histmap_2016_elec_medium_sf;
@@ -248,7 +247,10 @@ public:
     bool Cut4LepLeptonPt(bool=false);
     bool CutHLT();
     bool Cut4LepLowMll(bool=false);
-    bool Cut4LepBVeto();
+    bool Cut4LepBVeto(int=0);
+    bool Cut4LepBTag(int=0);
+    bool CutHighMT(int=0);
+    bool CutHighMET(int=0);
 
     bool IsChannelEMu(bool=false);
     bool IsChannelOnZ(bool=false);
@@ -264,7 +266,12 @@ public:
     float VarMET();
     float VarNvtx();
     float VarMll2ndZ();
-    float VarMT5th();
+    float VarMT(int,int=0);
+    float VarMT5th(int=0);
+    float VarMTNom0(int=0);
+    float VarMTNom1(int=0);
+    float VarMTMax(int=0);
+    float VarMTMin(int=0);
     float VarRelIso5th();
     float VarPt5th();
     float VarNjet();
@@ -440,6 +447,40 @@ struct less_than_key
     }
 };
 
+//_______________________________________________________________________________________________________
+class TheoryWeight
+{
+    public:
+        RooUtil::HistMap* histmap_neventsinfile;
+        float nominal_;
+        float pdfup_;
+        float pdfdn_;
+        float alsup_;
+        float alsdn_;
+        float qsqup_;
+        float qsqdn_;
+        TheoryWeight() : histmap_neventsinfile(0), nominal_(1), pdfup_(1), pdfdn_(1), alsup_(1), alsdn_(1), qsqup_(1), qsqdn_(1) {}
+        void setFile(TString fname)
+        {
+            histmap_neventsinfile = new RooUtil::HistMap(fname + ":h_neventsinfile");
+            nominal_ = histmap_neventsinfile->hist->GetBinContent(1+1);
+            pdfup_   = histmap_neventsinfile->hist->GetBinContent(1+10);
+            pdfdn_   = histmap_neventsinfile->hist->GetBinContent(1+11);
+            alsup_   = histmap_neventsinfile->hist->GetBinContent(1+13);
+            alsdn_   = histmap_neventsinfile->hist->GetBinContent(1+12);
+            qsqup_   = histmap_neventsinfile->hist->GetBinContent(1+5);
+            qsqdn_   = histmap_neventsinfile->hist->GetBinContent(1+9);
+        }
+        float& nominal() { return nominal_; }
+        float& pdfup()   { return pdfup_  ; }
+        float& pdfdn()   { return pdfdn_  ; }
+        float& alsup()   { return alsup_  ; }
+        float& alsdn()   { return alsdn_  ; }
+        float& qsqup()   { return qsqup_  ; }
+        float& qsqdn()   { return qsqdn_  ; }
+};
+
+extern TheoryWeight theoryweight;
 
 using namespace std;
 #endif

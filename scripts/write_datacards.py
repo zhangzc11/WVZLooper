@@ -29,11 +29,13 @@ def write_datacards(ntuple_version, tag):
     # tag = args.tag
 
     fname_sig     = "outputs/{}/{}/sig.root".format(ntuple_version, tag)
+    # fname_sig     = "outputs/{}/{}/wwz.root".format(ntuple_version, tag)
     fname_ttz     = "outputs/{}/{}/ttz.root".format(ntuple_version, tag)
     fname_zz      = "outputs/{}/{}/zz.root".format(ntuple_version, tag)
     fname_wz      = "outputs/{}/{}/wz.root".format(ntuple_version, tag)
     fname_twz     = "outputs/{}/{}/twz.root".format(ntuple_version, tag)
     fname_rare    = "outputs/{}/{}/rare.root".format(ntuple_version, tag)
+    # fname_rare    = "outputs/{}/{}/rarevvv.root".format(ntuple_version, tag)
     fname_dyttbar = "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag)
     fname_higgs   = "outputs/{}/{}/higgs.root".format(ntuple_version, tag)
     fname_data    = "outputs/{}/{}/data.root".format(ntuple_version, tag)
@@ -69,6 +71,7 @@ def write_datacards(ntuple_version, tag):
     onz_data_h = pr.get_summed_histogram([fname_data], "ChannelOnZCR__Yield")
     onz_nonzz_h = pr.get_summed_histogram(nonzzbkg, "ChannelOnZCR__Yield")
     zz_sf = pr.get_sf(onz_zz_h, onz_data_h, onz_nonzz_h).GetBinContent(1)
+    zz_sferr = pr.get_sf(onz_zz_h, onz_data_h, onz_nonzz_h).GetBinError(1)
     expected_nevt_zz = onz_data_h.GetBinContent(1)
 
     ############################
@@ -79,17 +82,21 @@ def write_datacards(ntuple_version, tag):
     bcr_data_h = pr.get_summed_histogram([fname_data], "ChannelBTagEMuCR__Yield")
     bcr_nonttz_h = pr.get_summed_histogram(nonttzbkg, "ChannelBTagEMuCR__Yield")
     ttz_sf = pr.get_sf(bcr_ttz_h, bcr_data_h, bcr_nonttz_h).GetBinContent(1)
+    ttz_sferr = pr.get_sf(bcr_ttz_h, bcr_data_h, bcr_nonttz_h).GetBinError(1)
     expected_nevt_ttz = bcr_data_h.GetBinContent(1)
 
-    print year, "ttz_sf", ttz_sf
-    print year, "zz_sf", zz_sf
+    print year, "ttz_sf", "{:.2f} +/- {:.2f}".format(ttz_sf, ttz_sferr), expected_nevt_ttz
+    print year, "zz_sf", "{:.2f} +/- {:.2f}".format(zz_sf, zz_sferr), expected_nevt_zz
 
     ###############################
     # EMu channel data card writing
     ###############################
 
     # number of bins
+    nbins = 1
+    fitvar = "Yield"
     nbins = 5
+    fitvar = "MllNom"
 
     # Main data base to hold all the histograms
     hists_db = {}
@@ -107,9 +114,15 @@ def write_datacards(ntuple_version, tag):
         for syst in systnames:
 
             if syst == "Nominal":
-                h = rebin36(tfile.Get("ChannelEMuHighMT__MllNom").Clone())
+                if fitvar == "MllNom":
+                    h = rebin36(tfile.Get("ChannelEMuHighMT__{}".format(fitvar)).Clone())
+                else:
+                    h = tfile.Get("ChannelEMuHighMT__{}".format(fitvar)).Clone()
             else:
-                h = rebin36(tfile.Get("ChannelEMuHighMT{}__MllNom".format(syst)).Clone())
+                if fitvar == "MllNom":
+                    h = rebin36(tfile.Get("ChannelEMuHighMT{}__{}".format(syst, fitvar)).Clone())
+                else:
+                    h = tfile.Get("ChannelEMuHighMT{}__{}".format(syst, fitvar)).Clone()
 
             h.SetTitle("emu{}_{}".format(year, proc))
 
@@ -129,7 +142,7 @@ def write_datacards(ntuple_version, tag):
     thissyst = {}
     for proc in mcprocs:
        if proc == "zz":
-           thissyst["emu{}_".format(year) + proc] = [ "{:4f}".format(alpha.GetBinContent(i)) for i in range(1,6) ]
+           thissyst["emu{}_".format(year) + proc] = [ "{:4f}".format(alpha.GetBinContent(i)) for i in range(1,nbins+1) ]
        else:
            thissyst["emu{}_".format(year) + proc] = 0
     systs.append(("CRZZ{}".format(year), "gmN", [onz_cr_hist], thissyst))
@@ -143,7 +156,7 @@ def write_datacards(ntuple_version, tag):
     thissyst = {}
     for proc in mcprocs:
        if proc == "ttz":
-           thissyst["emu{}_".format(year) + proc] = [ "{:4f}".format(alpha.GetBinContent(i)) for i in range(1,6) ]
+           thissyst["emu{}_".format(year) + proc] = [ "{:4f}".format(alpha.GetBinContent(i)) for i in range(1,nbins+1) ]
        else:
            thissyst["emu{}_".format(year) + proc] = 0
     systs.append(("CRTTZ{}".format(year), "gmN", [btag_cr_hist], thissyst))
@@ -171,6 +184,13 @@ def write_datacards(ntuple_version, tag):
         if proc == "zz": thissyst["emu{}_".format(year) + proc] = "1.2"
         else: thissyst["emu{}_".format(year) + proc] = 0
     systs.append( ("FlatSystZZ{}".format(year), "lnN", [], thissyst) )
+
+    # Flat additional systematics
+    thissyst = {}
+    for proc in mcprocs:
+        if proc == "wz": thissyst["emu{}_".format(year) + proc] = "2.0"
+        else: thissyst["emu{}_".format(year) + proc] = 0
+    systs.append( ("FlatSystWZ{}".format(year), "lnN", [], thissyst) )
 
     # Now create data card writer
     sig = hists_db["sig"]["Nominal"]
@@ -273,6 +293,13 @@ def write_datacards(ntuple_version, tag):
         if proc == "zz": thissyst["offz{}_".format(year) + proc] = "1.2"
         else: thissyst["offz{}_".format(year) + proc] = 0
     systs.append( ("FlatSystZZ{}".format(year), "lnN", [], thissyst) )
+
+    # Flat additional systematics
+    thissyst = {}
+    for proc in mcprocs:
+        if proc == "wz": thissyst["offz{}_".format(year) + proc] = "2.0"
+        else: thissyst["offz{}_".format(year) + proc] = 0
+    systs.append( ("FlatSystWZ{}".format(year), "lnN", [], thissyst) )
 
     # Now create data card writer
     sig = hists_db["sig"]["Nominal"]

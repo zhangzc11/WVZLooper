@@ -126,8 +126,12 @@ public:
     bool isRead;
     bool isDamaged;
     bool doFakeEst;
-    TLorentzVector leptons[10];
+    std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
+    std::vector<int> lep_nom_idxs;
+    std::vector<int> lep_notnom_idxs;
+    std::vector<int> lep_fakeable_idxs;
+    int nFakeableLeptons;
     int nVetoLeptons;
     int lep_Veto_idx1;
     int lep_Veto_idx2;
@@ -148,8 +152,9 @@ public:
     int lep_FakeCand_MaxIso_idx;
     int lep_NonFakeCand_idx;
     int lep_VetoButNotNom_idx;
-    TLorentzVector dilepZCand;
-    TLorentzVector dilepNominal;
+    int lep_Fakeable_idx;
+    LV dilepZCand;
+    LV dilepNominal;
     TString output_tfile_name;
     int year;
 
@@ -213,6 +218,7 @@ public:
     void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
     void selectVetoButNotNomLeptons();
+    void selectFakeableLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
 
@@ -235,6 +241,10 @@ public:
     bool passVetoElectronID(int idx);
     bool passVetoMuonID(int idx);
 
+    bool passFakeableLeptonID(int idx);
+    bool passFakeableElectronID(int idx);
+    bool passFakeableMuonID(int idx);
+
     bool Is3LeptonEvent();
     bool Is4LeptonEvent();
     bool Is5LeptonEvent();
@@ -242,6 +252,7 @@ public:
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
     bool FindOSOneNomOneVbntLeptons();
+    bool FindOSOneNomOneNotNomLeptons();
     bool IsEMuPlusX();
 
     bool Cut4LepLeptonPt(bool=false);
@@ -251,6 +262,7 @@ public:
     bool Cut4LepBTag(int=0);
     bool CutHighMT(int=0);
     bool CutHighMET(int=0);
+    bool CutHighMTAR(int=0);
 
     bool IsChannelEMu(bool=false);
     bool IsChannelOnZ(bool=false);
@@ -272,11 +284,19 @@ public:
     float VarMTNom1(int=0);
     float VarMTMax(int=0);
     float VarMTMin(int=0);
+    float VarMTVetoButNotNom(int=0);
+    float VarMTFakeable(int=0);
     float VarRelIso5th();
     float VarPt5th();
     float VarNjet();
+    float VarNb();
     float VarMll2l();
     float VarNSFOS();
+    float VarLepPt(int);
+    float VarPtll(int, int);
+    float VarMll(int, int);
+    float VarM4l(int, int, int, int);
+    float VarHTLep(int, int, int, int);
 
 };
 #endif

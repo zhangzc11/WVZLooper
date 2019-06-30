@@ -128,17 +128,17 @@ if [ -n ${DIRNAME} ] && [ -n ${PATTERN} ]; then
 
 fi
 
-if [[ ${PATTERN} == *"PtVarBin"* ]]; then
-    if [[ ${NTUPLETYPE} == *"Trilep"* ]]; then
-        # Plotting the output histograms by each year
-        python ./scripts/fakerate.py ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # The last two arguments must match the last two arguments from previous command
-        python ./scripts/fakerate.py ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # The last two arguments must match the last two arguments from previous command
-        python ./scripts/fakerate.py ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # The last two arguments must match the last two arguments from previous command
+# if [[ ${PATTERN} == *"PtVarBin"* ]]; then
+#     if [[ ${NTUPLETYPE} == *"Trilep"* ]]; then
+#         # Plotting the output histograms by each year
+#         python ./scripts/fakerate.py ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # The last two arguments must match the last two arguments from previous command
+#         python ./scripts/fakerate.py ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # The last two arguments must match the last two arguments from previous command
+#         python ./scripts/fakerate.py ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # The last two arguments must match the last two arguments from previous command
         
-        # Plotting the output histograms of all year
-        python ./scripts/fakerate.py ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"
-    fi
-fi
+#         # Plotting the output histograms of all year
+#         python ./scripts/fakerate.py ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+#     fi
+# fi
 
 if [[ ${PATTERN} == *"ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZCR__Yield,ChannelBTagEMuCR__Yield"* ]]; then
 

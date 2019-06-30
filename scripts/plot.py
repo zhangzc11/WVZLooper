@@ -19,7 +19,7 @@ def main_analysis_make_plot_userfilter():
     parser.add_argument('-d' , '--dirname'         , dest='dirname'         , help='plots/<sample_set_name>/<tag>/<dirname> for plot output'                                                          , required=True)
     parser.add_argument('-p' , '--filter_pattern'  , dest='filter_pattern'  , help='To filter out plot'                                                                                               , required=True)
     parser.add_argument('-u' , '--unblind'         , dest='unblind'         , help='To unblind data'     , default=False, action='store_true'                                                                        )
-    parser.add_argument('-f' , '--dofakes'         , dest='dofakes'         , help='Do data-driven fakes', default=False, action='store_true'                                                                        )
+    # parser.add_argument('-f' , '--fake_rate_study' , dest='fake_rate_study' , help='Use MC bkg grouping intended for fake rate study ', default=False, action='store_true'                                           )
     parser.add_argument('-n' , '--nbins'           , dest='nbins'           , help='# of bins'           , default=15                                                                                                )
     
     args = parser.parse_args()
@@ -47,6 +47,7 @@ def main_analysis_make_plot_userfilter():
             ]
     bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"]
     sigfiles = [
+            # "outputs/{}/{}/zh_wwz.root".format(ntuple_version, tag),
             "outputs/{}/{}/wwz.root".format(ntuple_version, tag),
             "outputs/{}/{}/wzz.root".format(ntuple_version, tag),
             #"outputs/{}/{}/www.root".format(ntuple_version, tag),
@@ -82,11 +83,11 @@ def main_analysis_make_plot_userfilter():
     if "2018" in ntuple_version: lumi = 59.74
     if "2016" in ntuple_version and "2017" in ntuple_version and "2018" in ntuple_version: lumi = 137
 
-    p.dump_plot(fnames=bkgfilesfake if args.dofakes else bkgfiles,
+    p.dump_plot(fnames=bkgfilesfake if "EMuPlusX" in filter_pattern else bkgfiles,
             sig_fnames=sigfiles,
             data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag) if unblind else None,
             usercolors=colors,
-            legend_labels=bkgnamesddfake if args.dofakes else bkgnames,
+            legend_labels=bkgnamesddfake if "EMuPlusX" in filter_pattern else bkgnames,
             signal_labels=["WWZ", "WZZ", "ZZZ", "VVV"],
             dirname="plots/{}/{}/{}".format(ntuple_version, tag, dirname),
             filter_pattern=filter_pattern,
@@ -98,6 +99,9 @@ def main_analysis_make_plot_userfilter():
                 "legend_scalex":1.8,
                 "legend_scaley":1.1,
                 "legend_ncolumns": 3,
+                # "legend_smart": False,
+                # "yaxis_log":True,
+                # "yaxis_range": [0.1,1000],
                 "ymax_scale": 1.2,
                 "lumi_value":lumi,
                 "xaxis_ndivisions":505,

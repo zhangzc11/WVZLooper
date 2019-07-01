@@ -9,6 +9,25 @@
     make clean
     make -j
 
+## Quick run
+
+    sh runall.sh -b test -t WVZ -v v0.1.7
+
+## Statistical interpretation
+
+    # In another terminal
+    source setup.sh
+    python scripts/write_datacards.py -t WVZ -v v0.1.7 -b test
+
+    # In another new terminal
+    cd stats/
+    source setup_higgs_combine.sh
+    cd ../
+    sh stats/combine.sh -t WVZ -v v0.1.7 -b test
+    sh stats/doSensitivity.sh stats/stat.txt
+
+## Long run (may be outdated)
+
     # Running the code
     ./Analysis.exe <(for i in $(ls /nfs-7/userdata/phchang/babies/WVZ2016_v0.0.9/); do echo ${i/.root/}; done) WVZ2016_v0.0.9 baseline_y2016_0520
     ./Analysis.exe <(for i in $(ls /nfs-7/userdata/phchang/babies/WVZ2017_v0.0.9/); do echo ${i/.root/}; done) WVZ2017_v0.0.9 baseline_y2017_0520

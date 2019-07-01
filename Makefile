@@ -6,18 +6,19 @@ SOURCES=$(wildcard srcs/*.C) rooutil/rooutil.cc
 TMPOBJECTS=$(SOURCES:.C=.o)
 OBJECTS=$(TMPOBJECTS:.cc=.o)
 
+OPTIMIZE    = -O2
 CC          = g++
 CXX         = g++
-CXXFLAGS    = -g -O2 -Wall -fPIC -Wshadow -Woverloaded-virtual
+CXXFLAGS    = -g $(OPTIMIZE) -Wall -fPIC -Wshadow -Woverloaded-virtual
 LD          = g++
-LDFLAGS     = -g -O2
+LDFLAGS     = -g $(OPTIMIZE)
 SOFLAGS     = -g -shared
-CXXFLAGS    = -g -O2 -Wall -fPIC -Wshadow -Woverloaded-virtual
-LDFLAGS     = -g -O2
+CXXFLAGS    = -g $(OPTIMIZE) -Wall -fPIC -Wshadow -Woverloaded-virtual
+LDFLAGS     = -g $(OPTIMIZE)
 ROOTLIBS    = $(shell root-config --libs)
 ROOTCFLAGS  = $(shell root-config --cflags)
 CXXFLAGS   += $(ROOTCFLAGS)
-CFLAGS      = $(ROOTCFLAGS) -Wall -Wno-unused-function -g -O2 -fPIC -fno-var-tracking
+CFLAGS      = $(ROOTCFLAGS) -Wall -Wno-unused-function -g $(OPTIMIZE) -fPIC -fno-var-tracking
 EXTRACFLAGS = $(shell rooutil-config)
 EXTRAFLAGS  = -fPIC -ITMultiDrawTreePlayer -Wunused-variable -lTMVA -lEG -lGenVector -lXMLIO -lMLP -lTreePlayer
 

@@ -125,9 +125,18 @@ public:
 
     bool isRead;
     bool isDamaged;
-    TLorentzVector leptons[10];
+    bool doFakeEst;
+    std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
+    std::vector<int> lep_nom_idxs;
+    std::vector<int> lep_notnom_idxs;
+    std::vector<int> lep_fakeable_idxs;
+    int nFakeableLeptons;
     int nVetoLeptons;
+    int lep_Veto_idx1;
+    int lep_Veto_idx2;
+    int lep_Veto_idx3;
+    int lep_Veto_idx4;
     int lep_ZCand_idx1;
     int lep_ZCand_idx2;
     int nNominalLeptons;
@@ -137,13 +146,52 @@ public:
     int lep_2ndZCand_idx1;
     int lep_2ndZCand_idx2;
     int lep_WCand_idx1;
-    TLorentzVector dilepZCand;
-    TLorentzVector dilepNominal;
+    int nDFOS;
+    int lep_FakeCand_idx1;
+    int lep_FakeCand_idx2;
+    int lep_FakeCand_MaxIso_idx;
+    int lep_NonFakeCand_idx;
+    int lep_VetoButNotNom_idx;
+    int lep_Fakeable_idx;
+    LV dilepZCand;
+    LV dilepNominal;
     TString output_tfile_name;
     int year;
 
     // Scale factors
-    RooUtil::HistMap* histmap_purwegt;
+    RooUtil::HistMap* histmap_2016_elec_reco_highpt_sf;
+    RooUtil::HistMap* histmap_2016_elec_reco_lowpt_sf;
+    RooUtil::HistMap* histmap_2016_elec_medium_sf;
+    RooUtil::HistMap* histmap_2016_elec_veto_sf;
+    RooUtil::HistMap* histmap_2017_elec_reco_highpt_sf;
+    RooUtil::HistMap* histmap_2017_elec_reco_lowpt_sf;
+    RooUtil::HistMap* histmap_2017_elec_medium_sf;
+    RooUtil::HistMap* histmap_2017_elec_veto_sf;
+    RooUtil::HistMap* histmap_2018_elec_reco_sf;
+    RooUtil::HistMap* histmap_2018_elec_medium_sf;
+    RooUtil::HistMap* histmap_2018_elec_veto_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_id_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_id_lowpt_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_tightiso_sf;
+    RooUtil::HistMap* histmap_2016_muon_BCDEF_looseiso_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_id_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_id_lowpt_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_tightiso_sf;
+    RooUtil::HistMap* histmap_2016_muon_GH_looseiso_sf;
+    RooUtil::HistMap* histmap_2017_muon_id_sf;
+    RooUtil::HistMap* histmap_2017_muon_id_lowpt_sf;
+    RooUtil::HistMap* histmap_2017_muon_tightiso_sf;
+    RooUtil::HistMap* histmap_2017_muon_looseiso_sf;
+    RooUtil::HistMap* histmap_2018_muon_id_sf;
+    RooUtil::HistMap* histmap_2018_muon_id_lowpt_sf;
+    RooUtil::HistMap* histmap_2018_muon_tightiso_sf;
+    RooUtil::HistMap* histmap_2018_muon_looseiso_sf;
+    RooUtil::HistMap* histmap_2016_fake_rate_el;
+    RooUtil::HistMap* histmap_2016_fake_rate_mu;
+    RooUtil::HistMap* histmap_2017_fake_rate_el;
+    RooUtil::HistMap* histmap_2017_fake_rate_mu;
+    RooUtil::HistMap* histmap_2018_fake_rate_el;
+    RooUtil::HistMap* histmap_2018_fake_rate_mu;
 
     // Looper
     RooUtil::Looper<wvztree>* looper;
@@ -152,7 +200,7 @@ public:
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
     virtual void  Initial(const char* RootName, int RootNumber);
-    virtual void  Loop(const char* NtupleVersion, const char* TagName);
+    virtual void  Loop(const char* NtupleVersion, const char* TagName, bool dofake);
     virtual void  End(int RootNumber);
     virtual void  Finish(int RootNumber);
     virtual void  Output();
@@ -167,11 +215,19 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
+    void selectVetoButNotNomLeptons();
+    void selectFakeableLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
 
     float EventWeight();
+    float LeptonScaleFactor();
+    float LeptonScaleFactorv1();
+    float IndividualLeptonScaleFactor(int, bool);
+    float FakeFactor();
+    float BTagSF();
 
     bool passZCandLeptonID(int idx);
     bool passZCandElectronID(int idx);
@@ -185,36 +241,62 @@ public:
     bool passVetoElectronID(int idx);
     bool passVetoMuonID(int idx);
 
+    bool passFakeableLeptonID(int idx);
+    bool passFakeableElectronID(int idx);
+    bool passFakeableMuonID(int idx);
+
+    bool Is3LeptonEvent();
     bool Is4LeptonEvent();
     bool Is5LeptonEvent();
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
+    bool FindOSOneNomOneVbntLeptons();
+    bool FindOSOneNomOneNotNomLeptons();
+    bool IsEMuPlusX();
 
-    bool Cut4LepLeptonPt();
+    bool Cut4LepLeptonPt(bool=false);
     bool CutHLT();
-    bool Cut4LepLowMll();
-    bool Cut4LepBVeto();
+    bool Cut4LepLowMll(bool=false);
+    bool Cut4LepBVeto(int=0);
+    bool Cut4LepBTag(int=0);
+    bool CutHighMT(int=0);
+    bool CutHighMET(int=0);
+    bool CutHighMTAR(int=0);
 
-    bool IsChannelEMu();
-    bool IsChannelOnZ();
-    bool IsChannelOffZ();
+    bool IsChannelEMu(bool=false);
+    bool IsChannelOnZ(bool=false);
+    bool IsChannelOffZ(bool=false);
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
 
-    bool ChannelEMuHighMll();
+    bool ChannelEMuHighMll(bool=false);
     bool ChannelOffZHighMET();
 
     float VarMll();
     float VarMET();
     float VarNvtx();
     float VarMll2ndZ();
-    float VarMT5th();
+    float VarMT(int,int=0);
+    float VarMT5th(int=0);
+    float VarMTNom0(int=0);
+    float VarMTNom1(int=0);
+    float VarMTMax(int=0);
+    float VarMTMin(int=0);
+    float VarMTVetoButNotNom(int=0);
+    float VarMTFakeable(int=0);
     float VarRelIso5th();
     float VarPt5th();
     float VarNjet();
+    float VarNb();
     float VarMll2l();
+    float VarNSFOS();
+    float VarLepPt(int);
+    float VarPtll(int, int);
+    float VarMll(int, int);
+    float VarM4l(int, int, int, int);
+    float VarHTLep(int, int, int, int);
 
 };
 #endif
@@ -385,6 +467,40 @@ struct less_than_key
     }
 };
 
+//_______________________________________________________________________________________________________
+class TheoryWeight
+{
+    public:
+        RooUtil::HistMap* histmap_neventsinfile;
+        float nominal_;
+        float pdfup_;
+        float pdfdn_;
+        float alsup_;
+        float alsdn_;
+        float qsqup_;
+        float qsqdn_;
+        TheoryWeight() : histmap_neventsinfile(0), nominal_(1), pdfup_(1), pdfdn_(1), alsup_(1), alsdn_(1), qsqup_(1), qsqdn_(1) {}
+        void setFile(TString fname)
+        {
+            histmap_neventsinfile = new RooUtil::HistMap(fname + ":h_neventsinfile");
+            nominal_ = histmap_neventsinfile->hist->GetBinContent(1+1);
+            pdfup_   = histmap_neventsinfile->hist->GetBinContent(1+10);
+            pdfdn_   = histmap_neventsinfile->hist->GetBinContent(1+11);
+            alsup_   = histmap_neventsinfile->hist->GetBinContent(1+13);
+            alsdn_   = histmap_neventsinfile->hist->GetBinContent(1+12);
+            qsqup_   = histmap_neventsinfile->hist->GetBinContent(1+5);
+            qsqdn_   = histmap_neventsinfile->hist->GetBinContent(1+9);
+        }
+        float& nominal() { return nominal_; }
+        float& pdfup()   { return pdfup_  ; }
+        float& pdfdn()   { return pdfdn_  ; }
+        float& alsup()   { return alsup_  ; }
+        float& alsdn()   { return alsdn_  ; }
+        float& qsqup()   { return qsqup_  ; }
+        float& qsqdn()   { return qsqdn_  ; }
+};
+
+extern TheoryWeight theoryweight;
 
 using namespace std;
 #endif

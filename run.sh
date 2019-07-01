@@ -15,17 +15,19 @@ usage()
   echo "  -t    Ntuple type            (e.g. -t WVZMVA, WVZ, or Trilep etc.)"
   echo "  -v    Ntuple version         (e.g. -v 0.0.9, 0.1.0, or etc.)"
   echo "  -T    tag                    (e.g. -T test1)"
+  echo "  -F    do fake                (e.g. -F)"
   echo
   exit
 }
 
 # Command-line opts
-while getopts ":y:t:v:T:h" OPTION; do
+while getopts ":y:t:v:T:Fh" OPTION; do
   case $OPTION in
     y) YEAR=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;
     v) NTUPLEVERSION=${OPTARG};;
     T) TAG=${OPTARG};;
+    F) FAKE=FAKE;;
     h) usage;;
     :) usage;;
   esac
@@ -49,6 +51,7 @@ echo "YEAR           : ${YEAR}"
 echo "NTUPLEVERSION  : ${NTUPLEVERSION}"
 echo "NTUPLETYPE     : ${NTUPLETYPE}"
 echo "TAG            : ${TAG}"
+echo "FAKE           : ${FAKE}"
 echo "================================================"
 
 # Sanity check that the sample referred exists
@@ -56,14 +59,14 @@ if [ ! -d /nfs-7/userdata/phchang/babies/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/ 
 
 echo " Will only show progress for ZZ to 4L sample. since that is the bottle neck processing"
 
-rm -f .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}.txt
-for i in $(ls /nfs-7/userdata/phchang/babies/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/); do
+rm -f .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${FAKE}.txt
+for i in $(ls -r /nfs-7/userdata/phchang/babies/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/); do
     if [[ $i == *"zz_4l_powheg"* ]]; then
-        echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} " | tee outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${i}.log"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}.txt
+        echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} ${FAKE}" | tee outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${FAKE}${i}.log"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${FAKE}.txt
     else
-        echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} "> outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${i}.log"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}.txt
+        echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} ${FAKE}"> outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${FAKE}${i}.log"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${FAKE}.txt
     fi
 done
 
 mkdir -p outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}
-sh rooutil/xargs.sh .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}.txt
+sh rooutil/xargs.sh -n 6 .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${FAKE}.txt

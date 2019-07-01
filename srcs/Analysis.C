@@ -133,39 +133,39 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     cutflow.addCutToLastActiveCut("ChannelAROffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
     cutflow.addCutToLastActiveCut("ChannelAROffZHighMET", [&](){ return this->CutHighMET(); }, UNITY );
 
-    // For fake rate related studies
-    if (ntupleVersion.Contains("Trilep"))
-    {
-        cutflow.getCut("Weight");
-        cutflow.addCutToLastActiveCut("ThreeLeptons"              , [&]() { return this->Is3LeptonEvent(); }                       , [&](){ return this->LeptonScaleFactor(); } );
-        cutflow.addCutToLastActiveCut("EMuPlusX"                  , [&]() { return this->IsEMuPlusX(); }                           , UNITY );
-        cutflow.getCut("EMuPlusX");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeMu"            , [&]() { return abs(wvz.lep_id().at(lep_FakeCand_idx2)) == 13; }   , UNITY );
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeMuTight"       , [&]() { return passNominalLeptonID(lep_FakeCand_idx2); }       , UNITY );
-        cutflow.getCut("EMuPlusXFakeMu");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeMuPrompt"      , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
-        cutflow.getCut("EMuPlusXFakeMuTight");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeMuTightPrompt" , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
-        cutflow.getCut("EMuPlusXFakeMu");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeMuFake"        , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
-        cutflow.getCut("EMuPlusXFakeMuTight");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeMuTightFake"   , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
-        cutflow.getCut("EMuPlusX");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeEl"            , [&]() { return abs(wvz.lep_id().at(lep_FakeCand_idx2)) == 11; }   , UNITY );
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeElTight"       , [&]() { return passNominalLeptonID(lep_FakeCand_idx2); }       , UNITY );
-        cutflow.getCut("EMuPlusXFakeEl");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeElPrompt"      , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
-        cutflow.getCut("EMuPlusXFakeElTight");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeElTightPrompt" , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
-        cutflow.getCut("EMuPlusXFakeEl");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeElFake"        , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
-        cutflow.getCut("EMuPlusXFakeElTight");
-        cutflow.addCutToLastActiveCut("EMuPlusXFakeElTightFake"   , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
-        cutflow.getCut("ThreeLeptons");
-        cutflow.addCutToLastActiveCut("Channel1SFOS"              , [&]() { return this->VarNSFOS() == 1; }                        , UNITY );
-        cutflow.getCut("ThreeLeptons");
-        cutflow.addCutToLastActiveCut("Channel2SFOS"              , [&]() { return this->VarNSFOS() == 2; }                        , UNITY );
-    }
+    // // For fake rate related studies
+    // if (ntupleVersion.Contains("Trilep"))
+    // {
+    //     cutflow.getCut("Weight");
+    //     cutflow.addCutToLastActiveCut("ThreeLeptons"              , [&]() { return this->Is3LeptonEvent(); }                       , [&](){ return this->LeptonScaleFactor(); } );
+    //     cutflow.addCutToLastActiveCut("EMuPlusX"                  , [&]() { return this->IsEMuPlusX(); }                           , UNITY );
+    //     cutflow.getCut("EMuPlusX");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeMu"            , [&]() { return abs(wvz.lep_id().at(lep_FakeCand_idx2)) == 13; }   , UNITY );
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeMuTight"       , [&]() { return passNominalLeptonID(lep_FakeCand_idx2); }       , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeMu");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeMuPrompt"      , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeMuTight");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeMuTightPrompt" , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeMu");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeMuFake"        , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeMuTight");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeMuTightFake"   , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
+    //     cutflow.getCut("EMuPlusX");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeEl"            , [&]() { return abs(wvz.lep_id().at(lep_FakeCand_idx2)) == 11; }   , UNITY );
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeElTight"       , [&]() { return passNominalLeptonID(lep_FakeCand_idx2); }       , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeEl");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeElPrompt"      , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeElTight");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeElTightPrompt" , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) >= 1; } , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeEl");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeElFake"        , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
+    //     cutflow.getCut("EMuPlusXFakeElTight");
+    //     cutflow.addCutToLastActiveCut("EMuPlusXFakeElTightFake"   , [&]() { return wvz.lep_motherIdv2().at(lep_FakeCand_idx2) < 1; }  , UNITY );
+    //     cutflow.getCut("ThreeLeptons");
+    //     cutflow.addCutToLastActiveCut("Channel1SFOS"              , [&]() { return this->VarNSFOS() == 1; }                        , UNITY );
+    //     cutflow.getCut("ThreeLeptons");
+    //     cutflow.addCutToLastActiveCut("Channel2SFOS"              , [&]() { return this->VarNSFOS() == 2; }                        , UNITY );
+    // }
 
     //========================
     //
@@ -219,22 +219,24 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     histograms.addHistogram("MTNomMin"       , 180 , 0       , 180    , [&](){ return this->VarMTMin(); });
     histograms.addHistogram("WindowMllNom"   , 180 , 0       , 50     , [&](){ return fabs(this->VarMll(lep_Nom_idx1, doFakeEst ? lep_Fakeable_idx : lep_Nom_idx2)-91.1876); });
     histograms.addHistogram("Yield"          , 1   , 0       , 1      , [&](){ return 0; });
+    histograms.addHistogram("lepFrelIso03EA" , 180 , 0       , 6.0    , [&](){ return lep_Fakeable_idx >= 0 ? wvz.lep_relIso03EA()[lep_Fakeable_idx] : -999; });
+    histograms.addHistogram("lepFrelIso04DB" , 180 , 0       , 6.0    , [&](){ return lep_Fakeable_idx >= 0 ? wvz.lep_relIso04DB()[lep_Fakeable_idx] : -999; });
 
-    if (ntupleVersion.Contains("Trilep"))
-    {
-        histograms.addHistogram("lepFakeCand2MotherID"    , 7   , -4  , 3    , [&](){ return wvz.lep_motherIdv2().at(lep_FakeCand_idx2); });
-        histograms.addHistogram("lepFakeCand2MCID"        , 7   , -4  , 3    , [&](){ return wvz.lep_mc_id().at(lep_FakeCand_idx2); });
-        histograms.addHistogram("lepFakeCand2Pt"          , 180 , 0.  , 150. , [&](){ return fabs(wvz.lep_pt().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2dz"          , 180 , 0.  , 0.2  , [&](){ return fabs(wvz.lep_dz().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2dxy"         , 180 , 0.  , 0.2  , [&](){ return fabs(wvz.lep_dxy().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2sip3d"       , 180 , 0.  , 20   , [&](){ return fabs(wvz.lep_sip3d().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2ip3d"        , 180 , 0.  , 0.2  , [&](){ return fabs(wvz.lep_ip3d().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2relIso03EA"  , 180 , 0.  , 0.4  , [&](){ return fabs(wvz.lep_relIso03EA().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2relIso04DB"  , 180 , 0.  , 0.4  , [&](){ return fabs(wvz.lep_relIso04DB().at(lep_FakeCand_idx2)); });
-        histograms.addHistogram("lepFakeCand2PtVarBin"    , {0. , 10. , 20.  , 70.}, [&](){ float rtn = std::min((double) wvz.lep_pt().at(lep_FakeCand_idx2)                                                 , 149.9); return rtn; });
-        histograms.addHistogram("lepFakeCand2PtVarBinFwd" , {0. , 10. , 20.  , 70.}, [&](){ float rtn = fabs(wvz.lep_eta().at(lep_FakeCand_idx2)) >  1.6 ? std::min((double) wvz.lep_pt().at(lep_FakeCand_idx2) , 149.9) : -999; return rtn; });
-        histograms.addHistogram("lepFakeCand2PtVarBinCen" , {0. , 10. , 20.  , 70.}, [&](){ float rtn = fabs(wvz.lep_eta().at(lep_FakeCand_idx2)) <= 1.6 ? std::min((double) wvz.lep_pt().at(lep_FakeCand_idx2) , 149.9) : -999; return rtn; });
-    }
+    // if (ntupleVersion.Contains("Trilep"))
+    // {
+    //     histograms.addHistogram("lepFakeCand2MotherID"    , 7   , -4  , 3    , [&](){ return wvz.lep_motherIdv2().at(lep_FakeCand_idx2); });
+    //     histograms.addHistogram("lepFakeCand2MCID"        , 7   , -4  , 3    , [&](){ return wvz.lep_mc_id().at(lep_FakeCand_idx2); });
+    //     histograms.addHistogram("lepFakeCand2Pt"          , 180 , 0.  , 150. , [&](){ return fabs(wvz.lep_pt().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2dz"          , 180 , 0.  , 0.2  , [&](){ return fabs(wvz.lep_dz().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2dxy"         , 180 , 0.  , 0.2  , [&](){ return fabs(wvz.lep_dxy().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2sip3d"       , 180 , 0.  , 20   , [&](){ return fabs(wvz.lep_sip3d().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2ip3d"        , 180 , 0.  , 0.2  , [&](){ return fabs(wvz.lep_ip3d().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2relIso03EA"  , 180 , 0.  , 0.4  , [&](){ return fabs(wvz.lep_relIso03EA().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2relIso04DB"  , 180 , 0.  , 0.4  , [&](){ return fabs(wvz.lep_relIso04DB().at(lep_FakeCand_idx2)); });
+    //     histograms.addHistogram("lepFakeCand2PtVarBin"    , {0. , 10. , 20.  , 70.}, [&](){ float rtn = std::min((double) wvz.lep_pt().at(lep_FakeCand_idx2)                                                 , 149.9); return rtn; });
+    //     histograms.addHistogram("lepFakeCand2PtVarBinFwd" , {0. , 10. , 20.  , 70.}, [&](){ float rtn = fabs(wvz.lep_eta().at(lep_FakeCand_idx2)) >  1.6 ? std::min((double) wvz.lep_pt().at(lep_FakeCand_idx2) , 149.9) : -999; return rtn; });
+    //     histograms.addHistogram("lepFakeCand2PtVarBinCen" , {0. , 10. , 20.  , 70.}, [&](){ float rtn = fabs(wvz.lep_eta().at(lep_FakeCand_idx2)) <= 1.6 ? std::min((double) wvz.lep_pt().at(lep_FakeCand_idx2) , 149.9) : -999; return rtn; });
+    // }
 
 
     // Systematic variations
@@ -325,10 +327,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
     cutflow.bookHistogramsForCutAndBelow(histograms, "FiveLeptonsRelIso5th");
     cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAREMu");
     cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAROffZ");
-    if (ntupleVersion.Contains("Trilep"))
-    {
-        cutflow.bookHistogramsForCutAndBelow(histograms, "EMuPlusX");
-    }
+    // if (ntupleVersion.Contains("Trilep"))
+    // {
+    //     cutflow.bookHistogramsForCutAndBelow(histograms, "EMuPlusX");
+    // }
 
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
@@ -352,6 +354,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dofake)
         selectVetoLeptons();
         selectZCandLeptons();
         selectNominalLeptons();
+        // selectTightLeptons();
         select2ndZCandAndWCandLeptons();
         selectFakeableLeptons();
         /* probably not necessary anymore */ sortLeptonIndex();
@@ -470,6 +473,28 @@ void Analysis::selectZCandLeptons()
             }
         }
     }
+}
+
+//______________________________________________________________________________________________
+void Analysis::selectTightLeptons()
+{
+    nTightLeptons = 0;
+    lep_tight_idxs.clear();
+
+    // Loop over the leptons
+    for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
+    {
+
+        if (not passNominalLeptonID(jj))
+            continue;
+
+        lep_tight_idxs.push_back(jj);
+
+        nTightLeptons++;
+
+    }
+
+    return;
 }
 
 //______________________________________________________________________________________________
@@ -692,20 +717,26 @@ void Analysis::selectFakeableLeptons()
 {
     // Loop over the leptons and find leptons that fail nominal but pass fakeable id
     lep_notnom_idxs.clear();
+    lep_fakeable_idxs.clear();
     lep_Fakeable_idx = -999;
     nFakeableLeptons = 0;
+    nNotNomLeptons = 0;
     for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
     {
 
         if (not (passFakeableLeptonID(jj)))
             continue;
 
+        lep_fakeable_idxs.push_back(jj);
+
+        nFakeableLeptons++;
+
         if (passNominalLeptonID(jj))
             continue;
 
         lep_notnom_idxs.push_back(jj);
 
-        nFakeableLeptons++;
+        nNotNomLeptons++;
     }
 
     if (lep_notnom_idxs.size() > 0)
@@ -856,6 +887,7 @@ bool Analysis::passFakeableLeptonID(int idx)
 //______________________________________________________________________________________________
 bool Analysis::passFakeableElectronID(int idx)
 {
+    // if (not (passVetoElectronID(idx))) return false;
     if (!( wvz.lep_p4().at(idx).pt() > 10.         )) return false;
     if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.5  )) return false;
     if (!( wvz.lep_isCutBasedNoIsoVetoPOG().at(idx)    )) return false;
@@ -866,6 +898,7 @@ bool Analysis::passFakeableElectronID(int idx)
 //______________________________________________________________________________________________
 bool Analysis::passFakeableMuonID(int idx)
 {
+    // if (not (passVetoMuonID(idx))) return false;
     if (!( wvz.lep_p4().at(idx).pt() > 10.        )) return false;
     if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.4 )) return false;
     if (not (wvz.lep_isMediumPOG().at(idx)        )) return false;
@@ -1571,8 +1604,8 @@ bool Analysis::Cut4LepLeptonPt(bool isAR)
     // Nominal needs sorting in case it is isAR or doFakeEst
     float tmp1 = lepNpt1;
     float tmp2 = lepNpt2;
-    lepNpt1 = lepNpt1 > lepNpt2 ? tmp1 : tmp2;
-    lepNpt2 = lepNpt1 > lepNpt2 ? tmp2 : tmp1;
+    lepNpt1 = tmp1 > tmp2 ? tmp1 : tmp2;
+    lepNpt2 = tmp1 > tmp2 ? tmp2 : tmp1;
 
     if (lepZpt1 > 25. and lepZpt2 > 10. and lepNpt1 > 25. and lepNpt2 > 10.)
         return true;
@@ -1617,7 +1650,9 @@ bool Analysis::CutHLT()
 //______________________________________________________________________________________________
 bool Analysis::Is3LeptonEvent()
 {
-    if (not (nVetoLeptons == 3)) return false;
+    if (not (nVetoLeptons >= 2 and nVetoLeptons <= 3)) return false;
+    if (not (nTightLeptons >= 2)) return false;
+    if (not (nFakeableLeptons >= 3)) return false;
     if (not (CutHLT())) return false;
     return true;
 }
@@ -1642,13 +1677,14 @@ bool Analysis::Is5LeptonEvent()
 //______________________________________________________________________________________________
 bool Analysis::IsEMuPlusX()
 {
-    if (not (nVetoLeptons == 3)) return false;
-    if (not (nNominalLeptons >= 2)) return false;
+
+    if (nFakeableLeptons < 3)
+        return false;
 
     // Check that the sum of the sign of the lepton is +/- 1
-    int charge1 = (wvz.lep_id().at(lep_Veto_idx1) > 0) - (wvz.lep_id().at(lep_Veto_idx1) < 0);
-    int charge2 = (wvz.lep_id().at(lep_Veto_idx2) > 0) - (wvz.lep_id().at(lep_Veto_idx2) < 0);
-    int charge3 = (wvz.lep_id().at(lep_Veto_idx3) > 0) - (wvz.lep_id().at(lep_Veto_idx3) < 0);
+    int charge1 = (wvz.lep_id().at(lep_fakeable_idxs[0]) > 0) - (wvz.lep_id().at(lep_fakeable_idxs[0]) < 0);
+    int charge2 = (wvz.lep_id().at(lep_fakeable_idxs[1]) > 0) - (wvz.lep_id().at(lep_fakeable_idxs[1]) < 0);
+    int charge3 = (wvz.lep_id().at(lep_fakeable_idxs[2]) > 0) - (wvz.lep_id().at(lep_fakeable_idxs[2]) < 0);
 
     if (not (abs(charge1 + charge2 + charge3) == 1))
         return false;

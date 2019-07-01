@@ -128,9 +128,12 @@ public:
     bool doFakeEst;
     std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
+    std::vector<int> lep_tight_idxs;
     std::vector<int> lep_nom_idxs;
     std::vector<int> lep_notnom_idxs;
     std::vector<int> lep_fakeable_idxs;
+    int nNotNomLeptons;
+    int nTightLeptons;
     int nFakeableLeptons;
     int nVetoLeptons;
     int lep_Veto_idx1;
@@ -215,6 +218,7 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void selectTightLeptons();
     void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
     void selectVetoButNotNomLeptons();

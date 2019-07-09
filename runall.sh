@@ -114,11 +114,11 @@ if ${FORCEHADDER} || [ ! -f outputs/${NTUPLETYPE}2016_${NTUPLEVERSION}/y2016_${B
     echo "Running the hadder..."
     sh ./scripts/hadd.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # The last two arguments must match the last two arguments from previous command
 fi
-if ${FORCEHADDER} || [ ! -f outputs/${NTUPLETYPE}2016_${NTUPLEVERSION}/y2016_${BASELINE}/sig.root ]; then
+if ${FORCEHADDER} || [ ! -f outputs/${NTUPLETYPE}2017_${NTUPLEVERSION}/y2018_${BASELINE}/sig.root ]; then
     echo "Running the hadder..."
     sh ./scripts/hadd.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # The last two arguments must match the last two arguments from previous command
 fi
-if ${FORCEHADDER} || [ ! -f outputs/${NTUPLETYPE}2016_${NTUPLEVERSION}/y2016_${BASELINE}/sig.root ]; then
+if ${FORCEHADDER} || [ ! -f outputs/${NTUPLETYPE}2018_${NTUPLEVERSION}/y2018_${BASELINE}/sig.root ]; then
     echo "Running the hadder..."
     sh ./scripts/hadd.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # The last two arguments must match the last two arguments from previous command
 fi

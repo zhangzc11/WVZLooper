@@ -63,7 +63,9 @@ def get_extrapolation_uncertainty(ntuple_version, tag, numerator, denominator, n
         data_eff =  (E_numer_data - E_numer_nonzzbkg) / (E_denom_data - E_denom_nonzzbkg)
         mc_eff =  E_numer_zz / E_denom_zz
         eff_ratio = data_eff / mc_eff
-        print mc_eff, data_eff, eff_ratio
+        print "mc_eff:", mc_eff
+        print "data_eff:", data_eff
+        print "eff_ratio:", eff_ratio
 
     else:
 
@@ -89,39 +91,41 @@ def get_extrapolation_uncertainty(ntuple_version, tag, numerator, denominator, n
         data_eff = (E_numer_data - E_numer_nonttzbkg) / (E_denom_data - E_denom_nonttzbkg)
         mc_eff = E_numer_ttz / E_denom_ttz
         eff_ratio = data_eff / mc_eff
-        print mc_eff, data_eff, eff_ratio
+        print "mc_eff:", mc_eff
+        print "data_eff:", data_eff
+        print "eff_ratio:", eff_ratio
 
 if __name__ == "__main__":
 
     denominator = "ChannelBTagEMu__Yield"
     numerator = "ChannelBTagEMuHighMET__Yield"
-    print denominator, numerator
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11", "y2016_test3", numerator, denominator, "ttz")
-    get_extrapolation_uncertainty("WVZ2017_v0.1.11", "y2017_test3", numerator, denominator, "ttz")
-    get_extrapolation_uncertainty("WVZ2018_v0.1.11", "y2018_test3", numerator, denominator, "ttz")
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_test3_y2017_test3_y2018_test3", numerator, denominator, "ttz")
+    print "Cut denominator:", denominator
+    print "Cut numerator:", numerator
+    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_baseline_0709_y2017_baseline_0709_y2018_baseline_0709", numerator, denominator, "ttz")
+    print ""
+    print ""
 
     denominator = "ChannelBTagEMu__Yield"
     numerator = "ChannelBTagEMuHighMT__Yield"
-    print denominator, numerator
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11", "y2016_test3", numerator, denominator, "ttz")
-    get_extrapolation_uncertainty("WVZ2017_v0.1.11", "y2017_test3", numerator, denominator, "ttz")
-    get_extrapolation_uncertainty("WVZ2018_v0.1.11", "y2018_test3", numerator, denominator, "ttz")
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_test3_y2017_test3_y2018_test3", numerator, denominator, "ttz")
+    print "Cut denominator:", denominator
+    print "Cut numerator:", numerator
+    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_baseline_0709_y2017_baseline_0709_y2018_baseline_0709", numerator, denominator, "ttz")
+    print ""
+    print ""
 
     denominator = "ChannelOnZ__Yield"
     numerator = "ChannelOnZHighMET__Yield"
-    print denominator, numerator
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11", "y2016_test3", numerator, denominator, "zz")
-    get_extrapolation_uncertainty("WVZ2017_v0.1.11", "y2017_test3", numerator, denominator, "zz")
-    get_extrapolation_uncertainty("WVZ2018_v0.1.11", "y2018_test3", numerator, denominator, "zz")
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_test3_y2017_test3_y2018_test3", numerator, denominator, "zz")
+    print "Cut denominator:", denominator
+    print "Cut numerator:", numerator
+    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_baseline_0709_y2017_baseline_0709_y2018_baseline_0709", numerator, denominator, "zz")
+    print ""
+    print ""
 
     denominator = "ChannelOnZ__Yield"
     numerator = "ChannelOnZHighMT__Yield"
-    print denominator, numerator
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11", "y2016_test3", numerator, denominator, "zz")
-    get_extrapolation_uncertainty("WVZ2017_v0.1.11", "y2017_test3", numerator, denominator, "zz")
-    get_extrapolation_uncertainty("WVZ2018_v0.1.11", "y2018_test3", numerator, denominator, "zz")
-    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_test3_y2017_test3_y2018_test3", numerator, denominator, "zz")
+    print "Cut denominator:", denominator
+    print "Cut numerator:", numerator
+    get_extrapolation_uncertainty("WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11", "y2016_baseline_0709_y2017_baseline_0709_y2018_baseline_0709", numerator, denominator, "zz")
+    print ""
+    print ""
 

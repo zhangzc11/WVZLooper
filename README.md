@@ -11,48 +11,29 @@
 
 ## Quick run
 
-    sh runall.sh -b test -t WVZ -v v0.1.7
+    sh runall.sh -b baseline_0709            -t WVZ -v v0.1.11
+    sh runall.sh -b baseline_0709_with_systs -t WVZ -v v0.1.11 -s
+
+## Plotting
+
+For example,
+
+    sh runall.sh -b baseline_0709 -t WVZ -v 0.1.11 -d myplots -p ChannelEMuHighMT__MllNom -n 5
+
+To plot 5 bin dilepton mass spectrum in emu channel
 
 ## Statistical interpretation
 
     # In another terminal
     source setup.sh
-    python scripts/write_datacards.py -t WVZ -v v0.1.7 -b test
+    python scripts/write_datacards.py -t WVZ -v v0.1.11 -b baseline_0709_with_systs
 
     # In another new terminal
     cd stats/
     source setup_higgs_combine.sh
     cd ../
-    sh stats/combine.sh -t WVZ -v v0.1.7 -b test
+    sh stats/combine.sh -t WVZ -v v0.1.11 -b baseline_0709_with_systs
     sh stats/doSensitivity.sh stats/stat.txt
-
-## Long run (may be outdated)
-
-    # Running the code
-    ./Analysis.exe <(for i in $(ls /nfs-7/userdata/phchang/babies/WVZ2016_v0.0.9/); do echo ${i/.root/}; done) WVZ2016_v0.0.9 baseline_y2016_0520
-    ./Analysis.exe <(for i in $(ls /nfs-7/userdata/phchang/babies/WVZ2017_v0.0.9/); do echo ${i/.root/}; done) WVZ2017_v0.0.9 baseline_y2017_0520
-    ./Analysis.exe <(for i in $(ls /nfs-7/userdata/phchang/babies/WVZ2018_v0.0.9/); do echo ${i/.root/}; done) WVZ2018_v0.0.9 baseline_y2018_0520
-
-    # Hadding the histogram outputs by each year
-    sh scripts/hadd.sh WVZ2016_v0.0.9 baseline_y2016_0520 # The last two arguments must match the last two arguments from previous command
-    sh scripts/hadd.sh WVZ2017_v0.0.9 baseline_y2017_0520 # The last two arguments must match the last two arguments from previous command
-    sh scripts/hadd.sh WVZ2018_v0.0.9 baseline_y2018_0520 # The last two arguments must match the last two arguments from previous command
-
-    # Hadding the entire Run 2 into a single histograms (NOTE: Must be ran after each year has alreday been hadded)
-    sh scripts/haddallyears.sh WVZ2016_v0.0.9 baseline_y2016_0520 WVZ2017_v0.0.9 baseline_y2017_0520 WVZ2018_v0.0.9 baseline_y2018_0520
-
-    # Plotting the output histograms by each year
-    python scripts/makeplot.py WVZ2016_v0.0.9 baseline_y2016_0520 # The last two arguments must match the last two arguments from previous command
-    python scripts/makeplot.py WVZ2017_v0.0.9 baseline_y2017_0520 # The last two arguments must match the last two arguments from previous command
-    python scripts/makeplot.py WVZ2018_v0.0.9 baseline_y2018_0520 # The last two arguments must match the last two arguments from previous command
-
-    # Plotting the output histograms of all year
-    python scripts/makeplot.py WVZ2016_v0.0.9_WVZ2017_v0.0.9_WVZ2018_v0.0.9 baseline_y2016_0520_baseline_y2017_0520_baseline_y2018_0520 # Basically the tags are just concatenated with "_"
-
-    # Outputs by each year
-    # plots/WVZ2016_v0.0.5/baseline_y2016_0520/
-    # plots/WVZ2017_v0.0.5/baseline_y2017_0520/
-    # plots/WVZ2018_v0.0.5/baseline_y2018_0520/
-
-    # Outputs of all year combined
-    # plots/WVZ2016_v0.0.9_WVZ2017_v0.0.9_WVZ2018_v0.0.9/baseline_y2016_0520_baseline_y2017_0520_baseline_y2018_0520/
+    sh stats/doSensitivity.sh stats/WVZ2016_v0.1.11/y2016_baseline_0709_with_systs/stat.txt
+    sh stats/doSensitivity.sh stats/WVZ2017_v0.1.11/y2017_baseline_0709_with_systs/stat.txt
+    sh stats/doSensitivity.sh stats/WVZ2018_v0.1.11/y2018_baseline_0709_with_systs/stat.txt

@@ -126,11 +126,15 @@ public:
     bool isRead;
     bool isDamaged;
     bool doFakeEst;
+    bool doSyst;
     std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
+    std::vector<int> lep_tight_idxs;
     std::vector<int> lep_nom_idxs;
     std::vector<int> lep_notnom_idxs;
     std::vector<int> lep_fakeable_idxs;
+    int nNotNomLeptons;
+    int nTightLeptons;
     int nFakeableLeptons;
     int nVetoLeptons;
     int lep_Veto_idx1;
@@ -149,10 +153,13 @@ public:
     int nDFOS;
     int lep_FakeCand_idx1;
     int lep_FakeCand_idx2;
-    int lep_FakeCand_MaxIso_idx;
     int lep_NonFakeCand_idx;
     int lep_VetoButNotNom_idx;
     int lep_Fakeable_idx;
+    int lep_DYX_FakeCand_idx;
+    int lep_DYX_DYCand_idx1;
+    int lep_DYX_DYCand_idx2;
+    int lep_Fakeable_MCmatched_idx;
     LV dilepZCand;
     LV dilepNominal;
     TString output_tfile_name;
@@ -215,6 +222,7 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void selectTightLeptons();
     void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
     void selectVetoButNotNomLeptons();
@@ -247,6 +255,8 @@ public:
 
     bool Is3LeptonEvent();
     bool Is4LeptonEvent();
+    bool Is4LeptonFakeValidationEvents();
+    bool Is3LeptonFakeValidationEvents();
     bool Is5LeptonEvent();
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
@@ -254,6 +264,7 @@ public:
     bool FindOSOneNomOneVbntLeptons();
     bool FindOSOneNomOneNotNomLeptons();
     bool IsEMuPlusX();
+    bool IsDYPlusX();
 
     bool Cut4LepLeptonPt(bool=false);
     bool CutHLT();
@@ -270,6 +281,8 @@ public:
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
+
+    bool CutHEMVeto();
 
     bool ChannelEMuHighMll(bool=false);
     bool ChannelOffZHighMET();
@@ -289,6 +302,8 @@ public:
     float VarRelIso5th();
     float VarPt5th();
     float VarNjet();
+    float VarNEENoiseJet();
+    float VarNfwdjet();
     float VarNb();
     float VarMll2l();
     float VarNSFOS();
@@ -297,6 +312,7 @@ public:
     float VarMll(int, int);
     float VarM4l(int, int, int, int);
     float VarHTLep(int, int, int, int);
+    float VarHTLep5();
 
 };
 #endif

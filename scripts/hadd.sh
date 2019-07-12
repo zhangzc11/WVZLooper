@@ -72,7 +72,11 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     fi
     echo "hadd -f higgs.root MC_ggh_hzz4l_powheg_1_results.root MC_vh_nonbbwwzz_amcatnlo_1_results.root MC_tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f data.root DATA_data_Run*.root" >> .hadd.cmds.txt
+    echo "hadd -f data_prehem.root DATA_data_Run201*A*.root DATA_data_Run201*B*.root" >> .hadd.cmds.txt
     # echo "hadd -f ddfake.root FAKE_*.root" >> .hadd.cmds.txt
+    echo "hadd -f other.root MC_dy_m1050_madgraph_1_results.root MC_dy_m50_madgraph_1_results.root MC_ttbar_dilep_madgraph_1_results.root MC_zg_llg_amcatnlo_1_results.root MC_sts_4f_leptonic_madgraph_1_results.root MC_tZq_ll_madgraph_1_results.root MC_ttw_lnu_amcatnlo_1_results.root MC_tw_antitopnofullhad_powheg_1_results.root MC_tw_topnofullhad_powheg_1_results.root MC_ww_2l_powheg_1_results.root MC_wwg_amcatnlo_1_results.root MC_wzg_amcatnlo_1_results.root MC_ggh_hzz4l_powheg_1_results.root MC_vh_nonbbwwzz_amcatnlo_1_results.root MC_tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
+
+    echo "hadd -f triother.root MC_sts_4f_leptonic_madgraph_1_results.root MC_tZq_ll_madgraph_1_results.root MC_ttw_lnu_amcatnlo_1_results.root MC_tw_antitopnofullhad_powheg_1_results.root MC_tw_topnofullhad_powheg_1_results.root MC_ww_2l_powheg_1_results.root MC_wwg_amcatnlo_1_results.root MC_wzg_amcatnlo_1_results.root MC_zz_4l_powheg_1_results.root MC_zz_2l2q_powheg_1_results.root MC_zz_2l2v_powheg_1_results.root MC_ggzz_*.root MC_ttz_ll_mll1_amcatnlo_1_results.root MC_ttz_llvv_mll10_amcatnlo_1_results.root MC_twz_ll_madgraph_1_results.root" >> .hadd.cmds.txt
 fi
 
 sh ../../../rooutil/xargs.sh .hadd.cmds.txt

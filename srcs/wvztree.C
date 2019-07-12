@@ -14,6 +14,8 @@ void wvztree::Init(TTree *tree) {
   if (jets_p4_branch) jets_p4_branch->SetAddress(&jets_p4_);
   jets_cen_p4_branch = tree->GetBranch("jets_cen_p4");
   if (jets_cen_p4_branch) jets_cen_p4_branch->SetAddress(&jets_cen_p4_);
+  rawjets_p4_branch = tree->GetBranch("rawjets_p4");
+  if (rawjets_p4_branch) rawjets_p4_branch->SetAddress(&rawjets_p4_);
 
   tree->SetMakeClass(1);
 
@@ -109,6 +111,8 @@ void wvztree::Init(TTree *tree) {
   if (lep_pt_branch) lep_pt_branch->SetAddress(&lep_pt_);
   lep_eta_branch = tree->GetBranch("lep_eta");
   if (lep_eta_branch) lep_eta_branch->SetAddress(&lep_eta_);
+  lep_etaSC_branch = tree->GetBranch("lep_etaSC");
+  if (lep_etaSC_branch) lep_etaSC_branch->SetAddress(&lep_etaSC_);
   lep_phi_branch = tree->GetBranch("lep_phi");
   if (lep_phi_branch) lep_phi_branch->SetAddress(&lep_phi_);
   lep_energy_branch = tree->GetBranch("lep_energy");
@@ -121,6 +125,8 @@ void wvztree::Init(TTree *tree) {
   if (lep_relIso04DB_branch) lep_relIso04DB_branch->SetAddress(&lep_relIso04DB_);
   lep_relIso03EA_branch = tree->GetBranch("lep_relIso03EA");
   if (lep_relIso03EA_branch) lep_relIso03EA_branch->SetAddress(&lep_relIso03EA_);
+  lep_relIso03EAv4_branch = tree->GetBranch("lep_relIso03EAv4");
+  if (lep_relIso03EAv4_branch) lep_relIso03EAv4_branch->SetAddress(&lep_relIso03EAv4_);
   lep_relIso03EAwLep_branch = tree->GetBranch("lep_relIso03EAwLep");
   if (lep_relIso03EAwLep_branch) lep_relIso03EAwLep_branch->SetAddress(&lep_relIso03EAwLep_);
   lep_ip3d_branch = tree->GetBranch("lep_ip3d");
@@ -191,6 +197,8 @@ void wvztree::Init(TTree *tree) {
   if (met_gen_pt_branch) met_gen_pt_branch->SetAddress(&met_gen_pt_);
   met_gen_phi_branch = tree->GetBranch("met_gen_phi");
   if (met_gen_phi_branch) met_gen_phi_branch->SetAddress(&met_gen_phi_);
+  passesMETfiltersRun2_branch = tree->GetBranch("passesMETfiltersRun2");
+  if (passesMETfiltersRun2_branch) passesMETfiltersRun2_branch->SetAddress(&passesMETfiltersRun2_);
   jets_pt_branch = tree->GetBranch("jets_pt");
   if (jets_pt_branch) jets_pt_branch->SetAddress(&jets_pt_);
   jets_eta_branch = tree->GetBranch("jets_eta");
@@ -207,6 +215,20 @@ void wvztree::Init(TTree *tree) {
   if (jets_cen_phi_branch) jets_cen_phi_branch->SetAddress(&jets_cen_phi_);
   jets_cen_mass_branch = tree->GetBranch("jets_cen_mass");
   if (jets_cen_mass_branch) jets_cen_mass_branch->SetAddress(&jets_cen_mass_);
+  rawjets_pt_branch = tree->GetBranch("rawjets_pt");
+  if (rawjets_pt_branch) rawjets_pt_branch->SetAddress(&rawjets_pt_);
+  rawjets_eta_branch = tree->GetBranch("rawjets_eta");
+  if (rawjets_eta_branch) rawjets_eta_branch->SetAddress(&rawjets_eta_);
+  rawjets_phi_branch = tree->GetBranch("rawjets_phi");
+  if (rawjets_phi_branch) rawjets_phi_branch->SetAddress(&rawjets_phi_);
+  rawjets_mass_branch = tree->GetBranch("rawjets_mass");
+  if (rawjets_mass_branch) rawjets_mass_branch->SetAddress(&rawjets_mass_);
+  rawjets_JEC_branch = tree->GetBranch("rawjets_JEC");
+  if (rawjets_JEC_branch) rawjets_JEC_branch->SetAddress(&rawjets_JEC_);
+  rawjets_passJetID_branch = tree->GetBranch("rawjets_passJetID");
+  if (rawjets_passJetID_branch) rawjets_passJetID_branch->SetAddress(&rawjets_passJetID_);
+  rawjets_isORwLep_branch = tree->GetBranch("rawjets_isORwLep");
+  if (rawjets_isORwLep_branch) rawjets_isORwLep_branch->SetAddress(&rawjets_isORwLep_);
   nj_branch = tree->GetBranch("nj");
   if (nj_branch) nj_branch->SetAddress(&nj_);
   nj_up_branch = tree->GetBranch("nj_up");
@@ -295,12 +317,14 @@ void wvztree::GetEntry(unsigned int idx) {
   lep_p4_isLoaded = false;
   lep_pt_isLoaded = false;
   lep_eta_isLoaded = false;
+  lep_etaSC_isLoaded = false;
   lep_phi_isLoaded = false;
   lep_energy_isLoaded = false;
   lep_mva_isLoaded = false;
   lep_mvaIso_isLoaded = false;
   lep_relIso04DB_isLoaded = false;
   lep_relIso03EA_isLoaded = false;
+  lep_relIso03EAv4_isLoaded = false;
   lep_relIso03EAwLep_isLoaded = false;
   lep_ip3d_isLoaded = false;
   lep_sip3d_isLoaded = false;
@@ -337,6 +361,7 @@ void wvztree::GetEntry(unsigned int idx) {
   met_dn_phi_isLoaded = false;
   met_gen_pt_isLoaded = false;
   met_gen_phi_isLoaded = false;
+  passesMETfiltersRun2_isLoaded = false;
   jets_p4_isLoaded = false;
   jets_pt_isLoaded = false;
   jets_eta_isLoaded = false;
@@ -347,6 +372,14 @@ void wvztree::GetEntry(unsigned int idx) {
   jets_cen_eta_isLoaded = false;
   jets_cen_phi_isLoaded = false;
   jets_cen_mass_isLoaded = false;
+  rawjets_p4_isLoaded = false;
+  rawjets_pt_isLoaded = false;
+  rawjets_eta_isLoaded = false;
+  rawjets_phi_isLoaded = false;
+  rawjets_mass_isLoaded = false;
+  rawjets_JEC_isLoaded = false;
+  rawjets_passJetID_isLoaded = false;
+  rawjets_isORwLep_isLoaded = false;
   nj_isLoaded = false;
   nj_up_isLoaded = false;
   nj_dn_isLoaded = false;
@@ -416,12 +449,14 @@ void wvztree::LoadAllBranches() {
   if (lep_p4_branch != 0) lep_p4();
   if (lep_pt_branch != 0) lep_pt();
   if (lep_eta_branch != 0) lep_eta();
+  if (lep_etaSC_branch != 0) lep_etaSC();
   if (lep_phi_branch != 0) lep_phi();
   if (lep_energy_branch != 0) lep_energy();
   if (lep_mva_branch != 0) lep_mva();
   if (lep_mvaIso_branch != 0) lep_mvaIso();
   if (lep_relIso04DB_branch != 0) lep_relIso04DB();
   if (lep_relIso03EA_branch != 0) lep_relIso03EA();
+  if (lep_relIso03EAv4_branch != 0) lep_relIso03EAv4();
   if (lep_relIso03EAwLep_branch != 0) lep_relIso03EAwLep();
   if (lep_ip3d_branch != 0) lep_ip3d();
   if (lep_sip3d_branch != 0) lep_sip3d();
@@ -458,6 +493,7 @@ void wvztree::LoadAllBranches() {
   if (met_dn_phi_branch != 0) met_dn_phi();
   if (met_gen_pt_branch != 0) met_gen_pt();
   if (met_gen_phi_branch != 0) met_gen_phi();
+  if (passesMETfiltersRun2_branch != 0) passesMETfiltersRun2();
   if (jets_p4_branch != 0) jets_p4();
   if (jets_pt_branch != 0) jets_pt();
   if (jets_eta_branch != 0) jets_eta();
@@ -468,6 +504,14 @@ void wvztree::LoadAllBranches() {
   if (jets_cen_eta_branch != 0) jets_cen_eta();
   if (jets_cen_phi_branch != 0) jets_cen_phi();
   if (jets_cen_mass_branch != 0) jets_cen_mass();
+  if (rawjets_p4_branch != 0) rawjets_p4();
+  if (rawjets_pt_branch != 0) rawjets_pt();
+  if (rawjets_eta_branch != 0) rawjets_eta();
+  if (rawjets_phi_branch != 0) rawjets_phi();
+  if (rawjets_mass_branch != 0) rawjets_mass();
+  if (rawjets_JEC_branch != 0) rawjets_JEC();
+  if (rawjets_passJetID_branch != 0) rawjets_passJetID();
+  if (rawjets_isORwLep_branch != 0) rawjets_isORwLep();
   if (nj_branch != 0) nj();
   if (nj_up_branch != 0) nj_up();
   if (nj_dn_branch != 0) nj_dn();
@@ -1123,6 +1167,19 @@ const vector<float> &wvztree::lep_eta() {
   return *lep_eta_;
 }
 
+const vector<float> &wvztree::lep_etaSC() {
+  if (not lep_etaSC_isLoaded) {
+    if (lep_etaSC_branch != 0) {
+      lep_etaSC_branch->GetEntry(index);
+    } else {
+      printf("branch lep_etaSC_branch does not exist!\n");
+      exit(1);
+    }
+    lep_etaSC_isLoaded = true;
+  }
+  return *lep_etaSC_;
+}
+
 const vector<float> &wvztree::lep_phi() {
   if (not lep_phi_isLoaded) {
     if (lep_phi_branch != 0) {
@@ -1199,6 +1256,19 @@ const vector<float> &wvztree::lep_relIso03EA() {
     lep_relIso03EA_isLoaded = true;
   }
   return *lep_relIso03EA_;
+}
+
+const vector<float> &wvztree::lep_relIso03EAv4() {
+  if (not lep_relIso03EAv4_isLoaded) {
+    if (lep_relIso03EAv4_branch != 0) {
+      lep_relIso03EAv4_branch->GetEntry(index);
+    } else {
+      printf("branch lep_relIso03EAv4_branch does not exist!\n");
+      exit(1);
+    }
+    lep_relIso03EAv4_isLoaded = true;
+  }
+  return *lep_relIso03EAv4_;
 }
 
 const vector<float> &wvztree::lep_relIso03EAwLep() {
@@ -1669,6 +1739,19 @@ const float &wvztree::met_gen_phi() {
   return met_gen_phi_;
 }
 
+const int &wvztree::passesMETfiltersRun2() {
+  if (not passesMETfiltersRun2_isLoaded) {
+    if (passesMETfiltersRun2_branch != 0) {
+      passesMETfiltersRun2_branch->GetEntry(index);
+    } else {
+      printf("branch passesMETfiltersRun2_branch does not exist!\n");
+      exit(1);
+    }
+    passesMETfiltersRun2_isLoaded = true;
+  }
+  return passesMETfiltersRun2_;
+}
+
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::jets_p4() {
   if (not jets_p4_isLoaded) {
     if (jets_p4_branch != 0) {
@@ -1797,6 +1880,110 @@ const vector<float> &wvztree::jets_cen_mass() {
     jets_cen_mass_isLoaded = true;
   }
   return *jets_cen_mass_;
+}
+
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::rawjets_p4() {
+  if (not rawjets_p4_isLoaded) {
+    if (rawjets_p4_branch != 0) {
+      rawjets_p4_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_p4_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_p4_isLoaded = true;
+  }
+  return *rawjets_p4_;
+}
+
+const vector<float> &wvztree::rawjets_pt() {
+  if (not rawjets_pt_isLoaded) {
+    if (rawjets_pt_branch != 0) {
+      rawjets_pt_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_pt_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_pt_isLoaded = true;
+  }
+  return *rawjets_pt_;
+}
+
+const vector<float> &wvztree::rawjets_eta() {
+  if (not rawjets_eta_isLoaded) {
+    if (rawjets_eta_branch != 0) {
+      rawjets_eta_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_eta_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_eta_isLoaded = true;
+  }
+  return *rawjets_eta_;
+}
+
+const vector<float> &wvztree::rawjets_phi() {
+  if (not rawjets_phi_isLoaded) {
+    if (rawjets_phi_branch != 0) {
+      rawjets_phi_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_phi_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_phi_isLoaded = true;
+  }
+  return *rawjets_phi_;
+}
+
+const vector<float> &wvztree::rawjets_mass() {
+  if (not rawjets_mass_isLoaded) {
+    if (rawjets_mass_branch != 0) {
+      rawjets_mass_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_mass_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_mass_isLoaded = true;
+  }
+  return *rawjets_mass_;
+}
+
+const vector<float> &wvztree::rawjets_JEC() {
+  if (not rawjets_JEC_isLoaded) {
+    if (rawjets_JEC_branch != 0) {
+      rawjets_JEC_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_JEC_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_JEC_isLoaded = true;
+  }
+  return *rawjets_JEC_;
+}
+
+const vector<int> &wvztree::rawjets_passJetID() {
+  if (not rawjets_passJetID_isLoaded) {
+    if (rawjets_passJetID_branch != 0) {
+      rawjets_passJetID_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_passJetID_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_passJetID_isLoaded = true;
+  }
+  return *rawjets_passJetID_;
+}
+
+const vector<int> &wvztree::rawjets_isORwLep() {
+  if (not rawjets_isORwLep_isLoaded) {
+    if (rawjets_isORwLep_branch != 0) {
+      rawjets_isORwLep_branch->GetEntry(index);
+    } else {
+      printf("branch rawjets_isORwLep_branch does not exist!\n");
+      exit(1);
+    }
+    rawjets_isORwLep_isLoaded = true;
+  }
+  return *rawjets_isORwLep_;
 }
 
 const int &wvztree::nj() {
@@ -2079,12 +2266,14 @@ const int &nTrueInt() { return wvz.nTrueInt(); }
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &lep_p4() { return wvz.lep_p4(); }
 const vector<float> &lep_pt() { return wvz.lep_pt(); }
 const vector<float> &lep_eta() { return wvz.lep_eta(); }
+const vector<float> &lep_etaSC() { return wvz.lep_etaSC(); }
 const vector<float> &lep_phi() { return wvz.lep_phi(); }
 const vector<float> &lep_energy() { return wvz.lep_energy(); }
 const vector<float> &lep_mva() { return wvz.lep_mva(); }
 const vector<float> &lep_mvaIso() { return wvz.lep_mvaIso(); }
 const vector<float> &lep_relIso04DB() { return wvz.lep_relIso04DB(); }
 const vector<float> &lep_relIso03EA() { return wvz.lep_relIso03EA(); }
+const vector<float> &lep_relIso03EAv4() { return wvz.lep_relIso03EAv4(); }
 const vector<float> &lep_relIso03EAwLep() { return wvz.lep_relIso03EAwLep(); }
 const vector<float> &lep_ip3d() { return wvz.lep_ip3d(); }
 const vector<float> &lep_sip3d() { return wvz.lep_sip3d(); }
@@ -2121,6 +2310,7 @@ const float &met_dn_pt() { return wvz.met_dn_pt(); }
 const float &met_dn_phi() { return wvz.met_dn_phi(); }
 const float &met_gen_pt() { return wvz.met_gen_pt(); }
 const float &met_gen_phi() { return wvz.met_gen_phi(); }
+const int &passesMETfiltersRun2() { return wvz.passesMETfiltersRun2(); }
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_p4() { return wvz.jets_p4(); }
 const vector<float> &jets_pt() { return wvz.jets_pt(); }
 const vector<float> &jets_eta() { return wvz.jets_eta(); }
@@ -2131,6 +2321,14 @@ const vector<float> &jets_cen_pt() { return wvz.jets_cen_pt(); }
 const vector<float> &jets_cen_eta() { return wvz.jets_cen_eta(); }
 const vector<float> &jets_cen_phi() { return wvz.jets_cen_phi(); }
 const vector<float> &jets_cen_mass() { return wvz.jets_cen_mass(); }
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &rawjets_p4() { return wvz.rawjets_p4(); }
+const vector<float> &rawjets_pt() { return wvz.rawjets_pt(); }
+const vector<float> &rawjets_eta() { return wvz.rawjets_eta(); }
+const vector<float> &rawjets_phi() { return wvz.rawjets_phi(); }
+const vector<float> &rawjets_mass() { return wvz.rawjets_mass(); }
+const vector<float> &rawjets_JEC() { return wvz.rawjets_JEC(); }
+const vector<int> &rawjets_passJetID() { return wvz.rawjets_passJetID(); }
+const vector<int> &rawjets_isORwLep() { return wvz.rawjets_isORwLep(); }
 const int &nj() { return wvz.nj(); }
 const int &nj_up() { return wvz.nj_up(); }
 const int &nj_dn() { return wvz.nj_dn(); }

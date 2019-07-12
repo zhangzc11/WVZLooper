@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     //usage output
     if (argc < 4)
     {
-        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag dofake" << std::endl;
+        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag dosyst" << std::endl;
         return 0;
     }
 

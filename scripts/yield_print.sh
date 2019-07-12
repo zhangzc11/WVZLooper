@@ -21,8 +21,8 @@ fi
 
 python rooutil/yield_for_keynote.py plots/$1/$2/yield/ChannelOffZHighMET__Yield.txt > offz.txt
 python rooutil/yield_for_keynote.py plots/$1/$2/yield/ChannelEMuHighMT__Yield.txt > emu.txt
-python rooutil/yield_for_keynote.py plots/$1/$2/yield/ChannelOnZCR__Yield.txt > onz.txt
-python rooutil/yield_for_keynote.py plots/$1/$2/yield/ChannelBTagEMuCR__Yield.txt > btag.txt
+python rooutil/yield_for_keynote.py plots/$1/$2/yield/ChannelOnZ__Yield.txt > onz.txt
+python rooutil/yield_for_keynote.py plots/$1/$2/yield/ChannelBTagEMu__Yield.txt > btag.txt
 
 ##head -n1 emu.txt > summary.txt
 tail -n2 emu.txt | head -n1 > summary_${1}_${2}.txt

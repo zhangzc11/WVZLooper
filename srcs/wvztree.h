@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.7/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.10/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -169,6 +169,9 @@ class wvztree {
   vector<float> *lep_eta_;
   TBranch *lep_eta_branch;
   bool     lep_eta_isLoaded;
+  vector<float> *lep_etaSC_;
+  TBranch *lep_etaSC_branch;
+  bool     lep_etaSC_isLoaded;
   vector<float> *lep_phi_;
   TBranch *lep_phi_branch;
   bool     lep_phi_isLoaded;
@@ -187,6 +190,9 @@ class wvztree {
   vector<float> *lep_relIso03EA_;
   TBranch *lep_relIso03EA_branch;
   bool     lep_relIso03EA_isLoaded;
+  vector<float> *lep_relIso03EAv4_;
+  TBranch *lep_relIso03EAv4_branch;
+  bool     lep_relIso03EAv4_isLoaded;
   vector<float> *lep_relIso03EAwLep_;
   TBranch *lep_relIso03EAwLep_branch;
   bool     lep_relIso03EAwLep_isLoaded;
@@ -295,6 +301,9 @@ class wvztree {
   float    met_gen_phi_;
   TBranch *met_gen_phi_branch;
   bool     met_gen_phi_isLoaded;
+  int      passesMETfiltersRun2_;
+  TBranch *passesMETfiltersRun2_branch;
+  bool     passesMETfiltersRun2_isLoaded;
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *jets_p4_;
   TBranch *jets_p4_branch;
   bool     jets_p4_isLoaded;
@@ -325,6 +334,30 @@ class wvztree {
   vector<float> *jets_cen_mass_;
   TBranch *jets_cen_mass_branch;
   bool     jets_cen_mass_isLoaded;
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *rawjets_p4_;
+  TBranch *rawjets_p4_branch;
+  bool     rawjets_p4_isLoaded;
+  vector<float> *rawjets_pt_;
+  TBranch *rawjets_pt_branch;
+  bool     rawjets_pt_isLoaded;
+  vector<float> *rawjets_eta_;
+  TBranch *rawjets_eta_branch;
+  bool     rawjets_eta_isLoaded;
+  vector<float> *rawjets_phi_;
+  TBranch *rawjets_phi_branch;
+  bool     rawjets_phi_isLoaded;
+  vector<float> *rawjets_mass_;
+  TBranch *rawjets_mass_branch;
+  bool     rawjets_mass_isLoaded;
+  vector<float> *rawjets_JEC_;
+  TBranch *rawjets_JEC_branch;
+  bool     rawjets_JEC_isLoaded;
+  vector<int> *rawjets_passJetID_;
+  TBranch *rawjets_passJetID_branch;
+  bool     rawjets_passJetID_isLoaded;
+  vector<int> *rawjets_isORwLep_;
+  TBranch *rawjets_isORwLep_branch;
+  bool     rawjets_isORwLep_isLoaded;
   int      nj_;
   TBranch *nj_branch;
   bool     nj_isLoaded;
@@ -426,12 +459,14 @@ void LoadAllBranches();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &lep_p4();
   const vector<float> &lep_pt();
   const vector<float> &lep_eta();
+  const vector<float> &lep_etaSC();
   const vector<float> &lep_phi();
   const vector<float> &lep_energy();
   const vector<float> &lep_mva();
   const vector<float> &lep_mvaIso();
   const vector<float> &lep_relIso04DB();
   const vector<float> &lep_relIso03EA();
+  const vector<float> &lep_relIso03EAv4();
   const vector<float> &lep_relIso03EAwLep();
   const vector<float> &lep_ip3d();
   const vector<float> &lep_sip3d();
@@ -468,6 +503,7 @@ void LoadAllBranches();
   const float &met_dn_phi();
   const float &met_gen_pt();
   const float &met_gen_phi();
+  const int &passesMETfiltersRun2();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_p4();
   const vector<float> &jets_pt();
   const vector<float> &jets_eta();
@@ -478,6 +514,14 @@ void LoadAllBranches();
   const vector<float> &jets_cen_eta();
   const vector<float> &jets_cen_phi();
   const vector<float> &jets_cen_mass();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &rawjets_p4();
+  const vector<float> &rawjets_pt();
+  const vector<float> &rawjets_eta();
+  const vector<float> &rawjets_phi();
+  const vector<float> &rawjets_mass();
+  const vector<float> &rawjets_JEC();
+  const vector<int> &rawjets_passJetID();
+  const vector<int> &rawjets_isORwLep();
   const int &nj();
   const int &nj_up();
   const int &nj_dn();
@@ -552,12 +596,14 @@ namespace tas {
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &lep_p4();
   const vector<float> &lep_pt();
   const vector<float> &lep_eta();
+  const vector<float> &lep_etaSC();
   const vector<float> &lep_phi();
   const vector<float> &lep_energy();
   const vector<float> &lep_mva();
   const vector<float> &lep_mvaIso();
   const vector<float> &lep_relIso04DB();
   const vector<float> &lep_relIso03EA();
+  const vector<float> &lep_relIso03EAv4();
   const vector<float> &lep_relIso03EAwLep();
   const vector<float> &lep_ip3d();
   const vector<float> &lep_sip3d();
@@ -594,6 +640,7 @@ namespace tas {
   const float &met_dn_phi();
   const float &met_gen_pt();
   const float &met_gen_phi();
+  const int &passesMETfiltersRun2();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_p4();
   const vector<float> &jets_pt();
   const vector<float> &jets_eta();
@@ -604,6 +651,14 @@ namespace tas {
   const vector<float> &jets_cen_eta();
   const vector<float> &jets_cen_phi();
   const vector<float> &jets_cen_mass();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &rawjets_p4();
+  const vector<float> &rawjets_pt();
+  const vector<float> &rawjets_eta();
+  const vector<float> &rawjets_phi();
+  const vector<float> &rawjets_mass();
+  const vector<float> &rawjets_JEC();
+  const vector<int> &rawjets_passJetID();
+  const vector<int> &rawjets_isORwLep();
   const int &nj();
   const int &nj_up();
   const int &nj_dn();

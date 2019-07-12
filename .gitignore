@@ -3,3 +3,9 @@
 outputs/*.root
 outputs/*/*/*.root
 plots/
+.*.txt
+.*.history
+stats/*_v*/
+outputs/*
+plots/*
+plots_*/

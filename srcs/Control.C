@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     //usage output
     if (argc < 4)
     {
-        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag dosyst" << std::endl;
+        std::cout << "usage : " << argv[0] << " ntuple_file_name ntuple_version output_tag EXTRAOPT=(either SYST or SKIM)" << std::endl;
         return 0;
     }
 
@@ -104,7 +104,12 @@ int main(int argc, char** argv)
         //
         // Loop!
         //
-        Run.Loop(argv[2], argv[3], (argc>=5));
+        bool dosyst = false;
+        bool doskim = false;
+        if (argc>=5)
+        {
+        }
+        Run.Loop(argv[2], argv[3], dosyst, doskim);
 
         // Done
         Run.End(count);

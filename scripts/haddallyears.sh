@@ -67,6 +67,7 @@ if [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     # echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/ddfake.root   outputs/${1}/${2}/ddfake.root   outputs/${3}/${4}/ddfake.root   outputs/${5}/${6}/ddfake.root  " >> .hadd.cmds.txt
     echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/other.root    outputs/${1}/${2}/other.root    outputs/${3}/${4}/other.root    outputs/${5}/${6}/other.root   " >> .hadd.cmds.txt
     echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/triother.root outputs/${1}/${2}/triother.root outputs/${3}/${4}/triother.root outputs/${5}/${6}/triother.root" >> .hadd.cmds.txt
+    echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/othervvv.root outputs/${1}/${2}/othervvv.root outputs/${3}/${4}/othervvv.root outputs/${5}/${6}/othervvv.root" >> .hadd.cmds.txt
 fi
 
 sh rooutil/xargs.sh .hadd.cmds.txt

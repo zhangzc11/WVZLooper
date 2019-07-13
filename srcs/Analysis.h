@@ -35,6 +35,9 @@
 #include "rooutil.h"
 #include "wvztree.h"
 
+// MET MC Correction
+#include "METCorrectionHandler.h"
+
 using namespace std;
 
 //class: the main class for functions;
@@ -127,6 +130,7 @@ public:
     bool isDamaged;
     bool doFakeEst;
     bool doSyst;
+    bool doSkim;
     std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
     std::vector<int> lep_tight_idxs;
@@ -200,8 +204,16 @@ public:
     RooUtil::HistMap* histmap_2018_fake_rate_el;
     RooUtil::HistMap* histmap_2018_fake_rate_mu;
 
+    // MET MC Correction for
+    METCorrectionHandler metcorrector;
+    METObject metobj;
+    METObject metobj_corrected;
+
     // Looper
     RooUtil::Looper<wvztree>* looper;
+    TTree* t;
+    TFile* BDTinputFile;
+    RooUtil::TTreeX* tx;
 
 //*******functions********//
     Analysis(const char* ifileName, const char* RootName);
@@ -214,6 +226,8 @@ public:
 
 //*******plots*******//
     makeHists* myhists;
+
+    void setDoSkim(bool=true);
 
     void loadScaleFactors();
 
@@ -229,6 +243,7 @@ public:
     void selectFakeableLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
+    void correctMET();
 
     float EventWeight();
     float LeptonScaleFactor();
@@ -278,6 +293,8 @@ public:
     bool IsChannelEMu(bool=false);
     bool IsChannelOnZ(bool=false);
     bool IsChannelOffZ(bool=false);
+    bool IsChannelOffZHighMll(bool=false);
+    bool IsChannelOffZLowMll(bool=false);
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
@@ -288,7 +305,7 @@ public:
     bool ChannelOffZHighMET();
 
     float VarMll();
-    float VarMET();
+    float VarMET(int=0);
     float VarNvtx();
     float VarMll2ndZ();
     float VarMT(int,int=0);
@@ -313,6 +330,8 @@ public:
     float VarM4l(int, int, int, int);
     float VarHTLep(int, int, int, int);
     float VarHTLep5();
+    float VarMETPhi(int=0);
+    float VarTauTauDisc(int=0);
 
 };
 #endif
@@ -346,7 +365,7 @@ void Analysis::End(int RootNumber)
         cout << "XXXX**Runing: Big Error! No file load!" << endl;
         return;
     }
-    delete fTTree->GetCurrentFile();
+    // delete fTTree->GetCurrentFile();
 }
 
 

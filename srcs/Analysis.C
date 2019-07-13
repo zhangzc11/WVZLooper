@@ -721,20 +721,20 @@ void Analysis::setDoSkim(bool setDoSkim)
 void Analysis::createNewBranches()
 {
     tx = new RooUtil::TTreeX(looper->getSkimTree());
-    tx->createBranch<float>("lep_Z_pt0");
-    tx->createBranch<float>("lep_Z_pt1");
-    tx->createBranch<float>("lep_N_pt0");
-    tx->createBranch<float>("lep_N_pt1");
+    tx->createBranch<int>("lep_Z_idx0");
+    tx->createBranch<int>("lep_Z_idx1");
+    tx->createBranch<int>("lep_N_idx0");
+    tx->createBranch<int>("lep_N_idx1");
     tx->createBranch<float>("MllN");
 }
 
 //______________________________________________________________________________________________
 void Analysis::fillSkimTree()
 {
-    tx->setBranch<float>("lep_Z_pt0", this->VarLepPt(lep_ZCand_idx1));
-    tx->setBranch<float>("lep_Z_pt1", this->VarLepPt(lep_ZCand_idx2));
-    tx->setBranch<float>("lep_N_pt0", this->VarLepPt(lep_Nom_idx1));
-    tx->setBranch<float>("lep_N_pt1", this->VarLepPt(lep_Nom_idx2));
+    tx->setBranch<int>("lep_Z_idx0", lep_ZCand_idx1);
+    tx->setBranch<int>("lep_Z_idx1", lep_ZCand_idx2);
+    tx->setBranch<int>("lep_N_idx0", lep_Nom_idx1);
+    tx->setBranch<int>("lep_N_idx1", lep_Nom_idx2);
     tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
     looper->fillSkim();
 }
@@ -2553,6 +2553,22 @@ float Analysis::VarLepPt(int idx)
     if (idx < 0)
         return -999;
     return wvz.lep_p4().at(idx).pt();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarLepEta(int idx)
+{
+    if (idx < 0)
+        return -999;
+    return wvz.lep_p4().at(idx).eta();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarLepPhi(int idx)
+{
+    if (idx < 0)
+        return -999;
+    return wvz.lep_p4().at(idx).phi();
 }
 
 //______________________________________________________________________________________________

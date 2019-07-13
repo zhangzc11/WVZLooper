@@ -327,6 +327,8 @@ public:
     float VarMll2l();
     float VarNSFOS();
     float VarLepPt(int);
+    float VarLepEta(int idx);
+    float VarLepPhi(int idx);
     float VarPtll(int, int);
     float VarMll(int, int);
     float VarM4l(int, int, int, int);

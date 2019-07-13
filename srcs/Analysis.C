@@ -2556,6 +2556,14 @@ float Analysis::VarLepPt(int idx)
 }
 
 //______________________________________________________________________________________________
+float Analysis::VarLepEta(int idx)
+{
+    if (idx < 0)
+        return -999;
+    return wvz.lep_p4().at(idx).eta();
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarMll(int idx, int jdx)
 {
     if (idx < 0 or jdx < 0)

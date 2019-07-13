@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.10/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2018_v0.1.12/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -319,6 +319,9 @@ class wvztree {
   vector<float> *jets_mass_;
   TBranch *jets_mass_branch;
   bool     jets_mass_isLoaded;
+  vector<float> *jets_btag_score_;
+  TBranch *jets_btag_score_branch;
+  bool     jets_btag_score_isLoaded;
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *jets_cen_p4_;
   TBranch *jets_cen_p4_branch;
   bool     jets_cen_p4_isLoaded;
@@ -509,6 +512,7 @@ void LoadAllBranches();
   const vector<float> &jets_eta();
   const vector<float> &jets_phi();
   const vector<float> &jets_mass();
+  const vector<float> &jets_btag_score();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_cen_p4();
   const vector<float> &jets_cen_pt();
   const vector<float> &jets_cen_eta();
@@ -646,6 +650,7 @@ namespace tas {
   const vector<float> &jets_eta();
   const vector<float> &jets_phi();
   const vector<float> &jets_mass();
+  const vector<float> &jets_btag_score();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_cen_p4();
   const vector<float> &jets_cen_pt();
   const vector<float> &jets_cen_eta();

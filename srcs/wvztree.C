@@ -207,6 +207,8 @@ void wvztree::Init(TTree *tree) {
   if (jets_phi_branch) jets_phi_branch->SetAddress(&jets_phi_);
   jets_mass_branch = tree->GetBranch("jets_mass");
   if (jets_mass_branch) jets_mass_branch->SetAddress(&jets_mass_);
+  jets_btag_score_branch = tree->GetBranch("jets_btag_score");
+  if (jets_btag_score_branch) jets_btag_score_branch->SetAddress(&jets_btag_score_);
   jets_cen_pt_branch = tree->GetBranch("jets_cen_pt");
   if (jets_cen_pt_branch) jets_cen_pt_branch->SetAddress(&jets_cen_pt_);
   jets_cen_eta_branch = tree->GetBranch("jets_cen_eta");
@@ -367,6 +369,7 @@ void wvztree::GetEntry(unsigned int idx) {
   jets_eta_isLoaded = false;
   jets_phi_isLoaded = false;
   jets_mass_isLoaded = false;
+  jets_btag_score_isLoaded = false;
   jets_cen_p4_isLoaded = false;
   jets_cen_pt_isLoaded = false;
   jets_cen_eta_isLoaded = false;
@@ -499,6 +502,7 @@ void wvztree::LoadAllBranches() {
   if (jets_eta_branch != 0) jets_eta();
   if (jets_phi_branch != 0) jets_phi();
   if (jets_mass_branch != 0) jets_mass();
+  if (jets_btag_score_branch != 0) jets_btag_score();
   if (jets_cen_p4_branch != 0) jets_cen_p4();
   if (jets_cen_pt_branch != 0) jets_cen_pt();
   if (jets_cen_eta_branch != 0) jets_cen_eta();
@@ -1817,6 +1821,19 @@ const vector<float> &wvztree::jets_mass() {
   return *jets_mass_;
 }
 
+const vector<float> &wvztree::jets_btag_score() {
+  if (not jets_btag_score_isLoaded) {
+    if (jets_btag_score_branch != 0) {
+      jets_btag_score_branch->GetEntry(index);
+    } else {
+      printf("branch jets_btag_score_branch does not exist!\n");
+      exit(1);
+    }
+    jets_btag_score_isLoaded = true;
+  }
+  return *jets_btag_score_;
+}
+
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::jets_cen_p4() {
   if (not jets_cen_p4_isLoaded) {
     if (jets_cen_p4_branch != 0) {
@@ -2316,6 +2333,7 @@ const vector<float> &jets_pt() { return wvz.jets_pt(); }
 const vector<float> &jets_eta() { return wvz.jets_eta(); }
 const vector<float> &jets_phi() { return wvz.jets_phi(); }
 const vector<float> &jets_mass() { return wvz.jets_mass(); }
+const vector<float> &jets_btag_score() { return wvz.jets_btag_score(); }
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_cen_p4() { return wvz.jets_cen_p4(); }
 const vector<float> &jets_cen_pt() { return wvz.jets_cen_pt(); }
 const vector<float> &jets_cen_eta() { return wvz.jets_cen_eta(); }

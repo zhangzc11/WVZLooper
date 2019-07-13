@@ -735,7 +735,7 @@ void Analysis::fillSkimTree()
     tx->setBranch<int>("lep_Z_idx1", lep_ZCand_idx2);
     tx->setBranch<int>("lep_N_idx0", lep_Nom_idx1);
     tx->setBranch<int>("lep_N_idx1", lep_Nom_idx2);
-    tx->setBranch<int>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
+    tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
     looper->fillSkim();
 }
 

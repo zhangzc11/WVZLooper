@@ -12,7 +12,7 @@ TheoryWeight theoryweight;
 // e.g.
 // NtupleVersion = "WVZ2018_v0.0.9"
 // TagName = "LoopTag1"
-void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
+void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst, bool doskim)
 {
 
     //==================
@@ -29,6 +29,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
 
     // Whether to run systematic variations as well or not
     doSyst = dosyst;
+    // Whether to run skimming or not
+    doSkim = doskim;
 
     // Parsing year
     if (ntupleVersion.Contains("v0.0.5")) year = -1; // Meaning use this sets to scale it up to 137
@@ -660,7 +662,6 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
     looper = new RooUtil::Looper<wvztree>(ch, &wvz, -1); // -1 means process all events
 
     // if doSkim 
-    doSkim = true;
     if (doSkim)
     {
         TString tree_output_tfile = output_path + "/BDTinputTree_" + output_tfile_name;
@@ -677,12 +678,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
             theoryweight.setFile(looper->getCurrentFileName());
             if (doSkim)
             {
-                tx = new RooUtil::TTreeX(looper->getSkimTree());
-                tx->createBranch<float>("lep_Z_pt0");
-                tx->createBranch<float>("lep_Z_pt1");
-                tx->createBranch<float>("lep_N_pt0");
-                tx->createBranch<float>("lep_N_pt1");
-                tx->createBranch<float>("MllN");
+                createNewBranches();
             }
         }
 
@@ -704,17 +700,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
 
         if (cutflow.getCut("ChannelEMuHighMT").pass)
         {
-            tx->setBranch<float>("lep_Z_pt0", this->VarLepPt(lep_ZCand_idx1));
-            tx->setBranch<float>("lep_Z_pt1", this->VarLepPt(lep_ZCand_idx2));
-            tx->setBranch<float>("lep_N_pt0", this->VarLepPt(lep_Nom_idx1));
-            tx->setBranch<float>("lep_N_pt1", this->VarLepPt(lep_Nom_idx2));
-            tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
-            looper->fillSkim();
+            if (doSkim)
+                fillSkimTree();
         }
     }
 
     cutflow.saveOutput();
-    looper->saveSkim();
+    if (doSkim)
+        looper->saveSkim();
 
 }//end of whole function
 
@@ -722,6 +715,28 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
 void Analysis::setDoSkim(bool setDoSkim)
 {
     doSkim = setDoSkim;
+}
+
+//______________________________________________________________________________________________
+void Analysis::createNewBranches()
+{
+    tx = new RooUtil::TTreeX(looper->getSkimTree());
+    tx->createBranch<float>("lep_Z_pt0");
+    tx->createBranch<float>("lep_Z_pt1");
+    tx->createBranch<float>("lep_N_pt0");
+    tx->createBranch<float>("lep_N_pt1");
+    tx->createBranch<float>("MllN");
+}
+
+//______________________________________________________________________________________________
+void Analysis::fillSkimTree()
+{
+    tx->setBranch<float>("lep_Z_pt0", this->VarLepPt(lep_ZCand_idx1));
+    tx->setBranch<float>("lep_Z_pt1", this->VarLepPt(lep_ZCand_idx2));
+    tx->setBranch<float>("lep_N_pt0", this->VarLepPt(lep_Nom_idx1));
+    tx->setBranch<float>("lep_N_pt1", this->VarLepPt(lep_Nom_idx2));
+    tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
+    looper->fillSkim();
 }
 
 //______________________________________________________________________________________________

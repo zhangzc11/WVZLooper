@@ -101,6 +101,10 @@ void wvztree::Init(TTree *tree) {
   if (VHchannel_branch) VHchannel_branch->SetAddress(&VHchannel_);
   Higgschannel_branch = tree->GetBranch("Higgschannel");
   if (Higgschannel_branch) Higgschannel_branch->SetAddress(&Higgschannel_);
+  nGenTauClean_branch = tree->GetBranch("nGenTauClean");
+  if (nGenTauClean_branch) nGenTauClean_branch->SetAddress(&nGenTauClean_);
+  nGenTau_branch = tree->GetBranch("nGenTau");
+  if (nGenTau_branch) nGenTau_branch->SetAddress(&nGenTau_);
   firstgoodvertex_branch = tree->GetBranch("firstgoodvertex");
   if (firstgoodvertex_branch) firstgoodvertex_branch->SetAddress(&firstgoodvertex_);
   nvtx_branch = tree->GetBranch("nvtx");
@@ -313,6 +317,8 @@ void wvztree::GetEntry(unsigned int idx) {
   gen_lep_id_isLoaded = false;
   VHchannel_isLoaded = false;
   Higgschannel_isLoaded = false;
+  nGenTauClean_isLoaded = false;
+  nGenTau_isLoaded = false;
   firstgoodvertex_isLoaded = false;
   nvtx_isLoaded = false;
   nTrueInt_isLoaded = false;
@@ -446,6 +452,8 @@ void wvztree::LoadAllBranches() {
   if (gen_lep_id_branch != 0) gen_lep_id();
   if (VHchannel_branch != 0) VHchannel();
   if (Higgschannel_branch != 0) Higgschannel();
+  if (nGenTauClean_branch != 0) nGenTauClean();
+  if (nGenTau_branch != 0) nGenTau();
   if (firstgoodvertex_branch != 0) firstgoodvertex();
   if (nvtx_branch != 0) nvtx();
   if (nTrueInt_branch != 0) nTrueInt();
@@ -1091,6 +1099,32 @@ const int &wvztree::Higgschannel() {
     Higgschannel_isLoaded = true;
   }
   return Higgschannel_;
+}
+
+const int &wvztree::nGenTauClean() {
+  if (not nGenTauClean_isLoaded) {
+    if (nGenTauClean_branch != 0) {
+      nGenTauClean_branch->GetEntry(index);
+    } else {
+      printf("branch nGenTauClean_branch does not exist!\n");
+      exit(1);
+    }
+    nGenTauClean_isLoaded = true;
+  }
+  return nGenTauClean_;
+}
+
+const int &wvztree::nGenTau() {
+  if (not nGenTau_isLoaded) {
+    if (nGenTau_branch != 0) {
+      nGenTau_branch->GetEntry(index);
+    } else {
+      printf("branch nGenTau_branch does not exist!\n");
+      exit(1);
+    }
+    nGenTau_isLoaded = true;
+  }
+  return nGenTau_;
 }
 
 const int &wvztree::firstgoodvertex() {
@@ -2277,6 +2311,8 @@ const vector<float> &gen_lep_mass() { return wvz.gen_lep_mass(); }
 const vector<int> &gen_lep_id() { return wvz.gen_lep_id(); }
 const int &VHchannel() { return wvz.VHchannel(); }
 const int &Higgschannel() { return wvz.Higgschannel(); }
+const int &nGenTauClean() { return wvz.nGenTauClean(); }
+const int &nGenTau() { return wvz.nGenTau(); }
 const int &firstgoodvertex() { return wvz.firstgoodvertex(); }
 const int &nvtx() { return wvz.nvtx(); }
 const int &nTrueInt() { return wvz.nTrueInt(); }

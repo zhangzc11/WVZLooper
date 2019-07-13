@@ -49,7 +49,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
-    cutflow.addCut("Weight", [&](){ return 1; }, [&](){ return this->EventWeight(); } );
+    cutflow.addCut("Weight", [&](){ return this->CutGenFilter(); }, [&](){ return this->EventWeight(); } );
 
     // There are two types of NtupleVersion
     // 1. WVZ201*_v* which only contains events with 4 or more leptons
@@ -698,7 +698,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         correctMET();
         cutflow.fill();
 
-        if (cutflow.getCut("ChannelEMuHighMT").pass)
+        if (cutflow.getCut("Cut4LepBVeto").pass)
         {
             if (doSkim)
                 fillSkimTree();
@@ -726,6 +726,8 @@ void Analysis::createNewBranches()
     tx->createBranch<int>("lep_N_idx0");
     tx->createBranch<int>("lep_N_idx1");
     tx->createBranch<float>("MllN");
+    tx->createBranch<float>("eventweight");
+    tx->createBranch<float>("lepsf");
 }
 
 //______________________________________________________________________________________________
@@ -736,6 +738,8 @@ void Analysis::fillSkimTree()
     tx->setBranch<int>("lep_N_idx0", lep_Nom_idx1);
     tx->setBranch<int>("lep_N_idx1", lep_Nom_idx2);
     tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
+    tx->setBranch<float>("eventweight", this->EventWeight());
+    tx->setBranch<float>("lepsf", this->LeptonScaleFactor());
     looper->fillSkim();
 }
 
@@ -2057,6 +2061,29 @@ bool Analysis::Is3LeptonEvent()
     if (not (nFakeableLeptons >= 3)) return false;
     if (not (CutHLT())) return false;
     return true;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::CutGenFilter()
+{
+    if (looper->getCurrentFileName().Contains("wwz_amcatnlo"))
+    {
+        if (year == 2016)
+        {
+            return true;
+        }
+        else
+        {
+            if (wvz.nGenTauClean() != 0)
+                return true;
+            else
+                return false;
+        }
+    }
+    else
+    {
+        return true;
+    }
 }
 
 //______________________________________________________________________________________________

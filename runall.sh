@@ -24,12 +24,13 @@ usage()
   echo "  -u    unblind                (e.g. -u)"
   echo "  -y    yaxis-log              (e.g. -y)"
   echo "  -s    do systematics         (e.g. -s)"
+  echo "  -k    do skim tree           (e.g. -k)"
   echo
   exit
 }
 
 # Command-line opts
-while getopts ":b:t:v:d:p:n:12uysh" OPTION; do
+while getopts ":b:t:v:d:p:n:12uyskh" OPTION; do
   case $OPTION in
     b) BASELINE=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;
@@ -42,6 +43,7 @@ while getopts ":b:t:v:d:p:n:12uysh" OPTION; do
     u) UNBLIND=" -u";;
     y) YAXISLOG=" -y";;
     s) DOSYST=" -s";;
+    k) DOSKIM=" -k";;
     h) usage;;
     :) usage;;
   esac
@@ -58,6 +60,7 @@ if [ -z "${NBINS}" ]; then NBINS=""; fi
 if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 if [ -z ${YAXISLOG}  ]; then YAXISLOG=""; fi
 if [ -z ${DOSYST}  ]; then DOSYST=""; fi
+if [ -z ${DOSKIM}  ]; then DOSKIM=""; fi
 
 # Verbose
 date
@@ -76,6 +79,7 @@ echo "NBINS          : ${NBINS}"
 echo "UNBLIND        : ${UNBLIND}"
 echo "YAXISLOG       : ${YAXISLOG}"
 echo "DOSYST         : ${DOSYST}"
+echo "DOSKIM         : ${DOSKIM}"
 echo "================================================"
 
 # to shift away the parsed options
@@ -93,15 +97,15 @@ if [ ! -d /nfs-7/userdata/phchang/babies/${NTUPLETYPE}2018_${NTUPLEVERSION}/ ]; 
 #
 if ${FORCELOOPER} || [ ! -d outputs/${NTUPLETYPE}2016_${NTUPLEVERSION}/y2016_${BASELINE} ]; then
     echo "Running the looper..."
-    sh ./run.sh ${DOSYST} -y 2016 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2016_${BASELINE} &
+    sh ./run.sh ${DOSYST} ${DOSKIM} -y 2016 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2016_${BASELINE} &
 fi
 if ${FORCELOOPER} || [ ! -d outputs/${NTUPLETYPE}2017_${NTUPLEVERSION}/y2017_${BASELINE} ]; then
     echo "Running the looper..."
-    sh ./run.sh ${DOSYST} -y 2017 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2017_${BASELINE} &
+    sh ./run.sh ${DOSYST} ${DOSKIM} -y 2017 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2017_${BASELINE} &
 fi
 if ${FORCELOOPER} || [ ! -d outputs/${NTUPLETYPE}2018_${NTUPLEVERSION}/y2018_${BASELINE} ]; then
     echo "Running the looper..."
-    sh ./run.sh ${DOSYST} -y 2018 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2018_${BASELINE} &
+    sh ./run.sh ${DOSYST} ${DOSKIM} -y 2018 -t ${NTUPLETYPE} -v ${NTUPLEVERSION} -T y2018_${BASELINE} &
 fi
 wait
 

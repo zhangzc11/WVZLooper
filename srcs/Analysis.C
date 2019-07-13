@@ -659,6 +659,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
     ch->Add(fTTree->GetCurrentFile()->GetName());
     looper = new RooUtil::Looper<wvztree>(ch, &wvz, -1); // -1 means process all events
 
+    // if doSkim 
+    doSkim = true;
+    if (doSkim)
+    {
+        looper->setSkim(output_file->GetName());
+    }
+
+
     // Perform event loop!
     while (looper->nextEvent())
     {
@@ -684,11 +692,23 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
         selectFakeStudyLeptons();
         correctMET();
         cutflow.fill();
+
+        if (cutflow.getCut("ChannelEMuHighMT").pass)
+        {
+            looper->fillSkim();
+        }
     }
 
     cutflow.saveOutput();
+    looper->saveSkim();
 
 }//end of whole function
+
+//______________________________________________________________________________________________
+void Analysis::setDoSkim(bool setDoSkim)
+{
+    doSkim = setDoSkim;
+}
 
 //______________________________________________________________________________________________
 void Analysis::loadScaleFactors()
@@ -2572,7 +2592,7 @@ float Analysis::VarHTLep5()
 //______________________________________________________________________________________________
 float Analysis::VarTauTauDisc(int var)
 {
-
+    return -999;
 }
 
 

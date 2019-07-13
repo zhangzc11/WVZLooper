@@ -130,6 +130,7 @@ public:
     bool isDamaged;
     bool doFakeEst;
     bool doSyst;
+    bool doSkim;
     std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
     std::vector<int> lep_tight_idxs;
@@ -222,6 +223,8 @@ public:
 
 //*******plots*******//
     makeHists* myhists;
+
+    void setDoSkim(bool=true);
 
     void loadScaleFactors();
 

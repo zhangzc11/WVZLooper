@@ -211,6 +211,9 @@ public:
 
     // Looper
     RooUtil::Looper<wvztree>* looper;
+    TTree* t;
+    TFile* BDTinputFile;
+    RooUtil::TTreeX* tx;
 
 //*******functions********//
     Analysis(const char* ifileName, const char* RootName);

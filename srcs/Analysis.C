@@ -663,9 +663,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
     doSkim = true;
     if (doSkim)
     {
-        looper->setSkim(output_file->GetName());
+        TString tree_output_tfile = output_path + "/BDTinputTree_" + output_tfile_name;
+        looper->setSkim(tree_output_tfile);
     }
-
 
     // Perform event loop!
     while (looper->nextEvent())
@@ -675,6 +675,15 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
         if (looper->isNewFileInChain())
         {
             theoryweight.setFile(looper->getCurrentFileName());
+            if (doSkim)
+            {
+                tx = new RooUtil::TTreeX(looper->getSkimTree());
+                tx->createBranch<float>("lep_Z_pt0");
+                tx->createBranch<float>("lep_Z_pt1");
+                tx->createBranch<float>("lep_N_pt0");
+                tx->createBranch<float>("lep_N_pt1");
+                tx->createBranch<float>("MllN");
+            }
         }
 
         // Once it enters loop it's 1, and then 2, and so on.
@@ -695,6 +704,11 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst)
 
         if (cutflow.getCut("ChannelEMuHighMT").pass)
         {
+            tx->setBranch<float>("lep_Z_pt0", this->VarLepPt(lep_ZCand_idx1));
+            tx->setBranch<float>("lep_Z_pt1", this->VarLepPt(lep_ZCand_idx2));
+            tx->setBranch<float>("lep_N_pt0", this->VarLepPt(lep_Nom_idx1));
+            tx->setBranch<float>("lep_N_pt1", this->VarLepPt(lep_Nom_idx2));
+            tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
             looper->fillSkim();
         }
     }

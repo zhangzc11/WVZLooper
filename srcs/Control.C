@@ -108,6 +108,11 @@ int main(int argc, char** argv)
         bool doskim = false;
         if (argc>=5)
         {
+            std::string extraopt = argv[4];
+            if (TString(extraopt).EqualTo("SYST"))
+                dosyst = true;
+            else if (TString(extraopt).EqualTo("SKIM"))
+                doskim = true;
         }
         Run.Loop(argv[2], argv[3], dosyst, doskim);
 

@@ -700,12 +700,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
         if (cutflow.getCut("ChannelEMuHighMT").pass)
         {
-            fillSkimTree();
+            if (doSkim)
+                fillSkimTree();
         }
     }
 
     cutflow.saveOutput();
-    looper->saveSkim();
+    if (doSkim)
+        looper->saveSkim();
 
 }//end of whole function
 

@@ -19,7 +19,7 @@ ROOTLIBS    = $(shell root-config --libs)
 ROOTCFLAGS  = $(shell root-config --cflags)
 CXXFLAGS   += $(ROOTCFLAGS)
 CFLAGS      = $(ROOTCFLAGS) -Wall -Wno-unused-function -g $(OPTIMIZE) -fPIC -fno-var-tracking
-EXTRACFLAGS = $(shell rooutil-config)
+EXTRACFLAGS = $(shell rooutil-config) -IStopAnalysis/StopCORE/METCorr/
 EXTRAFLAGS  = -fPIC -ITMultiDrawTreePlayer -Wunused-variable -lTMVA -lEG -lGenVector -lXMLIO -lMLP -lTreePlayer
 
 $(EXE): $(OBJECTS)

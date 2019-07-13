@@ -1,3 +1,6 @@
 [submodule "rooutil"]
 	path = rooutil
 	url = git@github.com:sgnoohc/rooutil.git
+[submodule "StopAnalysis"]
+	path = StopAnalysis
+	url = git@github.com:cmstas/StopAnalysis.git

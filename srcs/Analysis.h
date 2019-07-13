@@ -270,6 +270,7 @@ public:
     bool passFakeableElectronID(int idx);
     bool passFakeableMuonID(int idx);
 
+    bool CutGenFilter();
     bool Is3LeptonEvent();
     bool Is4LeptonEvent();
     bool Is4LeptonFakeValidationEvents();

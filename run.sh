@@ -21,7 +21,7 @@ usage()
 }
 
 # Command-line opts
-while getopts ":y:t:v:T:sh" OPTION; do
+while getopts ":y:t:v:T:skh" OPTION; do
   case $OPTION in
     y) YEAR=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;

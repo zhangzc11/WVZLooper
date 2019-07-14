@@ -86,7 +86,7 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     fi
     echo "hadd -f higgs.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f data.root DATA_data_Run*.root" >> .hadd.cmds.txt
-    echo "hadd -f data_prehem.root DATA_data_Run201*A*.root DATA_data_Run201*B*.root" >> .hadd.cmds.txt
+    # echo "hadd -f data_prehem.root DATA_data_Run201*A*.root DATA_data_Run201*B*.root" >> .hadd.cmds.txt
     # echo "hadd -f ddfake.root FAKE_*.root" >> .hadd.cmds.txt
     echo "hadd -f other.root ${PREFIX}dy_m1050_madgraph_1_results.root ${PREFIX}dy_m50_madgraph_1_results.root ${PREFIX}ttbar_dilep_madgraph_1_results.root ${PREFIX}zg_llg_amcatnlo_1_results.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
 

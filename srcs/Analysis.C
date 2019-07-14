@@ -2169,7 +2169,8 @@ bool Analysis::CutGenFilter()
         }
         else
         {
-            if (wvz.nGenTauClean() == 0)
+            if (wvz.hasTau())
+            // if (wvz.nGenTauClean() > 0)
                 return true;
             else
                 return false;

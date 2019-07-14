@@ -105,6 +105,8 @@ void wvztree::Init(TTree *tree) {
   if (nGenTauClean_branch) nGenTauClean_branch->SetAddress(&nGenTauClean_);
   nGenTau_branch = tree->GetBranch("nGenTau");
   if (nGenTau_branch) nGenTau_branch->SetAddress(&nGenTau_);
+  hasTau_branch = tree->GetBranch("hasTau");
+  if (hasTau_branch) hasTau_branch->SetAddress(&hasTau_);
   firstgoodvertex_branch = tree->GetBranch("firstgoodvertex");
   if (firstgoodvertex_branch) firstgoodvertex_branch->SetAddress(&firstgoodvertex_);
   nvtx_branch = tree->GetBranch("nvtx");
@@ -319,6 +321,7 @@ void wvztree::GetEntry(unsigned int idx) {
   Higgschannel_isLoaded = false;
   nGenTauClean_isLoaded = false;
   nGenTau_isLoaded = false;
+  hasTau_isLoaded = false;
   firstgoodvertex_isLoaded = false;
   nvtx_isLoaded = false;
   nTrueInt_isLoaded = false;
@@ -454,6 +457,7 @@ void wvztree::LoadAllBranches() {
   if (Higgschannel_branch != 0) Higgschannel();
   if (nGenTauClean_branch != 0) nGenTauClean();
   if (nGenTau_branch != 0) nGenTau();
+  if (hasTau_branch != 0) hasTau();
   if (firstgoodvertex_branch != 0) firstgoodvertex();
   if (nvtx_branch != 0) nvtx();
   if (nTrueInt_branch != 0) nTrueInt();
@@ -1125,6 +1129,19 @@ const int &wvztree::nGenTau() {
     nGenTau_isLoaded = true;
   }
   return nGenTau_;
+}
+
+const int &wvztree::hasTau() {
+  if (not hasTau_isLoaded) {
+    if (hasTau_branch != 0) {
+      hasTau_branch->GetEntry(index);
+    } else {
+      printf("branch hasTau_branch does not exist!\n");
+      exit(1);
+    }
+    hasTau_isLoaded = true;
+  }
+  return hasTau_;
 }
 
 const int &wvztree::firstgoodvertex() {
@@ -2313,6 +2330,7 @@ const int &VHchannel() { return wvz.VHchannel(); }
 const int &Higgschannel() { return wvz.Higgschannel(); }
 const int &nGenTauClean() { return wvz.nGenTauClean(); }
 const int &nGenTau() { return wvz.nGenTau(); }
+const int &hasTau() { return wvz.hasTau(); }
 const int &firstgoodvertex() { return wvz.firstgoodvertex(); }
 const int &nvtx() { return wvz.nvtx(); }
 const int &nTrueInt() { return wvz.nTrueInt(); }

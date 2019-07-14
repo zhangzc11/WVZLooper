@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.1/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.2/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -157,6 +157,9 @@ class wvztree {
   int      nGenTau_;
   TBranch *nGenTau_branch;
   bool     nGenTau_isLoaded;
+  int      hasTau_;
+  TBranch *hasTau_branch;
+  bool     hasTau_isLoaded;
   int      firstgoodvertex_;
   TBranch *firstgoodvertex_branch;
   bool     firstgoodvertex_isLoaded;
@@ -464,6 +467,7 @@ void LoadAllBranches();
   const int &Higgschannel();
   const int &nGenTauClean();
   const int &nGenTau();
+  const int &hasTau();
   const int &firstgoodvertex();
   const int &nvtx();
   const int &nTrueInt();
@@ -604,6 +608,7 @@ namespace tas {
   const int &Higgschannel();
   const int &nGenTauClean();
   const int &nGenTau();
+  const int &hasTau();
   const int &firstgoodvertex();
   const int &nvtx();
   const int &nTrueInt();

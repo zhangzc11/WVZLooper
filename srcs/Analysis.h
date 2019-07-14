@@ -30,10 +30,12 @@
 #include <tuple>
 #include <unistd.h>
 #include <vector>
+#include "TVector3.h"
 
 #include "makeHists.h"
 #include "rooutil.h"
 #include "wvztree.h"
+#include "hzzangles.h"
 
 // MET MC Correction
 #include "METCorrectionHandler.h"
@@ -312,6 +314,7 @@ public:
     float VarNvtx();
     float VarMll2ndZ();
     float VarMT(int,int=0);
+    float VarMTll(int,int,int=0);
     float VarMT5th(int=0);
     float VarMTNom0(int=0);
     float VarMTNom1(int=0);
@@ -337,6 +340,11 @@ public:
     float VarHTLep5();
     float VarMETPhi(int=0);
     float VarTauTauDisc(int=0);
+    float VarPtZeta();
+    float VarPtZetaVis();
+    float VarMinDRJetsToLep(int);
+
+    LeptonVectors GetLeptonVectors();
 
 };
 #endif

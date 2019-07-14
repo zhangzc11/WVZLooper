@@ -698,7 +698,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         correctMET();
         cutflow.fill();
 
-        if (cutflow.getCut("Cut4LepBVeto").pass)
+        if (cutflow.getCut("CutHLT").pass)
         {
             if (doSkim)
                 fillSkimTree();
@@ -725,21 +725,113 @@ void Analysis::createNewBranches()
     tx->createBranch<int>("lep_Z_idx1");
     tx->createBranch<int>("lep_N_idx0");
     tx->createBranch<int>("lep_N_idx1");
-    tx->createBranch<float>("MllN");
     tx->createBranch<float>("eventweight");
     tx->createBranch<float>("lepsf");
+    //needed for wwz vs ZZ BDT
+    //lep1: Z cand lepton, id > 0
+    //lep2: Z cand lepton, id < 0
+    //lep3: W cand lepton, leading pt
+    //lep4: W cand lepton, subleading pt
+    tx->createBranch<float>("MllN");
+    tx->createBranch<float>("MllZ");
+    tx->createBranch<float>("ZPt");
+    tx->createBranch<float>("lep1Pt");
+    tx->createBranch<float>("lep2Pt");
+    tx->createBranch<float>("lep3Pt");
+    tx->createBranch<float>("lep4Pt");
+    tx->createBranch<float>("lep3Id");
+    tx->createBranch<float>("lep4Id");
+    tx->createBranch<float>("lep3MT");
+    tx->createBranch<float>("lep4MT");
+    tx->createBranch<float>("lep34MT");
+    tx->createBranch<float>("lep1dZ");
+    tx->createBranch<float>("lep2dZ");
+    tx->createBranch<float>("lep3dZ");
+    tx->createBranch<float>("lep4dZ");
+    tx->createBranch<float>("pt_zeta");
+    tx->createBranch<float>("pt_zeta_vis");
+    tx->createBranch<float>("phi0");
+    tx->createBranch<float>("phi");
+    tx->createBranch<float>("phiH");
+    tx->createBranch<float>("theta0");
+    tx->createBranch<float>("theta1");
+    tx->createBranch<float>("theta2");
+    //needed for wwz vs ttZ BDT
+    //for jet1/2/3/4, if not enough jets, fill with -999
+    tx->createBranch<float>("minDRJetToLep3");
+    tx->createBranch<float>("minDRJetToLep4");
+    tx->createBranch<float>("jet1Pt");
+    tx->createBranch<float>("jet2Pt");
+    tx->createBranch<float>("jet3Pt");
+    tx->createBranch<float>("jet4Pt");
+    tx->createBranch<float>("jet1BtagScore");
+    tx->createBranch<float>("jet2BtagScore");
+    tx->createBranch<float>("jet3BtagScore");
+    tx->createBranch<float>("jet4BtagScore");
+    
 }
 
 //______________________________________________________________________________________________
 void Analysis::fillSkimTree()
 {
-    tx->setBranch<int>("lep_Z_idx0", lep_ZCand_idx1);
-    tx->setBranch<int>("lep_Z_idx1", lep_ZCand_idx2);
-    tx->setBranch<int>("lep_N_idx0", lep_Nom_idx1);
-    tx->setBranch<int>("lep_N_idx1", lep_Nom_idx2);
-    tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
+    int lep1_idx = lep_ZCand_idx1, lep2_idx = lep_ZCand_idx2, lep3_idx = lep_Nom_idx1, lep4_idx = lep_Nom_idx2;
+    //Z: lep1 is id>0 lepton
+    if(wvz.lep_id().at(lep_ZCand_idx1) < 0) 
+    {
+	lep1_idx = lep_ZCand_idx2;
+	lep2_idx = lep_ZCand_idx1;
+    } 
+    //W: lep3 is higher pt lepton
+    if(wvz.lep_pt().at(lep_Nom_idx1) < wvz.lep_pt().at(lep_Nom_idx2)) 
+    {
+	lep3_idx = lep_Nom_idx2;
+	lep4_idx = lep_Nom_idx1;
+    } 
+
+    LeptonVectors vLeptons = GetLeptonVectors();
+    HZZ4lEventParameters eventParameters = ConvertVectorsToAngles( vLeptons );
+    //start filling...
+    tx->setBranch<int>("lep_Z_idx0", lep1_idx);
+    tx->setBranch<int>("lep_Z_idx1", lep2_idx);
+    tx->setBranch<int>("lep_N_idx0", lep3_idx);
+    tx->setBranch<int>("lep_N_idx1", lep4_idx);
     tx->setBranch<float>("eventweight", this->EventWeight());
     tx->setBranch<float>("lepsf", this->LeptonScaleFactor());
+    tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
+    tx->setBranch<float>("MllZ", this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2));
+    tx->setBranch<float>("ZPt", this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2));
+    tx->setBranch<float>("lep1Pt", this->VarLepPt(lep1_idx));
+    tx->setBranch<float>("lep2Pt", this->VarLepPt(lep2_idx));
+    tx->setBranch<float>("lep3Pt", this->VarLepPt(lep3_idx));
+    tx->setBranch<float>("lep4Pt", this->VarLepPt(lep4_idx));
+    tx->setBranch<float>("lep3Id", wvz.lep_id().at(lep3_idx));
+    tx->setBranch<float>("lep4Id", wvz.lep_id().at(lep4_idx));
+    tx->setBranch<float>("lep3MT", this->VarMT(lep3_idx));
+    tx->setBranch<float>("lep4MT", this->VarMT(lep4_idx));
+    tx->setBranch<float>("lep34MT", this->VarMTll(lep3_idx, lep4_idx));
+    tx->setBranch<float>("lep1dZ", wvz.lep_dz().at(lep1_idx));
+    tx->setBranch<float>("lep2dZ", wvz.lep_dz().at(lep2_idx));
+    tx->setBranch<float>("lep3dZ", wvz.lep_dz().at(lep3_idx));
+    tx->setBranch<float>("lep4dZ", wvz.lep_dz().at(lep4_idx));
+    tx->setBranch<float>("pt_zeta", this->VarPtZeta());
+    tx->setBranch<float>("pt_zeta_vis", this->VarPtZetaVis());
+    tx->setBranch<float>("phi0", eventParameters.Phi0);
+    tx->setBranch<float>("phi", eventParameters.Phi);
+    tx->setBranch<float>("phiH", eventParameters.PhiH);
+    tx->setBranch<float>("theta0", eventParameters.Theta0);
+    tx->setBranch<float>("theta1", eventParameters.Theta1);
+    tx->setBranch<float>("theta2", eventParameters.Theta2);
+    tx->setBranch<float>("minDRJetToLep3", this->VarMinDRJetsToLep(lep3_idx));
+    tx->setBranch<float>("minDRJetToLep4", this->VarMinDRJetsToLep(lep4_idx));
+    tx->setBranch<float>("jet1Pt", wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999);
+    tx->setBranch<float>("jet2Pt", wvz.jets_p4().size() > 1 ? wvz.jets_p4()[1].pt() : -999);
+    tx->setBranch<float>("jet3Pt", wvz.jets_p4().size() > 2 ? wvz.jets_p4()[2].pt() : -999);
+    tx->setBranch<float>("jet4Pt", wvz.jets_p4().size() > 3 ? wvz.jets_p4()[3].pt() : -999);
+    tx->setBranch<float>("jet1BtagScore", wvz.jets_btag_score().size() > 0 ? wvz.jets_btag_score()[0] : -999);
+    tx->setBranch<float>("jet2BtagScore", wvz.jets_btag_score().size() > 1 ? wvz.jets_btag_score()[1] : -999);
+    tx->setBranch<float>("jet3BtagScore", wvz.jets_btag_score().size() > 2 ? wvz.jets_btag_score()[2] : -999);
+    tx->setBranch<float>("jet4BtagScore", wvz.jets_btag_score().size() > 3 ? wvz.jets_btag_score()[3] : -999);
+
     looper->fillSkim();
 }
 
@@ -2496,6 +2588,21 @@ float Analysis::VarMT(int idx, int var)
 }
 
 //______________________________________________________________________________________________
+float Analysis::VarMTll(int idx1, int idx2, int var)
+{
+    if (idx1 < 0 || idx2 < 0)
+    {
+        return -999;
+    }
+    if (idx1 >= (int) leptons.size() || idx2 >= (int) leptons.size())
+    {
+        return -999;
+    }
+    return sqrt(2 * this->VarMET(var) * (leptons.at(idx1) + leptons.at(idx2)).Et() * (1.0 - cos((leptons.at(idx1) + leptons.at(idx2)).Phi() - this->VarMETPhi(var))));
+}
+
+
+//______________________________________________________________________________________________
 float Analysis::VarMT5th(int var)           { return VarMT(lep_WCand_idx1, var);                                   } 
 float Analysis::VarMTNom0(int var)          { return VarMT(lep_Nom_idx1, var);                                     } 
 float Analysis::VarMTNom1(int var)          { return VarMT(lep_Nom_idx2, var);                                     } 
@@ -2670,5 +2777,85 @@ float Analysis::VarTauTauDisc(int var)
     return -999;
 }
 
+//______________________________________________________________________________________________
+float Analysis::VarPtZeta()
+{
+	TVector3 lep1, lep2, metv3, zeta;
 
+        metv3.SetPtEtaPhi(this->VarMET(), 0., this->VarMETPhi());
+        lep1.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx1), 0,  this->VarLepPhi(lep_ZCand_idx1));
+        lep2.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx2), 0,  this->VarLepPhi(lep_ZCand_idx2));
+
+        zeta = lep1*lep2.Mag() + lep2*lep1.Mag(); // find bisector
+
+        TVector3 sum = lep1 + lep2 + metv3;
+        return  sum.Dot(zeta.Unit());
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarPtZetaVis()
+{
+	TVector3 lep1, lep2, metv3, zeta;
+
+        metv3.SetPtEtaPhi(this->VarMET(), 0., this->VarMETPhi());
+        lep1.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx1), 0,  this->VarLepPhi(lep_ZCand_idx1));
+        lep2.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx2), 0,  this->VarLepPhi(lep_ZCand_idx2));
+
+        zeta = lep1*lep2.Mag() + lep2*lep1.Mag(); // find bisector
+
+        TVector3 sum_vis = lep1 + lep2;
+        return  sum_vis.Dot(zeta.Unit());	
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMinDRJetsToLep(int idx)
+{
+	float minDR = 9999;
+	for (unsigned int jj = 0 ; jj < wvz.jets_p4().size(); jj++)
+	{	
+		float dphi = wvz.jets_p4()[jj].phi() - lep_phi->at(idx);
+		float deta = wvz.jets_p4()[jj].eta() - lep_eta->at(idx);
+		float dR_this = sqrt(dphi*dphi + deta*deta);
+		if(dR_this < minDR) minDR = dR_this;
+	}
+	
+	if (minDR > 9998) minDR = -999; //default value: -999
+	
+	return minDR;
+}
+
+//______________________________________________________________________________________________
+LeptonVectors Analysis::GetLeptonVectors()
+{
+
+	int lep11_idx = lep_ZCand_idx1, lep12_idx = lep_ZCand_idx2, lep21_idx = lep_Nom_idx1, lep22_idx = lep_Nom_idx2;
+	//Z: lep11 is id>0 lepton
+	if(wvz.lep_id().at(lep_ZCand_idx1) < 0)
+	{
+	lep11_idx = lep_ZCand_idx2;
+        lep12_idx = lep_ZCand_idx1;
+	}
+	//W: lep21 id>0 lepton
+	if(wvz.lep_id().at(lep_Nom_idx1) < 0)
+	{
+	lep21_idx = lep_Nom_idx2;
+        lep22_idx = lep_Nom_idx1;
+	}
+	double lep11Mass = 0, lep12Mass = 0, lep21Mass = 0, lep22Mass = 0;
+	if(abs(wvz.lep_id().at(lep11_idx)) == 11) lep11Mass = 0.000511;
+	else if(abs(wvz.lep_id().at(lep11_idx)) == 13) lep11Mass = 0.1057;
+	if(abs(wvz.lep_id().at(lep12_idx)) == 11) lep12Mass = 0.000511;
+	else if(abs(wvz.lep_id().at(lep12_idx)) == 13) lep12Mass = 0.1057;
+	if(abs(wvz.lep_id().at(lep21_idx)) == 11) lep21Mass = 0.000511;
+	else if(abs(wvz.lep_id().at(lep21_idx)) == 13) lep21Mass = 0.1057;
+	if(abs(wvz.lep_id().at(lep22_idx)) == 11) lep22Mass = 0.000511;
+	else if(abs(wvz.lep_id().at(lep22_idx)) == 13) lep22Mass = 0.1057;
+
+	LeptonVectors vLeptons;
+	vLeptons.Lepton11.SetPtEtaPhiMass(this->VarLepPt(lep11_idx), this->VarLepEta(lep11_idx), this->VarLepPhi(lep11_idx), lep11Mass);	
+	vLeptons.Lepton12.SetPtEtaPhiMass(this->VarLepPt(lep12_idx), this->VarLepEta(lep12_idx), this->VarLepPhi(lep12_idx), lep12Mass);	
+	vLeptons.Lepton21.SetPtEtaPhiMass(this->VarLepPt(lep21_idx), this->VarLepEta(lep21_idx), this->VarLepPhi(lep21_idx), lep21Mass);	
+	vLeptons.Lepton22.SetPtEtaPhiMass(this->VarLepPt(lep22_idx), this->VarLepEta(lep22_idx), this->VarLepPhi(lep22_idx), lep22Mass);	
+	return vLeptons;
+}
 // eof

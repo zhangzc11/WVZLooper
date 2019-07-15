@@ -30,10 +30,12 @@
 #include <tuple>
 #include <unistd.h>
 #include <vector>
+#include "TVector3.h"
 
 #include "makeHists.h"
 #include "rooutil.h"
 #include "wvztree.h"
+#include "hzzangles.h"
 
 // MET MC Correction
 #include "METCorrectionHandler.h"
@@ -219,7 +221,7 @@ public:
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
     virtual void  Initial(const char* RootName, int RootNumber);
-    virtual void  Loop(const char* NtupleVersion, const char* TagName, bool dofake);
+    virtual void  Loop(const char* NtupleVersion, const char* TagName, bool dosyst, bool doskim);
     virtual void  End(int RootNumber);
     virtual void  Finish(int RootNumber);
     virtual void  Output();
@@ -228,6 +230,8 @@ public:
     makeHists* myhists;
 
     void setDoSkim(bool=true);
+    void createNewBranches();
+    void fillSkimTree();
 
     void loadScaleFactors();
 
@@ -268,6 +272,7 @@ public:
     bool passFakeableElectronID(int idx);
     bool passFakeableMuonID(int idx);
 
+    bool CutGenFilter();
     bool Is3LeptonEvent();
     bool Is4LeptonEvent();
     bool Is4LeptonFakeValidationEvents();
@@ -309,6 +314,7 @@ public:
     float VarNvtx();
     float VarMll2ndZ();
     float VarMT(int,int=0);
+    float VarMTll(int,int,int=0);
     float VarMT5th(int=0);
     float VarMTNom0(int=0);
     float VarMTNom1(int=0);
@@ -325,6 +331,8 @@ public:
     float VarMll2l();
     float VarNSFOS();
     float VarLepPt(int);
+    float VarLepEta(int idx);
+    float VarLepPhi(int idx);
     float VarPtll(int, int);
     float VarMll(int, int);
     float VarM4l(int, int, int, int);
@@ -332,6 +340,11 @@ public:
     float VarHTLep5();
     float VarMETPhi(int=0);
     float VarTauTauDisc(int=0);
+    float VarPtZeta();
+    float VarPtZetaVis();
+    float VarMinDRJetsToLep(int);
+
+    LeptonVectors GetLeptonVectors();
 
 };
 #endif

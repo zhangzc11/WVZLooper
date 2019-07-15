@@ -61,12 +61,12 @@ def write_datacards(ntuple_version, tag):
     nonzzbkg = [fname_sig, fname_ttz, fname_wz, fname_twz, fname_rare, fname_dyttbar, fname_higgs]
     nonttzbkg = [fname_sig, fname_zz, fname_wz, fname_twz, fname_rare, fname_dyttbar, fname_higgs]
 
-    # procs = ["data_obs", "sig", "ttz", "zz", "wz", "twz", "other"]
-    # mcprocs = procs[1:]
-    # bkgprocs = procs[2:]
-    # fnames = [fname_data, fname_sig, fname_ttz, fname_zz, fname_wz, fname_twz, fname_other]
-    # nonzzbkg = [fname_sig, fname_ttz, fname_wz, fname_twz, fname_other]
-    # nonttzbkg = [fname_sig, fname_zz, fname_wz, fname_twz, fname_other]
+    procs = ["data_obs", "sig", "ttz", "zz", "wz", "twz", "other"]
+    mcprocs = procs[1:]
+    bkgprocs = procs[2:]
+    fnames = [fname_data, fname_sig, fname_ttz, fname_zz, fname_wz, fname_twz, fname_other]
+    nonzzbkg = [fname_sig, fname_ttz, fname_wz, fname_twz, fname_other]
+    nonttzbkg = [fname_sig, fname_zz, fname_wz, fname_twz, fname_other]
 
     systcategs = ["BTagHF", "BTagLF", "JES", "Pileup", "Qsq", "PDF", "AlphaS", "MET"] # Null string is the nominal variation
     # Form systnames (i.e. ["Nominal", "BTagHFUp", "BTagHFDown", "BTagLFUp", "BTagLFDown"])
@@ -112,10 +112,10 @@ def write_datacards(ntuple_version, tag):
     ###############################
 
     # number of bins
-    nbins = 1
-    fitvar = "Yield"
-    # nbins = 5
-    # fitvar = "MllNom"
+    # nbins = 1
+    # fitvar = "Yield"
+    nbins = 5
+    fitvar = "MllNom"
 
     # Main data base to hold all the histograms
     hists_db = {}

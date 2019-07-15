@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.2/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.3/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -145,6 +145,33 @@ class wvztree {
   vector<int> *gen_lep_id_;
   TBranch *gen_lep_id_branch;
   bool     gen_lep_id_isLoaded;
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *gen_part_p4_;
+  TBranch *gen_part_p4_branch;
+  bool     gen_part_p4_isLoaded;
+  vector<float> *gen_part_pt_;
+  TBranch *gen_part_pt_branch;
+  bool     gen_part_pt_isLoaded;
+  vector<float> *gen_part_eta_;
+  TBranch *gen_part_eta_branch;
+  bool     gen_part_eta_isLoaded;
+  vector<float> *gen_part_phi_;
+  TBranch *gen_part_phi_branch;
+  bool     gen_part_phi_isLoaded;
+  vector<float> *gen_part_mass_;
+  TBranch *gen_part_mass_branch;
+  bool     gen_part_mass_isLoaded;
+  vector<int> *gen_part_id_;
+  TBranch *gen_part_id_branch;
+  bool     gen_part_id_isLoaded;
+  vector<int> *gen_part_mother_id_;
+  TBranch *gen_part_mother_id_branch;
+  bool     gen_part_mother_id_isLoaded;
+  vector<int> *gen_part_grandma_id_;
+  TBranch *gen_part_grandma_id_branch;
+  bool     gen_part_grandma_id_isLoaded;
+  vector<int> *gen_part_status_;
+  TBranch *gen_part_status_branch;
+  bool     gen_part_status_isLoaded;
   int      VHchannel_;
   TBranch *VHchannel_branch;
   bool     VHchannel_isLoaded;
@@ -463,6 +490,15 @@ void LoadAllBranches();
   const vector<float> &gen_lep_phi();
   const vector<float> &gen_lep_mass();
   const vector<int> &gen_lep_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4();
+  const vector<float> &gen_part_pt();
+  const vector<float> &gen_part_eta();
+  const vector<float> &gen_part_phi();
+  const vector<float> &gen_part_mass();
+  const vector<int> &gen_part_id();
+  const vector<int> &gen_part_mother_id();
+  const vector<int> &gen_part_grandma_id();
+  const vector<int> &gen_part_status();
   const int &VHchannel();
   const int &Higgschannel();
   const int &nGenTauClean();
@@ -604,6 +640,15 @@ namespace tas {
   const vector<float> &gen_lep_phi();
   const vector<float> &gen_lep_mass();
   const vector<int> &gen_lep_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4();
+  const vector<float> &gen_part_pt();
+  const vector<float> &gen_part_eta();
+  const vector<float> &gen_part_phi();
+  const vector<float> &gen_part_mass();
+  const vector<int> &gen_part_id();
+  const vector<int> &gen_part_mother_id();
+  const vector<int> &gen_part_grandma_id();
+  const vector<int> &gen_part_status();
   const int &VHchannel();
   const int &Higgschannel();
   const int &nGenTauClean();
@@ -696,4 +741,5 @@ namespace tas {
   const float &weight_btagsf_light_DN();
   const float &weight_btagsf_light_UP();
 }
+#include "rooutil.h"
 #endif

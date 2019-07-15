@@ -1602,6 +1602,9 @@ float Analysis::EventWeight()
                 and looper->getCurrentFileName().Contains("2017")
                 and looper->getCurrentFileName().Contains("ggh_hzz4l"))
             fixXsec = 1.236e-05 / 5.617e-05; // Error from wrong scale1fb setting
+        if (looper->getCurrentFileName().Contains("v0.1.12.1")
+                and looper->getCurrentFileName().Contains("wwz_4l2v_amcatnlo"))
+            fixXsec = 0.9913678619; // GenXsecAnalyser vs. McM for 4l2v wwz sample
         if (year == 2016)
             return fixXsec * evt_scale1fb * 35.9 * getTruePUw2016(wvz.nTrueInt());
         else if (year == 2017)
@@ -2166,7 +2169,8 @@ bool Analysis::CutGenFilter()
         }
         else
         {
-            if (wvz.nGenTauClean() != 0)
+            if (wvz.hasTau())
+            // if (wvz.nGenTauClean() > 0)
                 return true;
             else
                 return false;

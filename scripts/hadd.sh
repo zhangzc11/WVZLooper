@@ -13,7 +13,7 @@ usage()
 PREFIX=MC_
 if [ -z $1 ]; then usage; fi
 if [ -z $2 ]; then usage; fi
-if [ -n $3 ]; then PREFIX=BDTinputTree_MC_; fi
+if [ -n "$3" ]; then PREFIX=BDTinputTree_MC_; fi
 
 if [ ! -d outputs/$1/$2 ]; then
     echo ">>> Error! cannot find outputs/$1/$2"
@@ -41,10 +41,14 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     else
         echo "hadd -f wz.root ${PREFIX}wz_3lv_amcatnlo_1_results.root" >> .hadd.cmds.txt
     fi
-    echo "hadd -f sig.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
-    if [[ $1 == *"WVZ2017_v0.1.12.1"* ]] || [[ $1 == *"WVZ2018_v0.1.12.1"* ]]; then
+    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]]; then
+        echo "hadd -f sig.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
+    else
+        echo "hadd -f sig.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
+    fi
+    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]]; then
        echo "hadd -f wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
-   else
+    else
        echo "hadd -f wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
     fi
     echo "hadd -f www.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
@@ -54,7 +58,7 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     echo "hadd -f wh_www.root ${PREFIX}wh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f wh_wzz.root ${PREFIX}wh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f zh_zzz.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
-    if [[ $1 == *"WVZ2017_v0.1.12.1"* ]] || [[ $1 == *"WVZ2018_v0.1.12.1"* ]]; then
+    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]]; then
        echo "hadd -f nonh_wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
     else
        echo "hadd -f nonh_wwz.root ${PREFIX}wwz_amcatnlo_1_results.root" >> .hadd.cmds.txt
@@ -82,7 +86,7 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
     fi
     echo "hadd -f higgs.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f data.root DATA_data_Run*.root" >> .hadd.cmds.txt
-    echo "hadd -f data_prehem.root DATA_data_Run201*A*.root DATA_data_Run201*B*.root" >> .hadd.cmds.txt
+    # echo "hadd -f data_prehem.root DATA_data_Run201*A*.root DATA_data_Run201*B*.root" >> .hadd.cmds.txt
     # echo "hadd -f ddfake.root FAKE_*.root" >> .hadd.cmds.txt
     echo "hadd -f other.root ${PREFIX}dy_m1050_madgraph_1_results.root ${PREFIX}dy_m50_madgraph_1_results.root ${PREFIX}ttbar_dilep_madgraph_1_results.root ${PREFIX}zg_llg_amcatnlo_1_results.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
 

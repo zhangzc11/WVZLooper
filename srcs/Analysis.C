@@ -617,7 +617,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     //==========================
 
     // // Book Cutflow
-    // cutflow.bookCutflows();
+    cutflow.bookCutflows();
 
     // Book histograms
     if (not ntupleVersion.Contains("Trilep"))
@@ -903,6 +903,13 @@ void Analysis::selectVetoLeptons()
 //______________________________________________________________________________________________
 void Analysis::selectZCandLeptons()
 {
+
+    if (nVetoLeptons >= 4)
+        return;
+
+    if (lep_pt->size() == 0)
+        return;
+
     //================
     // Tagging Z boson
     //================
@@ -2169,8 +2176,7 @@ bool Analysis::CutGenFilter()
         }
         else
         {
-            if (wvz.hasTau())
-            // if (wvz.nGenTauClean() > 0)
+            if (wvz.nLightLep() == 4)
                 return true;
             else
                 return false;

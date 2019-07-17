@@ -238,6 +238,12 @@ def write_datacards(ntuple_version, tag):
         thissyst["emu{}_".format(year) + proc] = "1.03"
     systs.append( ("FlatSystsIP3D{}".format(year), "lnN", [], thissyst) )
 
+    # Flat additional systematics
+    thissyst = {}
+    for proc in mcprocs:
+        thissyst["emu{}_".format(year) + proc] = "1.02"
+    systs.append( ("FlatSystsTrigSF{}".format(year), "lnN", [], thissyst) )
+
     # Now create data card writer
     sig = hists_db["sig"]["Nominal"]
     bgs = [ hists_db[proc]["Nominal"] for proc in bkgprocs ]
@@ -379,6 +385,12 @@ def write_datacards(ntuple_version, tag):
     for proc in mcprocs:
         thissyst["offz{}_".format(year) + proc] = "1.03"
     systs.append( ("FlatSystsIP3D{}".format(year), "lnN", [], thissyst) )
+
+    # Flat additional systematics
+    thissyst = {}
+    for proc in mcprocs:
+        thissyst["offz{}_".format(year) + proc] = "1.02"
+    systs.append( ("FlatSystsTrigSF{}".format(year), "lnN", [], thissyst) )
 
     # Now create data card writer
     sig = hists_db["sig"]["Nominal"]

@@ -39,7 +39,7 @@ mkdir -p outputs/${1}_${3}_${5}/${2}_${4}_${6}
 
 echo "" > .hadd.cmds.txt
 
-if [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
+if [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
     echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/zz.root       outputs/${1}/${2}/zz.root       outputs/${3}/${4}/zz.root       outputs/${5}/${6}/zz.root" >> .hadd.cmds.txt
     echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/ttz.root      outputs/${1}/${2}/ttz.root      outputs/${3}/${4}/ttz.root      outputs/${5}/${6}/ttz.root" >> .hadd.cmds.txt
     echo "hadd -f outputs/${1}_${3}_${5}/${2}_${4}_${6}/twz.root      outputs/${1}/${2}/twz.root      outputs/${3}/${4}/twz.root      outputs/${5}/${6}/twz.root" >> .hadd.cmds.txt

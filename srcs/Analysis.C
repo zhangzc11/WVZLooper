@@ -49,7 +49,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
-    cutflow.addCut("Weight", [&](){ return this->CutGenFilter(); }, [&](){ return this->EventWeight(); } );
+    cutflow.addCut("EventWeight", [&](){ return 1; }, [&](){ return this->EventWeight(); } );
+    cutflow.addCutToLastActiveCut("GenFilter", [&](){ return this->CutGenFilter(); }, UNITY );
+    cutflow.addCutToLastActiveCut("Weight", [&](){ return 1; }, UNITY );
 
     // There are two types of NtupleVersion
     // 1. WVZ201*_v* which only contains events with 4 or more leptons
@@ -61,7 +63,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     //
     //========================
 
-    if (not ntupleVersion.Contains("Trilep"))
+    if (ntupleVersion.Contains("WVZ"))
     {
         // List of common four lepton related selections
         cutflow.getCut("Weight");
@@ -165,6 +167,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     // For fake rate related studies
     else if (ntupleVersion.Contains("Trilep"))
     {
+
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("ThreeLeptons"              , [&]() { return this->Is3LeptonEvent(); }                       , [&](){ return this->LeptonScaleFactor(); } );
         cutflow.addCutToLastActiveCut("EMuPlusX"                  , [&]() { return this->IsEMuPlusX(); }                           , UNITY );
@@ -240,6 +243,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addCutToLastActiveCut("ThreeLeptonFakeValidationEventsMu"  , [&]() { return lep_Fakeable_MCmatched_idx >= 0 ? abs(wvz.lep_id()[lep_Fakeable_MCmatched_idx]) == 13 : false; } , UNITY );
 
     }
+    else if (ntupleVersion.Contains("TTZ"))
+    {
+
+        cutflow.getCut("Weight");
+        cutflow.addCutToLastActiveCut("ThreeLeptonsTTZ", [&]() { return this->Is3LeptonTTZEvent(); } , [&](){ return this->LeptonScaleFactor(); } );
+        cutflow.addCutToLastActiveCut("ThreeLeptonsTTZNjet", [&]() { return wvz.nj() >= 3; } , UNITY );
+
+    }
 
     //========================
     //
@@ -254,16 +265,17 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     {
         histograms.addHistogram("Mll"            , 180 , 0       , 300    , [&](){ return this->VarMll(); });
         histograms.addHistogram("MET"            , 180 , 0       , 300    , [&](){ return this->VarMET(); });
+        histograms.addHistogram("OrigMET"        , 180 , 0       , 300    , [&](){ return wvz.met_pt(); });
         histograms.addHistogram("VarBinMET"      , {0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100., 200., 500.}    , [&](){ return this->VarMET(); });
         histograms.addHistogram("VarBinMETCoarse", {0., 100., 500.}    , [&](){ return this->VarMET(); });
         histograms.addHistogram("Mll2ndZ"        , 180 , 0       , 300    , [&](){ return this->VarMll2ndZ(); });
         histograms.addHistogram("MT5th"          , 180 , 0       , 300    , [&](){ return this->VarMT5th(); });
         histograms.addHistogram("RelIso5th"      , 180 , 0       , 0.4    , [&](){ return this->VarRelIso5th(); });
         histograms.addHistogram("Pt5th"          , 180 , 0       , 200    , [&](){ return this->VarPt5th(); });
-        histograms.addHistogram("Njet"           , 4   , 0       , 4      , [&](){ return this->VarNjet(); });
+        histograms.addHistogram("Njet"           , 6   , 0       , 6      , [&](){ return this->VarNjet(); });
         histograms.addHistogram("Nfwdjet"        , 4   , 0       , 4      , [&](){ return wvz.nj() - wvz.nj_cen(); });
         histograms.addHistogram("Neenoisejet"    , 4   , 0       , 4      , [&](){ return this->VarNEENoiseJet(); });
-        histograms.addHistogram("Nbjet"          , 4   , 0       , 4      , [&](){ return this->VarNb(); });
+        histograms.addHistogram("Nbjet"          , 6   , 0       , 6      , [&](){ return this->VarNb(); });
         histograms.addHistogram("Mll2l"          , 180 , 0       , 300    , [&](){ return this->VarMll2l(); });
         histograms.addHistogram("lepZ2isNom0"    , 2   , 0       , 2      , [&](){ return lep_2ndZCand_idx1 >= 0 ? passNominalLeptonID(lep_2ndZCand_idx1) : -999; });
         histograms.addHistogram("lepZ2isNom1"    , 2   , 0       , 2      , [&](){ return lep_2ndZCand_idx2 >= 0 ? passNominalLeptonID(lep_2ndZCand_idx2) : -999; });
@@ -617,10 +629,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     //==========================
 
     // // Book Cutflow
-    cutflow.bookCutflows();
+    // cutflow.bookCutflows();
 
     // Book histograms
-    if (not ntupleVersion.Contains("Trilep"))
+    if (ntupleVersion.Contains("WVZ"))
     {
         if (not doSyst)
         {
@@ -646,6 +658,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMu");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMuHighMET");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMuHighMT");
+            cutflow.bookHistogramsForCut(histograms, "ChannelBTagOffZ");
+            cutflow.bookHistogramsForCut(histograms, "ChannelBTagOffZHighMET");
         }
     }
     else if (ntupleVersion.Contains("Trilep"))
@@ -655,6 +669,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.bookHistogramsForCutAndBelow(histograms, "ThreeLeptonFakeValidationEvents");
         cutflow.bookHistogramsForCutAndBelow(histograms, "FourLeptonFakeValidationEvents");
     }
+    else if (ntupleVersion.Contains("TTZ"))
+    {
+        cutflow.bookHistogramsForCutAndBelow(histograms, "ThreeLeptonsTTZ");
+    }
 
     // Looper class to facilitate various things
     TChain* ch = new TChain("t");
@@ -662,7 +680,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     looper = new RooUtil::Looper<wvztree>(ch, &wvz, -1); // -1 means process all events
 
     // if doSkim 
-    if (doSkim)
+    if (ntupleVersion.Contains("WVZ") and doSkim)
     {
         TString tree_output_tfile = output_path + "/BDTinputTree_" + output_tfile_name;
         looper->setSkim(tree_output_tfile);
@@ -676,7 +694,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         if (looper->isNewFileInChain())
         {
             theoryweight.setFile(looper->getCurrentFileName());
-            if (doSkim)
+            if (ntupleVersion.Contains("WVZ") and doSkim)
             {
                 createNewBranches();
             }
@@ -698,15 +716,18 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         correctMET();
         cutflow.fill();
 
-        if (cutflow.getCut("CutHLT").pass)
+        if (ntupleVersion.Contains("WVZ"))
         {
-            if (doSkim)
-                fillSkimTree();
+            if (cutflow.getCut("CutHLT").pass)
+            {
+                if (doSkim)
+                    fillSkimTree();
+            }
         }
     }
 
     cutflow.saveOutput();
-    if (doSkim)
+    if (ntupleVersion.Contains("WVZ") and doSkim)
         looper->saveSkim();
 
 }//end of whole function
@@ -904,18 +925,16 @@ void Analysis::selectVetoLeptons()
 void Analysis::selectZCandLeptons()
 {
 
-    if (nVetoLeptons >= 4)
-        return;
-
-    if (lep_pt->size() == 0)
-        return;
-
     //================
     // Tagging Z boson
     //================
     // Find the first two particles decay from a Z boson
     lep_ZCand_idx1 = -999;
     lep_ZCand_idx2 = -999;
+
+    if (lep_pt->size() == 0)
+        return;
+
     bool ifpass; // For tagging Z boson only
     double compare = 10; // Min value of |Mll - MZ|
 
@@ -1425,17 +1444,17 @@ bool Analysis::passVetoLeptonID(int idx)
 bool Analysis::passVetoElectronID(int idx)
 {
 
-    // HEM Veto
-    if (
-            (wvz.isData() and wvz.run() >= 319077)
-         // or ((not wvz.isData()) and ((wvz.evt() % 1961) < 1286))
-       )
-    {
-        if (    wvz.lep_p4().at(idx).eta() > -4.7
-            and wvz.lep_p4().at(idx).eta() < -1.4
-            and wvz.lep_p4().at(idx).phi() > -1.6
-            and wvz.lep_p4().at(idx).phi() < -0.8) return false;
-    }
+    // // HEM Veto
+    // if (
+    //         (wvz.isData() and wvz.run() >= 319077)
+    //      // or ((not wvz.isData()) and ((wvz.evt() % 1961) < 1286))
+    //    )
+    // {
+    //     if (    wvz.lep_p4().at(idx).eta() > -4.7
+    //         and wvz.lep_p4().at(idx).eta() < -1.4
+    //         and wvz.lep_p4().at(idx).phi() > -1.6
+    //         and wvz.lep_p4().at(idx).phi() < -0.8) return false;
+    // }
 
     if (!( wvz.lep_p4().at(idx).pt() > 10.           )) return false;
     if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.5    )) return false;
@@ -1612,6 +1631,12 @@ float Analysis::EventWeight()
         if (looper->getCurrentFileName().Contains("v0.1.12.1")
                 and looper->getCurrentFileName().Contains("wwz_4l2v_amcatnlo"))
             fixXsec = 0.9913678619; // GenXsecAnalyser vs. McM for 4l2v wwz sample
+        if ((looper->getCurrentFileName().Contains("v0.1.12.1")
+                or looper->getCurrentFileName().Contains("v0.1.12.2")
+                or looper->getCurrentFileName().Contains("v0.1.12.6"))
+                and year == 2017
+                and looper->getCurrentFileName().Contains("wwz_4l2v_amcatnlo"))
+            fixXsec = 1.1376131152; // Error from wrong scale1fb
         if (year == 2016)
             return fixXsec * evt_scale1fb * 35.9 * getTruePUw2016(wvz.nTrueInt());
         else if (year == 2017)
@@ -2166,6 +2191,16 @@ bool Analysis::Is3LeptonEvent()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::Is3LeptonTTZEvent()
+{
+    if (not (lep_ZCand_idx1 >= 0 or lep_ZCand_idx2 >= 0)) return false;
+    if (not (nNominalLeptons == 1)) return false;
+    if (not (nVetoLeptons == 3)) return false;
+    if (not (CutHLT())) return false;
+    return true;
+}
+
+//______________________________________________________________________________________________
 bool Analysis::CutGenFilter()
 {
     if (looper->getCurrentFileName().Contains("wwz_amcatnlo"))
@@ -2176,12 +2211,28 @@ bool Analysis::CutGenFilter()
         }
         else
         {
+            // if (not wvz.hasTau())
+            // if (wvz.nGenTau() == 0)
             if (wvz.nLightLep() == 4)
-                return true;
-            else
                 return false;
+            else
+                return true;
         }
     }
+    // else if (looper->getCurrentFileName().Contains("wwz_4l2v_amcatnlo"))
+    // {
+    //     if (year == 2016)
+    //     {
+    //         return true;
+    //     }
+    //     else
+    //     {
+    //         if (wvz.nLightLep() == 4 and abs(wvz.gen_V_p4()[2].mass() - 91.1876) < 10.)
+    //             return true;
+    //         else
+    //             return false;
+    //     }
+    // }
     else
     {
         return true;

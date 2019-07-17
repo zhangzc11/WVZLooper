@@ -274,6 +274,7 @@ public:
 
     bool CutGenFilter();
     bool Is3LeptonEvent();
+    bool Is3LeptonTTZEvent();
     bool Is4LeptonEvent();
     bool Is4LeptonFakeValidationEvents();
     bool Is3LeptonFakeValidationEvents();

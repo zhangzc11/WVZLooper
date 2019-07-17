@@ -38,16 +38,17 @@ def main_analysis_make_plot_userfilter():
     unblind = args.unblind
 
     bkgfiles = [
-            "outputs/{}/{}/ttz.root".format(ntuple_version, tag),
             "outputs/{}/{}/zz.root".format(ntuple_version, tag),
-            "outputs/{}/{}/wz.root".format(ntuple_version, tag),
+            "outputs/{}/{}/ttz.root".format(ntuple_version, tag),
             "outputs/{}/{}/twz.root".format(ntuple_version, tag),
+            "outputs/{}/{}/wz.root".format(ntuple_version, tag),
             # "outputs/{}/{}/rare.root".format(ntuple_version, tag),
             # "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag),
             # "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
             "outputs/{}/{}/other.root".format(ntuple_version, tag),
             ]
-    bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other"]
+    bkgnames = ["ZZ", "t#bar{t}Z", "tWZ", "WZ", "Other"]
+    # bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other"]
     # bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"]
     sigfiles = [
             # "outputs/{}/{}/zh_wwz.root".format(ntuple_version, tag),
@@ -76,7 +77,7 @@ def main_analysis_make_plot_userfilter():
     bkgnamesddfake = ["Other", "DY", "t#bar{t}", "WZ"]
 
 
-    colors = [2005, 2001, 2003, 2007, 920, 2012, 2011, 2002]
+    colors = [2001, 2005, 2007, 2003, 920, 2012, 2011, 2002]
     fakeVRcolors = [920, 2012, 2011, 2003]
 
     if "2016" in ntuple_version: lumi = 35.9

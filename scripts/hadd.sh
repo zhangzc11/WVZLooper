@@ -32,7 +32,7 @@ if [[ $1 == *"Dilep"* ]]; then
     echo "hadd -f wj.root ${PREFIX}wjets_incl_madgraph_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f ww.root ${PREFIX}ww_2l_powheg_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f data.root DATA_data_Run*mm*.root" >> .hadd.cmds.txt
-elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]]; then
+elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
     echo "hadd -f zz.root ${PREFIX}zz_4l_powheg_1_results.root ${PREFIX}zz_2l2q_powheg_1_results.root ${PREFIX}zz_2l2v_powheg_1_results.root ${PREFIX}ggzz_*.root" >> .hadd.cmds.txt
     echo "hadd -f ttz.root ${PREFIX}ttz_ll_mll1_amcatnlo_1_results.root ${PREFIX}ttz_llvv_mll10_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f twz.root ${PREFIX}twz_ll_madgraph_1_results.root" >> .hadd.cmds.txt

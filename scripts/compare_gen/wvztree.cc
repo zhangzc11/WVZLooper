@@ -6,6 +6,8 @@ void wvztree::Init(TTree *tree) {
   if (gen_V_p4_branch) gen_V_p4_branch->SetAddress(&gen_V_p4_);
   gen_lep_p4_branch = tree->GetBranch("gen_lep_p4");
   if (gen_lep_p4_branch) gen_lep_p4_branch->SetAddress(&gen_lep_p4_);
+  gen_child_p4_branch = tree->GetBranch("gen_child_p4");
+  if (gen_child_p4_branch) gen_child_p4_branch->SetAddress(&gen_child_p4_);
   gen_part_p4_branch = tree->GetBranch("gen_part_p4");
   if (gen_part_p4_branch) gen_part_p4_branch->SetAddress(&gen_part_p4_);
   lep_p4_branch = tree->GetBranch("lep_p4");
@@ -99,6 +101,16 @@ void wvztree::Init(TTree *tree) {
   if (gen_lep_mass_branch) gen_lep_mass_branch->SetAddress(&gen_lep_mass_);
   gen_lep_id_branch = tree->GetBranch("gen_lep_id");
   if (gen_lep_id_branch) gen_lep_id_branch->SetAddress(&gen_lep_id_);
+  gen_child_pt_branch = tree->GetBranch("gen_child_pt");
+  if (gen_child_pt_branch) gen_child_pt_branch->SetAddress(&gen_child_pt_);
+  gen_child_eta_branch = tree->GetBranch("gen_child_eta");
+  if (gen_child_eta_branch) gen_child_eta_branch->SetAddress(&gen_child_eta_);
+  gen_child_phi_branch = tree->GetBranch("gen_child_phi");
+  if (gen_child_phi_branch) gen_child_phi_branch->SetAddress(&gen_child_phi_);
+  gen_child_mass_branch = tree->GetBranch("gen_child_mass");
+  if (gen_child_mass_branch) gen_child_mass_branch->SetAddress(&gen_child_mass_);
+  gen_child_id_branch = tree->GetBranch("gen_child_id");
+  if (gen_child_id_branch) gen_child_id_branch->SetAddress(&gen_child_id_);
   gen_part_pt_branch = tree->GetBranch("gen_part_pt");
   if (gen_part_pt_branch) gen_part_pt_branch->SetAddress(&gen_part_pt_);
   gen_part_eta_branch = tree->GetBranch("gen_part_eta");
@@ -125,6 +137,8 @@ void wvztree::Init(TTree *tree) {
   if (nGenTau_branch) nGenTau_branch->SetAddress(&nGenTau_);
   hasTau_branch = tree->GetBranch("hasTau");
   if (hasTau_branch) hasTau_branch->SetAddress(&hasTau_);
+  nLightLep_branch = tree->GetBranch("nLightLep");
+  if (nLightLep_branch) nLightLep_branch->SetAddress(&nLightLep_);
   firstgoodvertex_branch = tree->GetBranch("firstgoodvertex");
   if (firstgoodvertex_branch) firstgoodvertex_branch->SetAddress(&firstgoodvertex_);
   nvtx_branch = tree->GetBranch("nvtx");
@@ -335,6 +349,12 @@ void wvztree::GetEntry(unsigned int idx) {
   gen_lep_phi_isLoaded = false;
   gen_lep_mass_isLoaded = false;
   gen_lep_id_isLoaded = false;
+  gen_child_p4_isLoaded = false;
+  gen_child_pt_isLoaded = false;
+  gen_child_eta_isLoaded = false;
+  gen_child_phi_isLoaded = false;
+  gen_child_mass_isLoaded = false;
+  gen_child_id_isLoaded = false;
   gen_part_p4_isLoaded = false;
   gen_part_pt_isLoaded = false;
   gen_part_eta_isLoaded = false;
@@ -349,6 +369,7 @@ void wvztree::GetEntry(unsigned int idx) {
   nGenTauClean_isLoaded = false;
   nGenTau_isLoaded = false;
   hasTau_isLoaded = false;
+  nLightLep_isLoaded = false;
   firstgoodvertex_isLoaded = false;
   nvtx_isLoaded = false;
   nTrueInt_isLoaded = false;
@@ -480,6 +501,12 @@ void wvztree::LoadAllBranches() {
   if (gen_lep_phi_branch != 0) gen_lep_phi();
   if (gen_lep_mass_branch != 0) gen_lep_mass();
   if (gen_lep_id_branch != 0) gen_lep_id();
+  if (gen_child_p4_branch != 0) gen_child_p4();
+  if (gen_child_pt_branch != 0) gen_child_pt();
+  if (gen_child_eta_branch != 0) gen_child_eta();
+  if (gen_child_phi_branch != 0) gen_child_phi();
+  if (gen_child_mass_branch != 0) gen_child_mass();
+  if (gen_child_id_branch != 0) gen_child_id();
   if (gen_part_p4_branch != 0) gen_part_p4();
   if (gen_part_pt_branch != 0) gen_part_pt();
   if (gen_part_eta_branch != 0) gen_part_eta();
@@ -494,6 +521,7 @@ void wvztree::LoadAllBranches() {
   if (nGenTauClean_branch != 0) nGenTauClean();
   if (nGenTau_branch != 0) nGenTau();
   if (hasTau_branch != 0) hasTau();
+  if (nLightLep_branch != 0) nLightLep();
   if (firstgoodvertex_branch != 0) firstgoodvertex();
   if (nvtx_branch != 0) nvtx();
   if (nTrueInt_branch != 0) nTrueInt();
@@ -1115,6 +1143,84 @@ const vector<int> &wvztree::gen_lep_id() {
   return *gen_lep_id_;
 }
 
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::gen_child_p4() {
+  if (not gen_child_p4_isLoaded) {
+    if (gen_child_p4_branch != 0) {
+      gen_child_p4_branch->GetEntry(index);
+    } else {
+      printf("branch gen_child_p4_branch does not exist!\n");
+      exit(1);
+    }
+    gen_child_p4_isLoaded = true;
+  }
+  return *gen_child_p4_;
+}
+
+const vector<float> &wvztree::gen_child_pt() {
+  if (not gen_child_pt_isLoaded) {
+    if (gen_child_pt_branch != 0) {
+      gen_child_pt_branch->GetEntry(index);
+    } else {
+      printf("branch gen_child_pt_branch does not exist!\n");
+      exit(1);
+    }
+    gen_child_pt_isLoaded = true;
+  }
+  return *gen_child_pt_;
+}
+
+const vector<float> &wvztree::gen_child_eta() {
+  if (not gen_child_eta_isLoaded) {
+    if (gen_child_eta_branch != 0) {
+      gen_child_eta_branch->GetEntry(index);
+    } else {
+      printf("branch gen_child_eta_branch does not exist!\n");
+      exit(1);
+    }
+    gen_child_eta_isLoaded = true;
+  }
+  return *gen_child_eta_;
+}
+
+const vector<float> &wvztree::gen_child_phi() {
+  if (not gen_child_phi_isLoaded) {
+    if (gen_child_phi_branch != 0) {
+      gen_child_phi_branch->GetEntry(index);
+    } else {
+      printf("branch gen_child_phi_branch does not exist!\n");
+      exit(1);
+    }
+    gen_child_phi_isLoaded = true;
+  }
+  return *gen_child_phi_;
+}
+
+const vector<float> &wvztree::gen_child_mass() {
+  if (not gen_child_mass_isLoaded) {
+    if (gen_child_mass_branch != 0) {
+      gen_child_mass_branch->GetEntry(index);
+    } else {
+      printf("branch gen_child_mass_branch does not exist!\n");
+      exit(1);
+    }
+    gen_child_mass_isLoaded = true;
+  }
+  return *gen_child_mass_;
+}
+
+const vector<int> &wvztree::gen_child_id() {
+  if (not gen_child_id_isLoaded) {
+    if (gen_child_id_branch != 0) {
+      gen_child_id_branch->GetEntry(index);
+    } else {
+      printf("branch gen_child_id_branch does not exist!\n");
+      exit(1);
+    }
+    gen_child_id_isLoaded = true;
+  }
+  return *gen_child_id_;
+}
+
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::gen_part_p4() {
   if (not gen_part_p4_isLoaded) {
     if (gen_part_p4_branch != 0) {
@@ -1295,6 +1401,19 @@ const int &wvztree::hasTau() {
     hasTau_isLoaded = true;
   }
   return hasTau_;
+}
+
+const int &wvztree::nLightLep() {
+  if (not nLightLep_isLoaded) {
+    if (nLightLep_branch != 0) {
+      nLightLep_branch->GetEntry(index);
+    } else {
+      printf("branch nLightLep_branch does not exist!\n");
+      exit(1);
+    }
+    nLightLep_isLoaded = true;
+  }
+  return nLightLep_;
 }
 
 const int &wvztree::firstgoodvertex() {
@@ -2479,6 +2598,12 @@ const vector<float> &gen_lep_eta() { return wvz.gen_lep_eta(); }
 const vector<float> &gen_lep_phi() { return wvz.gen_lep_phi(); }
 const vector<float> &gen_lep_mass() { return wvz.gen_lep_mass(); }
 const vector<int> &gen_lep_id() { return wvz.gen_lep_id(); }
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_child_p4() { return wvz.gen_child_p4(); }
+const vector<float> &gen_child_pt() { return wvz.gen_child_pt(); }
+const vector<float> &gen_child_eta() { return wvz.gen_child_eta(); }
+const vector<float> &gen_child_phi() { return wvz.gen_child_phi(); }
+const vector<float> &gen_child_mass() { return wvz.gen_child_mass(); }
+const vector<int> &gen_child_id() { return wvz.gen_child_id(); }
 const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4() { return wvz.gen_part_p4(); }
 const vector<float> &gen_part_pt() { return wvz.gen_part_pt(); }
 const vector<float> &gen_part_eta() { return wvz.gen_part_eta(); }
@@ -2493,6 +2618,7 @@ const int &Higgschannel() { return wvz.Higgschannel(); }
 const int &nGenTauClean() { return wvz.nGenTauClean(); }
 const int &nGenTau() { return wvz.nGenTau(); }
 const int &hasTau() { return wvz.hasTau(); }
+const int &nLightLep() { return wvz.nLightLep(); }
 const int &firstgoodvertex() { return wvz.firstgoodvertex(); }
 const int &nvtx() { return wvz.nvtx(); }
 const int &nTrueInt() { return wvz.nTrueInt(); }

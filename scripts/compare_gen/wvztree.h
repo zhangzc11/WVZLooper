@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.3/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.5/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
 
 #ifndef wvztree_H
 #define wvztree_H
@@ -145,6 +145,24 @@ class wvztree {
   vector<int> *gen_lep_id_;
   TBranch *gen_lep_id_branch;
   bool     gen_lep_id_isLoaded;
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *gen_child_p4_;
+  TBranch *gen_child_p4_branch;
+  bool     gen_child_p4_isLoaded;
+  vector<float> *gen_child_pt_;
+  TBranch *gen_child_pt_branch;
+  bool     gen_child_pt_isLoaded;
+  vector<float> *gen_child_eta_;
+  TBranch *gen_child_eta_branch;
+  bool     gen_child_eta_isLoaded;
+  vector<float> *gen_child_phi_;
+  TBranch *gen_child_phi_branch;
+  bool     gen_child_phi_isLoaded;
+  vector<float> *gen_child_mass_;
+  TBranch *gen_child_mass_branch;
+  bool     gen_child_mass_isLoaded;
+  vector<int> *gen_child_id_;
+  TBranch *gen_child_id_branch;
+  bool     gen_child_id_isLoaded;
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *gen_part_p4_;
   TBranch *gen_part_p4_branch;
   bool     gen_part_p4_isLoaded;
@@ -187,6 +205,9 @@ class wvztree {
   int      hasTau_;
   TBranch *hasTau_branch;
   bool     hasTau_isLoaded;
+  int      nLightLep_;
+  TBranch *nLightLep_branch;
+  bool     nLightLep_isLoaded;
   int      firstgoodvertex_;
   TBranch *firstgoodvertex_branch;
   bool     firstgoodvertex_isLoaded;
@@ -490,6 +511,12 @@ void LoadAllBranches();
   const vector<float> &gen_lep_phi();
   const vector<float> &gen_lep_mass();
   const vector<int> &gen_lep_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_child_p4();
+  const vector<float> &gen_child_pt();
+  const vector<float> &gen_child_eta();
+  const vector<float> &gen_child_phi();
+  const vector<float> &gen_child_mass();
+  const vector<int> &gen_child_id();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4();
   const vector<float> &gen_part_pt();
   const vector<float> &gen_part_eta();
@@ -504,6 +531,7 @@ void LoadAllBranches();
   const int &nGenTauClean();
   const int &nGenTau();
   const int &hasTau();
+  const int &nLightLep();
   const int &firstgoodvertex();
   const int &nvtx();
   const int &nTrueInt();
@@ -640,6 +668,12 @@ namespace tas {
   const vector<float> &gen_lep_phi();
   const vector<float> &gen_lep_mass();
   const vector<int> &gen_lep_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_child_p4();
+  const vector<float> &gen_child_pt();
+  const vector<float> &gen_child_eta();
+  const vector<float> &gen_child_phi();
+  const vector<float> &gen_child_mass();
+  const vector<int> &gen_child_id();
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4();
   const vector<float> &gen_part_pt();
   const vector<float> &gen_part_eta();
@@ -654,6 +688,7 @@ namespace tas {
   const int &nGenTauClean();
   const int &nGenTau();
   const int &hasTau();
+  const int &nLightLep();
   const int &firstgoodvertex();
   const int &nvtx();
   const int &nTrueInt();

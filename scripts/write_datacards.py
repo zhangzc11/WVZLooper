@@ -14,6 +14,8 @@ parser = argparse.ArgumentParser(description="Plotter for the WVZ analysis")
 parser.add_argument('-b' , '--baseline_tag'    , dest='baseline_tag'    , help='baseline tag (e.g. test, test1. test2, etc.)' , required=True)
 parser.add_argument('-t' , '--ntuple_type'     , dest='ntuple_type'     , help='WVZ, Trilep, etc.'                            , required=True)
 parser.add_argument('-v' , '--ntuple_version'  , dest='ntuple_version'  , help='v0.1.6, v0.1.7, etc.'                         , required=True)
+parser.add_argument('-y' , '--print_yields'    , dest='print_yields'    , help='to print wysiwyg yields'                      , action='store_true', default=False)
+parser.add_argument('-w' , '--wwz_only'        , dest='wwz_only'        , help='to write wwz only signal datacards'           , action='store_true', default=False)
 
 args = parser.parse_args()
 
@@ -35,8 +37,10 @@ def write_datacards(ntuple_version, tag):
     # ntuple_version = args.sample_set_name
     # tag = args.tag
 
-    fname_sig     = "outputs/{}/{}/sig.root".format(ntuple_version, tag)
-    # fname_sig     = "outputs/{}/{}/wwz.root".format(ntuple_version, tag)
+    if args.wwz_only:
+        fname_sig     = "outputs/{}/{}/wwz.root".format(ntuple_version, tag)
+    else:
+        fname_sig     = "outputs/{}/{}/sig.root".format(ntuple_version, tag)
     # fname_sig     = "outputs/{}/{}/wzz.root".format(ntuple_version, tag)
     # fname_sig     = "outputs/{}/{}/zzz.root".format(ntuple_version, tag)
     fname_ttz     = "outputs/{}/{}/ttz.root".format(ntuple_version, tag)
@@ -47,11 +51,15 @@ def write_datacards(ntuple_version, tag):
     # fname_rare    = "outputs/{}/{}/rarevvv.root".format(ntuple_version, tag)
     fname_dyttbar = "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag)
     fname_higgs   = "outputs/{}/{}/higgs.root".format(ntuple_version, tag)
-    fname_other   = "outputs/{}/{}/other.root".format(ntuple_version, tag)
-    # fname_other   = "outputs/{}/{}/othervvv.root".format(ntuple_version, tag)
+    if args.wwz_only:
+        fname_other   = "outputs/{}/{}/othervvv.root".format(ntuple_version, tag)
+    else:
+        fname_other   = "outputs/{}/{}/other.root".format(ntuple_version, tag)
     fname_data    = "outputs/{}/{}/data.root".format(ntuple_version, tag)
 
     year = "2" + ntuple_version.split("_")[0].split("2")[1]
+    if "2016" in ntuple_version and "2017" in ntuple_version:
+        year = "All"
     prefix = "{}/{}".format(ntuple_version, tag)
 
     procs = ["data_obs", "sig", "ttz", "zz", "wz", "twz", "rare", "dyttbar", "higgs"]
@@ -104,18 +112,21 @@ def write_datacards(ntuple_version, tag):
     ttz_sferr = pr.get_sf(bcr_ttz_h, bcr_data_h, bcr_nonttz_h).GetBinError(1)
     expected_nevt_ttz = bcr_data_h.GetBinContent(1)
 
-    print year, "ttz_sf", "{:.2f} +/- {:.2f}".format(ttz_sf, ttz_sferr), expected_nevt_ttz
-    print year, "zz_sf", "{:.2f} +/- {:.2f}".format(zz_sf, zz_sferr), expected_nevt_zz
+    if not args.print_yields:
+        print year, "ttz_sf", "{:.2f} +/- {:.2f}".format(ttz_sf, ttz_sferr), expected_nevt_ttz
+        print year, "zz_sf", "{:.2f} +/- {:.2f}".format(zz_sf, zz_sferr), expected_nevt_zz
 
     ###############################
     # EMu channel data card writing
     ###############################
 
     # number of bins
-    # nbins = 1
-    # fitvar = "Yield"
-    nbins = 5
-    fitvar = "MllNom"
+    if args.print_yields:
+        nbins = 1
+        fitvar = "Yield"
+    else:
+        nbins = 5
+        fitvar = "MllNom"
 
     # Main data base to hold all the histograms
     hists_db = {}
@@ -238,6 +249,12 @@ def write_datacards(ntuple_version, tag):
         thissyst["emu{}_".format(year) + proc] = "1.03"
     systs.append( ("FlatSystsIP3D{}".format(year), "lnN", [], thissyst) )
 
+    # Flat additional systematics
+    thissyst = {}
+    for proc in mcprocs:
+        thissyst["emu{}_".format(year) + proc] = "1.02"
+    systs.append( ("FlatSystsTrigSF{}".format(year), "lnN", [], thissyst) )
+
     # Now create data card writer
     sig = hists_db["sig"]["Nominal"]
     bgs = [ hists_db[proc]["Nominal"] for proc in bkgprocs ]
@@ -253,7 +270,8 @@ def write_datacards(ntuple_version, tag):
         d.set_bin(1)
         d.set_region_name("bin{}".format(1))
         d.write("stats/{}/emu_datacard_singlebin{}.txt".format(prefix, 1))
-        d.print_yields()
+        if args.print_yields:
+            d.print_yields()
 
     # colors = [2005, 2001, 2003, 2007, 920, 2012, 2011, 2002]
     # p.plot_hist(data=None, bgs=bgs, sigs=[sig], options={"bkg_sort_method":"ascending", "yaxis_range":[0.,2.5]}, colors=colors, sig_labels=["sig"], legend_labels=bkgprocs)
@@ -380,6 +398,12 @@ def write_datacards(ntuple_version, tag):
         thissyst["offz{}_".format(year) + proc] = "1.03"
     systs.append( ("FlatSystsIP3D{}".format(year), "lnN", [], thissyst) )
 
+    # Flat additional systematics
+    thissyst = {}
+    for proc in mcprocs:
+        thissyst["offz{}_".format(year) + proc] = "1.02"
+    systs.append( ("FlatSystsTrigSF{}".format(year), "lnN", [], thissyst) )
+
     # Now create data card writer
     sig = hists_db["sig"]["Nominal"]
     bgs = [ hists_db[proc]["Nominal"] for proc in bkgprocs ]
@@ -390,7 +414,8 @@ def write_datacards(ntuple_version, tag):
         d.set_bin(i)
         d.set_region_name("bin{}".format(i))
         d.write("stats/{}/offz_datacard_bin{}.txt".format(prefix, i))
-        d.print_yields()
+        if args.print_yields:
+            d.print_yields()
 
 #========
 

@@ -11,6 +11,9 @@ from array import array
 import pyrootutil as pr
 import math
 
+Ntuple_Version = "v0.1.12.7"
+Baseline_Version = "syst"
+
 syst_list_all = ["Nominal", "JES", "Pileup", "BTagHF", "BTagLF", "PDF", "Qsq", "AlphaS", "MET"]
 syst_list = ["Nominal", "JES", "Pileup", "MET"]
 syst_list = syst_list_all
@@ -226,8 +229,8 @@ def get_extrapolation_uncertainty(ntuple_version, tag, numerator, denominator, n
 
 def run_for_variation(variation=""):
 
-    ntuple_version = "WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11"
-    tag = "y2016_baseline_0711_METCorr_w_syst_y2017_baseline_0711_METCorr_w_syst_y2018_baseline_0711_METCorr_w_syst"
+    ntuple_version = "WVZ2016_{}_WVZ2017_{}_WVZ2018_{}".format(Ntuple_Version, Ntuple_Version, Ntuple_Version)
+    tag = "y2016_{}_y2017_{}_y2018_{}".format(Baseline_Version, Baseline_Version, Baseline_Version)
 
     denominator = "ChannelBTagEMu{}__Yield".format(variation)
     numerator = "ChannelBTagEMuHighMET{}__Yield".format(variation)
@@ -262,16 +265,16 @@ def run_for_variation(variation=""):
     print ""
 
 def run(process, region, variable, variation="", valopt="ratio"):
-    ntuple_version = "WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11"
-    tag = "y2016_baseline_0711_METCorr_w_syst_y2017_baseline_0711_METCorr_w_syst_y2018_baseline_0711_METCorr_w_syst"
+    ntuple_version = "WVZ2016_{}_WVZ2017_{}_WVZ2018_{}".format(Ntuple_Version,Ntuple_Version,Ntuple_Version)
+    tag = "y2016_{}_y2017_{}_y2018_{}".format(Baseline_Version, Baseline_Version, Baseline_Version)
     denominator = "Channel{}{}__Yield".format(region, variation)
     numerator = "Channel{}High{}{}__Yield".format(region, variable, variation)
     # print denominator, numerator
     return get_extrapolation_uncertainty(ntuple_version, tag, numerator, denominator, process, valopt)
 
 def run_alpha(process, numerator_region, denominator_region, variation="", valopt="eff"):
-    ntuple_version = "WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11"
-    tag = "y2016_baseline_0711_METCorr_w_syst_y2017_baseline_0711_METCorr_w_syst_y2018_baseline_0711_METCorr_w_syst"
+    ntuple_version = "WVZ2016_{}_WVZ2017_{}_WVZ2018_{}".format(Ntuple_Version, Ntuple_Version, Ntuple_Version)
+    tag = "y2016_{}_y2017_{}_y2018_{}".format(Baseline_Version, Baseline_Version, Baseline_Version)
     denominator = "{}{}__Yield".format(denominator_region, variation)
     numerator = "{}{}__Yield".format(numerator_region, variation)
     # print denominator, numerator
@@ -343,27 +346,44 @@ def main_onz_ttz_only():
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_ttz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data") , options={"output_name":"exp/data_eff_ttz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_num") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_den") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_num") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_den") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_met.pdf"  , "print_yield":True} ) 
 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc") , options={"output_name":"exp/mc_eff_ttz_mt.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data") , options={"output_name":"exp/data_eff_ttz_mt.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_num") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_den") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_num") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_den") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_mt.pdf"  , "print_yield":True} ) 
+
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "data") , options={"output_name":"exp/data_eff_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_sr_met.pdf"  , "print_yield":True} ) 
+
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "mc") , options={"output_name":"exp/mc_eff_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "data") , options={"output_name":"exp/data_eff_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_sr_mt.pdf"  , "print_yield":True} ) 
 
 def main_onz_zz_met_only():
+
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data") , options={"output_name":"exp/data_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_zz_met.pdf"  , "print_yield":True} ) 
 
 def main():
 
@@ -379,10 +399,10 @@ def main():
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data") , options={"output_name":"exp/data_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_zz_met.pdf"  , "print_yield":True} ) 
 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MT"  , "mc") , options={"output_name":"exp/mc_eff_zz_mt.pdf"   , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MT"  , "data") , options={"output_name":"exp/data_eff_zz_mt.pdf"   , "print_yield":True} ) 

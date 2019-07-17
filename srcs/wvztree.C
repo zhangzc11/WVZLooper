@@ -6,6 +6,8 @@ void wvztree::Init(TTree *tree) {
   if (gen_V_p4_branch) gen_V_p4_branch->SetAddress(&gen_V_p4_);
   gen_lep_p4_branch = tree->GetBranch("gen_lep_p4");
   if (gen_lep_p4_branch) gen_lep_p4_branch->SetAddress(&gen_lep_p4_);
+  gen_part_p4_branch = tree->GetBranch("gen_part_p4");
+  if (gen_part_p4_branch) gen_part_p4_branch->SetAddress(&gen_part_p4_);
   lep_p4_branch = tree->GetBranch("lep_p4");
   if (lep_p4_branch) lep_p4_branch->SetAddress(&lep_p4_);
   met_p4_branch = tree->GetBranch("met_p4");
@@ -97,6 +99,22 @@ void wvztree::Init(TTree *tree) {
   if (gen_lep_mass_branch) gen_lep_mass_branch->SetAddress(&gen_lep_mass_);
   gen_lep_id_branch = tree->GetBranch("gen_lep_id");
   if (gen_lep_id_branch) gen_lep_id_branch->SetAddress(&gen_lep_id_);
+  gen_part_pt_branch = tree->GetBranch("gen_part_pt");
+  if (gen_part_pt_branch) gen_part_pt_branch->SetAddress(&gen_part_pt_);
+  gen_part_eta_branch = tree->GetBranch("gen_part_eta");
+  if (gen_part_eta_branch) gen_part_eta_branch->SetAddress(&gen_part_eta_);
+  gen_part_phi_branch = tree->GetBranch("gen_part_phi");
+  if (gen_part_phi_branch) gen_part_phi_branch->SetAddress(&gen_part_phi_);
+  gen_part_mass_branch = tree->GetBranch("gen_part_mass");
+  if (gen_part_mass_branch) gen_part_mass_branch->SetAddress(&gen_part_mass_);
+  gen_part_id_branch = tree->GetBranch("gen_part_id");
+  if (gen_part_id_branch) gen_part_id_branch->SetAddress(&gen_part_id_);
+  gen_part_mother_id_branch = tree->GetBranch("gen_part_mother_id");
+  if (gen_part_mother_id_branch) gen_part_mother_id_branch->SetAddress(&gen_part_mother_id_);
+  gen_part_grandma_id_branch = tree->GetBranch("gen_part_grandma_id");
+  if (gen_part_grandma_id_branch) gen_part_grandma_id_branch->SetAddress(&gen_part_grandma_id_);
+  gen_part_status_branch = tree->GetBranch("gen_part_status");
+  if (gen_part_status_branch) gen_part_status_branch->SetAddress(&gen_part_status_);
   VHchannel_branch = tree->GetBranch("VHchannel");
   if (VHchannel_branch) VHchannel_branch->SetAddress(&VHchannel_);
   Higgschannel_branch = tree->GetBranch("Higgschannel");
@@ -107,6 +125,8 @@ void wvztree::Init(TTree *tree) {
   if (nGenTau_branch) nGenTau_branch->SetAddress(&nGenTau_);
   hasTau_branch = tree->GetBranch("hasTau");
   if (hasTau_branch) hasTau_branch->SetAddress(&hasTau_);
+  nLightLep_branch = tree->GetBranch("nLightLep");
+  if (nLightLep_branch) nLightLep_branch->SetAddress(&nLightLep_);
   firstgoodvertex_branch = tree->GetBranch("firstgoodvertex");
   if (firstgoodvertex_branch) firstgoodvertex_branch->SetAddress(&firstgoodvertex_);
   nvtx_branch = tree->GetBranch("nvtx");
@@ -317,11 +337,21 @@ void wvztree::GetEntry(unsigned int idx) {
   gen_lep_phi_isLoaded = false;
   gen_lep_mass_isLoaded = false;
   gen_lep_id_isLoaded = false;
+  gen_part_p4_isLoaded = false;
+  gen_part_pt_isLoaded = false;
+  gen_part_eta_isLoaded = false;
+  gen_part_phi_isLoaded = false;
+  gen_part_mass_isLoaded = false;
+  gen_part_id_isLoaded = false;
+  gen_part_mother_id_isLoaded = false;
+  gen_part_grandma_id_isLoaded = false;
+  gen_part_status_isLoaded = false;
   VHchannel_isLoaded = false;
   Higgschannel_isLoaded = false;
   nGenTauClean_isLoaded = false;
   nGenTau_isLoaded = false;
   hasTau_isLoaded = false;
+  nLightLep_isLoaded = false;
   firstgoodvertex_isLoaded = false;
   nvtx_isLoaded = false;
   nTrueInt_isLoaded = false;
@@ -453,11 +483,21 @@ void wvztree::LoadAllBranches() {
   if (gen_lep_phi_branch != 0) gen_lep_phi();
   if (gen_lep_mass_branch != 0) gen_lep_mass();
   if (gen_lep_id_branch != 0) gen_lep_id();
+  if (gen_part_p4_branch != 0) gen_part_p4();
+  if (gen_part_pt_branch != 0) gen_part_pt();
+  if (gen_part_eta_branch != 0) gen_part_eta();
+  if (gen_part_phi_branch != 0) gen_part_phi();
+  if (gen_part_mass_branch != 0) gen_part_mass();
+  if (gen_part_id_branch != 0) gen_part_id();
+  if (gen_part_mother_id_branch != 0) gen_part_mother_id();
+  if (gen_part_grandma_id_branch != 0) gen_part_grandma_id();
+  if (gen_part_status_branch != 0) gen_part_status();
   if (VHchannel_branch != 0) VHchannel();
   if (Higgschannel_branch != 0) Higgschannel();
   if (nGenTauClean_branch != 0) nGenTauClean();
   if (nGenTau_branch != 0) nGenTau();
   if (hasTau_branch != 0) hasTau();
+  if (nLightLep_branch != 0) nLightLep();
   if (firstgoodvertex_branch != 0) firstgoodvertex();
   if (nvtx_branch != 0) nvtx();
   if (nTrueInt_branch != 0) nTrueInt();
@@ -1079,6 +1119,123 @@ const vector<int> &wvztree::gen_lep_id() {
   return *gen_lep_id_;
 }
 
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &wvztree::gen_part_p4() {
+  if (not gen_part_p4_isLoaded) {
+    if (gen_part_p4_branch != 0) {
+      gen_part_p4_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_p4_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_p4_isLoaded = true;
+  }
+  return *gen_part_p4_;
+}
+
+const vector<float> &wvztree::gen_part_pt() {
+  if (not gen_part_pt_isLoaded) {
+    if (gen_part_pt_branch != 0) {
+      gen_part_pt_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_pt_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_pt_isLoaded = true;
+  }
+  return *gen_part_pt_;
+}
+
+const vector<float> &wvztree::gen_part_eta() {
+  if (not gen_part_eta_isLoaded) {
+    if (gen_part_eta_branch != 0) {
+      gen_part_eta_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_eta_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_eta_isLoaded = true;
+  }
+  return *gen_part_eta_;
+}
+
+const vector<float> &wvztree::gen_part_phi() {
+  if (not gen_part_phi_isLoaded) {
+    if (gen_part_phi_branch != 0) {
+      gen_part_phi_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_phi_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_phi_isLoaded = true;
+  }
+  return *gen_part_phi_;
+}
+
+const vector<float> &wvztree::gen_part_mass() {
+  if (not gen_part_mass_isLoaded) {
+    if (gen_part_mass_branch != 0) {
+      gen_part_mass_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_mass_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_mass_isLoaded = true;
+  }
+  return *gen_part_mass_;
+}
+
+const vector<int> &wvztree::gen_part_id() {
+  if (not gen_part_id_isLoaded) {
+    if (gen_part_id_branch != 0) {
+      gen_part_id_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_id_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_id_isLoaded = true;
+  }
+  return *gen_part_id_;
+}
+
+const vector<int> &wvztree::gen_part_mother_id() {
+  if (not gen_part_mother_id_isLoaded) {
+    if (gen_part_mother_id_branch != 0) {
+      gen_part_mother_id_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_mother_id_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_mother_id_isLoaded = true;
+  }
+  return *gen_part_mother_id_;
+}
+
+const vector<int> &wvztree::gen_part_grandma_id() {
+  if (not gen_part_grandma_id_isLoaded) {
+    if (gen_part_grandma_id_branch != 0) {
+      gen_part_grandma_id_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_grandma_id_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_grandma_id_isLoaded = true;
+  }
+  return *gen_part_grandma_id_;
+}
+
+const vector<int> &wvztree::gen_part_status() {
+  if (not gen_part_status_isLoaded) {
+    if (gen_part_status_branch != 0) {
+      gen_part_status_branch->GetEntry(index);
+    } else {
+      printf("branch gen_part_status_branch does not exist!\n");
+      exit(1);
+    }
+    gen_part_status_isLoaded = true;
+  }
+  return *gen_part_status_;
+}
+
 const int &wvztree::VHchannel() {
   if (not VHchannel_isLoaded) {
     if (VHchannel_branch != 0) {
@@ -1142,6 +1299,19 @@ const int &wvztree::hasTau() {
     hasTau_isLoaded = true;
   }
   return hasTau_;
+}
+
+const int &wvztree::nLightLep() {
+  if (not nLightLep_isLoaded) {
+    if (nLightLep_branch != 0) {
+      nLightLep_branch->GetEntry(index);
+    } else {
+      printf("branch nLightLep_branch does not exist!\n");
+      exit(1);
+    }
+    nLightLep_isLoaded = true;
+  }
+  return nLightLep_;
 }
 
 const int &wvztree::firstgoodvertex() {
@@ -2326,11 +2496,21 @@ const vector<float> &gen_lep_eta() { return wvz.gen_lep_eta(); }
 const vector<float> &gen_lep_phi() { return wvz.gen_lep_phi(); }
 const vector<float> &gen_lep_mass() { return wvz.gen_lep_mass(); }
 const vector<int> &gen_lep_id() { return wvz.gen_lep_id(); }
+const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4() { return wvz.gen_part_p4(); }
+const vector<float> &gen_part_pt() { return wvz.gen_part_pt(); }
+const vector<float> &gen_part_eta() { return wvz.gen_part_eta(); }
+const vector<float> &gen_part_phi() { return wvz.gen_part_phi(); }
+const vector<float> &gen_part_mass() { return wvz.gen_part_mass(); }
+const vector<int> &gen_part_id() { return wvz.gen_part_id(); }
+const vector<int> &gen_part_mother_id() { return wvz.gen_part_mother_id(); }
+const vector<int> &gen_part_grandma_id() { return wvz.gen_part_grandma_id(); }
+const vector<int> &gen_part_status() { return wvz.gen_part_status(); }
 const int &VHchannel() { return wvz.VHchannel(); }
 const int &Higgschannel() { return wvz.Higgschannel(); }
 const int &nGenTauClean() { return wvz.nGenTauClean(); }
 const int &nGenTau() { return wvz.nGenTau(); }
 const int &hasTau() { return wvz.hasTau(); }
+const int &nLightLep() { return wvz.nLightLep(); }
 const int &firstgoodvertex() { return wvz.firstgoodvertex(); }
 const int &nvtx() { return wvz.nvtx(); }
 const int &nTrueInt() { return wvz.nTrueInt(); }

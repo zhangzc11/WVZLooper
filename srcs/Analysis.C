@@ -79,6 +79,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("Cut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelEMu"              , [&](){ return this->IsChannelEMu();            } , UNITY );
         cutflow.addCutToLastActiveCut("ChannelEMuHighMT"        , [&](){ return this->CutHighMT();               } , UNITY );
+        cutflow.getCut("ChannelEMu");
+        cutflow.addCutToLastActiveCut("ChannelEMuLowPtZeta"     , [&](){ return this->CutLowPtZeta();            } , UNITY );
 
         // OnZ channel
         cutflow.getCut("Cut4LepBVeto");
@@ -296,6 +298,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("lepZEta1"       , 180 , -5      , 5      , [&](){ return lep_ZCand_idx2 >= 0 ? wvz.lep_eta()[lep_ZCand_idx2] : -999; });
         histograms.addHistogram("lepNEta0"       , 180 , -5      , 5      , [&](){ return lep_Nom_idx1 >= 0 ? wvz.lep_eta()[lep_Nom_idx1] : -999; });
         histograms.addHistogram("lepNEta1"       , 180 , -5      , 5      , [&](){ return lep_Nom_idx2 >= 0 ? wvz.lep_eta()[lep_Nom_idx2] : -999; });
+        histograms.addHistogram("lepNip3d0"      , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx1 >= 0 ? fabs(wvz.lep_ip3d()[lep_Nom_idx1]) : -999; });
+        histograms.addHistogram("lepNip3d1"      , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx2 >= 0 ? fabs(wvz.lep_ip3d()[lep_Nom_idx2]) : -999; });
+        histograms.addHistogram("lepNdxy0"       , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx1 >= 0 ? fabs(wvz.lep_dxy()[lep_Nom_idx1]) : -999; });
+        histograms.addHistogram("lepNdxy1"       , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx2 >= 0 ? fabs(wvz.lep_dxy()[lep_Nom_idx2]) : -999; });
+        histograms.addHistogram("lepNdz0"        , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx1 >= 0 ? fabs(wvz.lep_dz()[lep_Nom_idx1]) : -999; });
+        histograms.addHistogram("lepNdz1"        , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx2 >= 0 ? fabs(wvz.lep_dz()[lep_Nom_idx2]) : -999; });
         histograms.addHistogram("MllZCand"       , 180 , 0       , 200    , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("MllNom"         , 180 , 0       , 200    , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
         // histograms.addHistogram("M4l"            , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
@@ -344,7 +352,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         // histograms.addHistogram("jetPhi1"        , 180 ,-5.      ,  5.    , [&](){ return wvz.jets_p4().size() > 1 ? wvz.jets_p4()[1].phi() : -999; });
         // histograms.addHistogram("jetPhi2"        , 180 ,-5.      ,  5.    , [&](){ return wvz.jets_p4().size() > 2 ? wvz.jets_p4()[2].phi() : -999; });
         // histograms.addHistogram("jetPhi3"        , 180 ,-5.      ,  5.    , [&](){ return wvz.jets_p4().size() > 3 ? wvz.jets_p4()[3].phi() : -999; });
-        histograms.addHistogram("pt_zeta"        , 180 , -200    , 150       , [&](){ return this->VarPtZetaDiff(); });
+        histograms.addHistogram("pt_zeta"        , 180 , -200    , 200       , [&](){ return this->VarPtZetaDiff(); });
+        histograms.addHistogram("pt_zeta_vis"    , 180 , -200    , 550       , [&](){ return this->VarPtZetaVis(); });
+        histograms.addHistogram("pt_zeta_sum"    , 180 , -200    , 550       , [&](){ return this->VarPtZeta(); });
+        histograms.add2DHistogram("pt_zeta_vis", 50 , -200, 550 , "pt_zeta_sum", 50, -200, 550, [&](){ return this->VarPtZetaVis(); }, [&](){ return this->VarPtZeta(); });
     }
     else if (ntupleVersion.Contains("Trilep"))
     {
@@ -427,14 +438,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         // i.e. *MT*, *MET*, and *Cut4LepB* are the pattern used to search the cut names in the cutflow object to declare a systematic varations
         // e.g. ChannelBTagEMuHighMT contains "MT" and therefore a JES variations will be declared for these cuts
         // Then later below with "setCutSyst" function the variational cut defn will be defined
-        cutflow.addCutSyst("JESUp"         , {"MT" , "MET" , "Cut4LepB"});
-        cutflow.addCutSyst("JESDown"       , {"MT" , "MET" , "Cut4LepB"});
-        cutflow.addCutSyst("JERUp"         , {"MT" , "MET"});
-        cutflow.addCutSyst("JERDown"       , {"MT" , "MET"});
-        cutflow.addCutSyst("METUp"         , {"MT" , "MET"});
-        cutflow.addCutSyst("METDown"       , {"MT" , "MET"});
-        cutflow.addCutSyst("METPileupUp"   , {"MT" , "MET"});
-        cutflow.addCutSyst("METPileupDown" , {"MT" , "MET"});
+        cutflow.addCutSyst("JESUp"         , {"PtZeta", "MT" , "MET" , "Cut4LepB"});
+        cutflow.addCutSyst("JESDown"       , {"PtZeta", "MT" , "MET" , "Cut4LepB"});
+        cutflow.addCutSyst("JERUp"         , {"PtZeta", "MT" , "MET"});
+        cutflow.addCutSyst("JERDown"       , {"PtZeta", "MT" , "MET"});
+        cutflow.addCutSyst("METUp"         , {"PtZeta", "MT" , "MET"});
+        cutflow.addCutSyst("METDown"       , {"PtZeta", "MT" , "MET"});
+        cutflow.addCutSyst("METPileupUp"   , {"PtZeta", "MT" , "MET"});
+        cutflow.addCutSyst("METPileupDown" , {"PtZeta", "MT" , "MET"});
 
         // 1 represents JESup variation
         //-1 represents JESdown variation
@@ -623,6 +634,16 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.setCutSyst("Cut4LepBTag"   , "JESDown" , [&]() { return this->Cut4LepBTag(-1); } , [&]() { return this->BTagSF(); } );
         cutflow.setCutSyst("ARCut4LepBVeto", "JESDown" , [&]() { return this->Cut4LepBVeto(-1); }, [&]() { return this->BTagSF(); } );
 
+        // 4. PtZeta
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "JESUp" , [&]() { return this->CutLowPtZeta(1); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "JESDown" , [&]() { return this->CutLowPtZeta(-1); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "JERUp" , [&]() { return this->CutLowPtZeta(2); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "JERDown" , [&]() { return this->CutLowPtZeta(-2); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "METUp" , [&]() { return this->CutLowPtZeta(3); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "METDown" , [&]() { return this->CutLowPtZeta(-3); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "METPileupUp" , [&]() { return this->CutLowPtZeta(4); } , UNITY);
+        cutflow.setCutSyst("ChannelEMuLowPtZeta", "METPileupDown" , [&]() { return this->CutLowPtZeta(-4); } , UNITY);
+
     }
 
     //==========================
@@ -652,6 +673,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         else
         {
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighMT");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuLowPtZeta");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMET");
             cutflow.bookHistogramsForCut(histograms, "ChannelEMu");
             cutflow.bookHistogramsForCut(histograms, "ChannelOffZ");
@@ -2117,6 +2139,13 @@ bool Analysis::Cut4LepBTag(int var)
 }
 
 //______________________________________________________________________________________________
+bool Analysis::CutLowPtZeta(int var)
+{
+    if (not (VarPtZetaDiff(var) < -40.)) return false;
+    return true;
+}
+
+//______________________________________________________________________________________________
 bool Analysis::CutHighMT(int var)
 {
     if (not (VarMTNom0(var) > 40.)) return false;
@@ -2844,7 +2873,7 @@ float Analysis::VarTauTauDisc(int var)
 }
 
 //______________________________________________________________________________________________
-float Analysis::VarPtZetaDiff()
+float Analysis::VarPtZetaDiff(int var)
 {
     if (nVetoLeptons < 4)
         return -999;
@@ -2857,7 +2886,7 @@ float Analysis::VarPtZetaDiff()
     if (lep_Nom_idx2 < 0)
         return -999;
     TLorentzVector metv3_, lep1_, lep2_;
-    metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
+    metv3_.SetPtEtaPhiM(this->VarMET(var), 0., this->VarMETPhi(var), 0);
     lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
     lep2_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx2), 0,  this->VarLepPhi(lep_Nom_idx2), 0);
     metv3 = RooUtil::Calc::getLV(metv3_);
@@ -2878,7 +2907,7 @@ float Analysis::VarPtZetaDiff()
 }
 
 //______________________________________________________________________________________________
-float Analysis::VarPtZeta()
+float Analysis::VarPtZeta(int var)
 {
     if (nVetoLeptons < 4)
         return -999;
@@ -2892,7 +2921,7 @@ float Analysis::VarPtZeta()
         return -999;
 
     TLorentzVector metv3_, lep1_, lep2_;
-    metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
+    metv3_.SetPtEtaPhiM(this->VarMET(var), 0., this->VarMETPhi(var), 0);
     lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
     lep2_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx2), 0,  this->VarLepPhi(lep_Nom_idx2), 0);
     metv3 = RooUtil::Calc::getLV(metv3_);
@@ -2913,7 +2942,7 @@ float Analysis::VarPtZeta()
 }
 
 //______________________________________________________________________________________________
-float Analysis::VarPtZetaVis()
+float Analysis::VarPtZetaVis(int var)
 {
     if (nVetoLeptons < 4)
         return -999;
@@ -2926,7 +2955,7 @@ float Analysis::VarPtZetaVis()
     if (lep_Nom_idx2 < 0)
         return -999;
     TLorentzVector metv3_, lep1_, lep2_;
-    metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
+    metv3_.SetPtEtaPhiM(this->VarMET(var), 0., this->VarMETPhi(var), 0);
     lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
     lep2_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx2), 0,  this->VarLepPhi(lep_Nom_idx2), 0);
     metv3 = RooUtil::Calc::getLV(metv3_);

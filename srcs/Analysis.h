@@ -299,6 +299,7 @@ public:
     bool CutHighMT(int=0);
     bool CutHighMET(int=0);
     bool CutHighMTAR(int=0);
+    bool CutLowPtZeta(int=0);
 
     bool IsChannelEMu(bool=false);
     bool IsChannelOnZ(bool=false);
@@ -345,9 +346,9 @@ public:
     float VarHTLep5();
     float VarMETPhi(int=0);
     float VarTauTauDisc(int=0);
-    float VarPtZetaDiff();
-    float VarPtZeta();
-    float VarPtZetaVis();
+    float VarPtZetaDiff(int=0);
+    float VarPtZeta(int=0);
+    float VarPtZetaVis(int=0);
     float VarMinDRJetsToLep(int);
 
     LeptonVectors GetLeptonVectors();

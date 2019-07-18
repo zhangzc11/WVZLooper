@@ -76,7 +76,7 @@ def write_datacards(ntuple_version, tag):
     nonzzbkg = [fname_sig, fname_ttz, fname_wz, fname_twz, fname_other]
     nonttzbkg = [fname_sig, fname_zz, fname_wz, fname_twz, fname_other]
 
-    systcategs = ["BTagHF", "BTagLF", "JES", "Pileup", "Qsq", "PDF", "AlphaS", "MET"] # Null string is the nominal variation
+    systcategs = ["BTagHF", "BTagLF", "JES", "Pileup", "Qsq", "PDF", "AlphaS", "MET", "JER", "METPileup"] # Null string is the nominal variation
     # Form systnames (i.e. ["Nominal", "BTagHFUp", "BTagHFDown", "BTagLFUp", "BTagLFDown"])
     systnames = ["Nominal"] # Nominal always exist
     for systcateg in systcategs:
@@ -121,12 +121,15 @@ def write_datacards(ntuple_version, tag):
     ###############################
 
     # number of bins
+    fitreg = "EMuHighMT"
     if args.print_yields:
         nbins = 1
         fitvar = "Yield"
     else:
         nbins = 5
         fitvar = "MllNom"
+        # nbins = 5
+        # fitvar = "pt_zeta"
 
     # Main data base to hold all the histograms
     hists_db = {}
@@ -144,15 +147,15 @@ def write_datacards(ntuple_version, tag):
         for syst in systnames:
 
             if syst == "Nominal":
-                if fitvar == "MllNom":
-                    h = rebin36(tfile.Get("ChannelEMuHighMT__{}".format(fitvar)).Clone())
+                if nbins == 5:
+                    h = rebin36(tfile.Get("Channel{}__{}".format(fitreg, fitvar)).Clone())
                 else:
-                    h = tfile.Get("ChannelEMuHighMT__{}".format(fitvar)).Clone()
+                    h = tfile.Get("Channel{}__{}".format(fitreg, fitvar)).Clone()
             else:
-                if fitvar == "MllNom":
-                    h = rebin36(tfile.Get("ChannelEMuHighMT{}__{}".format(syst, fitvar)).Clone())
+                if nbins == 5:
+                    h = rebin36(tfile.Get("Channel{}{}__{}".format(fitreg, syst, fitvar)).Clone())
                 else:
-                    h = tfile.Get("ChannelEMuHighMT{}__{}".format(syst, fitvar)).Clone()
+                    h = tfile.Get("Channel{}{}__{}".format(fitreg, syst, fitvar)).Clone()
 
             h.SetTitle("emu{}_{}".format(year, proc))
 

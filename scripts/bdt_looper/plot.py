@@ -19,6 +19,8 @@ p.dump_plot(
         # If one wants to plot just a few
         # filter_pattern="HighBDT__lep3MT,HighBDT__lep4MT",
         # dogrep=True,
+        filter_pattern="Weight__BDTZZ",
+        dogrep=True,
 
         extraoptions={
             "nbins":15,
@@ -29,6 +31,7 @@ p.dump_plot(
             "lumi_value": 137,
             "xaxis_ndivisions": 505,
             "bkg_sort_method":"unsorted",
+            "print_yield":True,
             },
         # _plotter=p.plot_cut_scan,
         )

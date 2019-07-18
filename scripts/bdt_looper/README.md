@@ -4,6 +4,9 @@
 First source setup.sh from the main WVZLooper/ then cd into this directory
 
     source setup.sh
+    cd rooutil/
+    make -j
+    cd ..
     cd scripts/bdt_looper
 
 First train BDT

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/BDT_v0.1.12.7/ttbar.root", "t", "bdttree", "tas", "bdt")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/BDT_v0.1.12.7/wwz_20172018_skim.root", "t", "bdttree", "tas", "bdt")
 
 #ifndef bdttree_H
 #define bdttree_H
@@ -145,12 +145,69 @@ class bdttree {
   vector<int> *gen_lep_id_;
   TBranch *gen_lep_id_branch;
   bool     gen_lep_id_isLoaded;
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *gen_child_p4_;
+  TBranch *gen_child_p4_branch;
+  bool     gen_child_p4_isLoaded;
+  vector<float> *gen_child_pt_;
+  TBranch *gen_child_pt_branch;
+  bool     gen_child_pt_isLoaded;
+  vector<float> *gen_child_eta_;
+  TBranch *gen_child_eta_branch;
+  bool     gen_child_eta_isLoaded;
+  vector<float> *gen_child_phi_;
+  TBranch *gen_child_phi_branch;
+  bool     gen_child_phi_isLoaded;
+  vector<float> *gen_child_mass_;
+  TBranch *gen_child_mass_branch;
+  bool     gen_child_mass_isLoaded;
+  vector<int> *gen_child_id_;
+  TBranch *gen_child_id_branch;
+  bool     gen_child_id_isLoaded;
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *gen_part_p4_;
+  TBranch *gen_part_p4_branch;
+  bool     gen_part_p4_isLoaded;
+  vector<float> *gen_part_pt_;
+  TBranch *gen_part_pt_branch;
+  bool     gen_part_pt_isLoaded;
+  vector<float> *gen_part_eta_;
+  TBranch *gen_part_eta_branch;
+  bool     gen_part_eta_isLoaded;
+  vector<float> *gen_part_phi_;
+  TBranch *gen_part_phi_branch;
+  bool     gen_part_phi_isLoaded;
+  vector<float> *gen_part_mass_;
+  TBranch *gen_part_mass_branch;
+  bool     gen_part_mass_isLoaded;
+  vector<int> *gen_part_id_;
+  TBranch *gen_part_id_branch;
+  bool     gen_part_id_isLoaded;
+  vector<int> *gen_part_mother_id_;
+  TBranch *gen_part_mother_id_branch;
+  bool     gen_part_mother_id_isLoaded;
+  vector<int> *gen_part_grandma_id_;
+  TBranch *gen_part_grandma_id_branch;
+  bool     gen_part_grandma_id_isLoaded;
+  vector<int> *gen_part_status_;
+  TBranch *gen_part_status_branch;
+  bool     gen_part_status_isLoaded;
   int      VHchannel_;
   TBranch *VHchannel_branch;
   bool     VHchannel_isLoaded;
   int      Higgschannel_;
   TBranch *Higgschannel_branch;
   bool     Higgschannel_isLoaded;
+  int      nGenTauClean_;
+  TBranch *nGenTauClean_branch;
+  bool     nGenTauClean_isLoaded;
+  int      nGenTau_;
+  TBranch *nGenTau_branch;
+  bool     nGenTau_isLoaded;
+  int      hasTau_;
+  TBranch *hasTau_branch;
+  bool     hasTau_isLoaded;
+  int      nLightLep_;
+  TBranch *nLightLep_branch;
+  bool     nLightLep_isLoaded;
   int      firstgoodvertex_;
   TBranch *firstgoodvertex_branch;
   bool     firstgoodvertex_isLoaded;
@@ -529,6 +586,12 @@ class bdttree {
   float    jet4BtagScore_;
   TBranch *jet4BtagScore_branch;
   bool     jet4BtagScore_isLoaded;
+  float    bdt_zz_;
+  TBranch *bdt_zz_branch;
+  bool     bdt_zz_isLoaded;
+  float    bdt_ttz_;
+  TBranch *bdt_ttz_branch;
+  bool     bdt_ttz_isLoaded;
 public: 
 void Init(TTree *tree);
 void GetEntry(unsigned int idx); 
@@ -574,8 +637,27 @@ void LoadAllBranches();
   const vector<float> &gen_lep_phi();
   const vector<float> &gen_lep_mass();
   const vector<int> &gen_lep_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_child_p4();
+  const vector<float> &gen_child_pt();
+  const vector<float> &gen_child_eta();
+  const vector<float> &gen_child_phi();
+  const vector<float> &gen_child_mass();
+  const vector<int> &gen_child_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4();
+  const vector<float> &gen_part_pt();
+  const vector<float> &gen_part_eta();
+  const vector<float> &gen_part_phi();
+  const vector<float> &gen_part_mass();
+  const vector<int> &gen_part_id();
+  const vector<int> &gen_part_mother_id();
+  const vector<int> &gen_part_grandma_id();
+  const vector<int> &gen_part_status();
   const int &VHchannel();
   const int &Higgschannel();
+  const int &nGenTauClean();
+  const int &nGenTau();
+  const int &hasTau();
+  const int &nLightLep();
   const int &firstgoodvertex();
   const int &nvtx();
   const int &nTrueInt();
@@ -702,6 +784,8 @@ void LoadAllBranches();
   const float &jet2BtagScore();
   const float &jet3BtagScore();
   const float &jet4BtagScore();
+  const float &bdt_zz();
+  const float &bdt_ttz();
 
   static void progress(int nEventsTotal, int nEventsChain);
 };
@@ -752,8 +836,27 @@ namespace tas {
   const vector<float> &gen_lep_phi();
   const vector<float> &gen_lep_mass();
   const vector<int> &gen_lep_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_child_p4();
+  const vector<float> &gen_child_pt();
+  const vector<float> &gen_child_eta();
+  const vector<float> &gen_child_phi();
+  const vector<float> &gen_child_mass();
+  const vector<int> &gen_child_id();
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gen_part_p4();
+  const vector<float> &gen_part_pt();
+  const vector<float> &gen_part_eta();
+  const vector<float> &gen_part_phi();
+  const vector<float> &gen_part_mass();
+  const vector<int> &gen_part_id();
+  const vector<int> &gen_part_mother_id();
+  const vector<int> &gen_part_grandma_id();
+  const vector<int> &gen_part_status();
   const int &VHchannel();
   const int &Higgschannel();
+  const int &nGenTauClean();
+  const int &nGenTau();
+  const int &hasTau();
+  const int &nLightLep();
   const int &firstgoodvertex();
   const int &nvtx();
   const int &nTrueInt();
@@ -880,6 +983,8 @@ namespace tas {
   const float &jet2BtagScore();
   const float &jet3BtagScore();
   const float &jet4BtagScore();
+  const float &bdt_zz();
+  const float &bdt_ttz();
 }
 #include "rooutil.h"
 #endif

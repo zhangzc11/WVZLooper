@@ -8,7 +8,11 @@ for i in $(ls ${BDTINPUTDIR}); do
     if [[ $i == *"data.root"* ]]; then
         :
     else
-        echo "./doAnalysis -i ${BDTINPUTDIR}$i -t t -o outputs/$i" >> .cmd.txt
+        if [[ $i == *"sig.root"* ]]; then
+            echo "./doAnalysis -i ${BDTINPUTDIR}$i -t t -o outputs/$i | tee outputs/${i}.log" >> .cmd.txt
+        else
+            echo "./doAnalysis -i ${BDTINPUTDIR}$i -t t -o outputs/$i &> outputs/${i}.log" >> .cmd.txt
+        fi
     fi
 done
 xargs.sh .cmd.txt

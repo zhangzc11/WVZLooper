@@ -376,8 +376,14 @@ int main(int argc, char** argv)
     tx.createBranch<float>("MllN");
     tx.createBranch<float>("lep3MT");
     tx.createBranch<float>("lep4MT");
+    tx.createBranch<float>("lep34MT");
     tx.createBranch<float>("pt_zeta_vis");
     tx.createBranch<float>("pt_zeta");
+    tx.createBranch<float>("ZPt");
+    tx.createBranch<float>("nj");
+    tx.createBranch<float>("ht");
+    tx.createBranch<float>("minDRJetToLep3");
+    tx.createBranch<float>("minDRJetToLep4");
     float BDT_score;
 
     // Set the cutflow object output file
@@ -395,10 +401,22 @@ int main(int argc, char** argv)
     ana.histograms.addHistogram("MllNom", 180, 0, 200, [&]() { return bdt.MllN(); } );
     ana.histograms.addHistogram("lep3MT", 180, 0, 200, [&]() { return bdt.lep3MT(); } );
     ana.histograms.addHistogram("lep4MT", 180, 0, 200, [&]() { return bdt.lep4MT(); } );
+    ana.histograms.addHistogram("nj", 6, 0, 6, [&]() { return bdt.nj(); } );
+    ana.histograms.addHistogram("ht", 180, 0, 500, [&]() { return bdt.ht(); } );
+    ana.histograms.addHistogram("ZPt", 180, 0, 200, [&]() { return bdt.ZPt(); } );
     ana.histograms.addHistogram("BDTZZ", 180, -0.35, 0.6, [&]() { return BDT_score; } );
+    ana.histograms.addHistogram("lepNsumip3d", 180, 0., 0.02, [&]() { return fabs(bdt.lep_ip3d()[bdt.lep_N_idx0()]) + fabs(bdt.lep_ip3d()[bdt.lep_N_idx1()]); } );
+    ana.histograms.addHistogram("lepNsumdxy", 180, 0., 0.02, [&]() { return fabs(bdt.lep_dxy()[bdt.lep_N_idx0()]) + fabs(bdt.lep_dxy()[bdt.lep_N_idx1()]); } );
+    ana.histograms.addHistogram("lepNsumdz", 180, 0., 0.02, [&]() { return fabs(bdt.lep_dz()[bdt.lep_N_idx0()]) + fabs(bdt.lep_dz()[bdt.lep_N_idx1()]); } );
 
     // 2d histograms
-    ana.histograms.add2DHistogram("pt_zeta_vis", 50 , -200, 550 , "pt_zeta_sum", 50, -200, 550, [&](){ return bdt.pt_zeta_vis(); }, [&](){ return bdt.pt_zeta(); });
+    // ana.histograms.add2DHistogram("pt_zeta_vis", 50 , -200, 550 , "pt_zeta_sum", 50, -200, 550, [&](){ return bdt.pt_zeta_vis(); }, [&](){ return bdt.pt_zeta(); });
+    // ana.histograms.add2DHistogram("lep3ip3d" , 50 , 0 , 0.02 , "lep4ip3d" , 50 , 0 , 0.02 , [&](){ return fabs(bdt.lep_ip3d()[bdt.lep_N_idx0()]); } , [&](){ return fabs(bdt.lep_ip3d()[bdt.lep_N_idx1()]); });
+    // ana.histograms.add2DHistogram("lep3dxy"  , 50 , 0 , 0.02 , "lep4dxy"  , 50 , 0 , 0.02 , [&](){ return fabs(bdt.lep_dxy()[bdt.lep_N_idx0()]); }  , [&](){ return fabs(bdt.lep_dxy()[bdt.lep_N_idx1()]); });
+    // ana.histograms.add2DHistogram("lep3dz"   , 50 , 0 , 0.02 , "lep4dz"   , 50 , 0 , 0.02 , [&](){ return fabs(bdt.lep_dz()[bdt.lep_N_idx0()]); }   , [&](){ return fabs(bdt.lep_dz()[bdt.lep_N_idx1()]); });
+    // ana.histograms.add2DHistogram("lep1ip3d" , 50 , 0 , 0.02 , "lep2ip3d" , 50 , 0 , 0.02 , [&](){ return fabs(bdt.lep_ip3d()[bdt.lep_Z_idx0()]); } , [&](){ return fabs(bdt.lep_ip3d()[bdt.lep_Z_idx1()]); });
+    // ana.histograms.add2DHistogram("lep1dxy"  , 50 , 0 , 0.02 , "lep2dxy"  , 50 , 0 , 0.02 , [&](){ return fabs(bdt.lep_dxy()[bdt.lep_Z_idx0()]); }  , [&](){ return fabs(bdt.lep_dxy()[bdt.lep_Z_idx1()]); });
+    // ana.histograms.add2DHistogram("lep1dz"   , 50 , 0 , 0.02 , "lep2dz"   , 50 , 0 , 0.02 , [&](){ return fabs(bdt.lep_dz()[bdt.lep_Z_idx0()]); }   , [&](){ return fabs(bdt.lep_dz()[bdt.lep_Z_idx1()]); });
 
     // Book cutflows
     ana.cutflow.bookCutflows();
@@ -423,8 +441,14 @@ int main(int argc, char** argv)
         tx.setBranch<float>("MllN", bdt.MllN());
         tx.setBranch<float>("lep3MT", bdt.lep3MT());
         tx.setBranch<float>("lep4MT", bdt.lep4MT());
+        tx.setBranch<float>("lep34MT", bdt.lep34MT());
         tx.setBranch<float>("pt_zeta_vis", bdt.pt_zeta_vis());
         tx.setBranch<float>("pt_zeta", bdt.pt_zeta());
+        tx.setBranch<float>("ZPt", bdt.ZPt());
+        tx.setBranch<float>("nj", bdt.nj());
+        tx.setBranch<float>("ht", bdt.nj());
+        tx.setBranch<float>("minDRJetToLep3", bdt.minDRJetToLep3());
+        tx.setBranch<float>("minDRJetToLep4", bdt.minDRJetToLep4());
         BDT_score = readerx.eval(tx);
 
         //Do what you need to do in for each event here

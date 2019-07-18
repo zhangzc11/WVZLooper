@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     vector<TString> BkgSampleGlobber;
 
     BkgSampleGlobber.push_back(dirpath + "/zz.root");
-    // BkgSampleGlobber.push_back(dirpath + "/ttz.root");
+    BkgSampleGlobber.push_back(dirpath + "/ttz.root");
     // BkgSampleGlobber.push_back(dirpath + "/twz.root");
     // BkgSampleGlobber.push_back(dirpath + "/wz.root");
     // BkgSampleGlobber.push_back(dirpath + "/other.root");
@@ -63,8 +63,14 @@ int main(int argc, char** argv)
     dataloader->AddVariable("MllN");
     dataloader->AddVariable("lep3MT");
     dataloader->AddVariable("lep4MT");
+    dataloader->AddVariable("lep34MT");
     dataloader->AddVariable("pt_zeta_vis");
     dataloader->AddVariable("pt_zeta");
+    dataloader->AddVariable("ZPt");
+    dataloader->AddVariable("nj");
+    dataloader->AddVariable("ht");
+    dataloader->AddVariable("minDRJetToLep3");
+    dataloader->AddVariable("minDRJetToLep4");
 
     TCut cut = "1";
     dataloader->PrepareTrainingAndTestTree(cut, cut, "SplitMode=random:!V");

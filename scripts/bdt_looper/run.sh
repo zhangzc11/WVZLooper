@@ -16,3 +16,4 @@ for i in $(ls ${BDTINPUTDIR}); do
     fi
 done
 xargs.sh .cmd.txt
+python plot.py

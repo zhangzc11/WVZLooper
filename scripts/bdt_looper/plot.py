@@ -19,8 +19,8 @@ p.dump_plot(
         # If one wants to plot just a few
         # filter_pattern="HighBDT__lep3MT,HighBDT__lep4MT",
         # dogrep=True,
-        filter_pattern="Weight__BDTZZ",
-        dogrep=True,
+        # filter_pattern="Weight__BDTZZ",
+        # dogrep=True,
 
         extraoptions={
             "nbins":15,

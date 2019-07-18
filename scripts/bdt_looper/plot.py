@@ -15,8 +15,11 @@ p.dump_plot(
         dirname="plots/",
         usercolors=colors,
         signal_scale=1,
-        filter_pattern="HighBDT__lep3MT,HighBDT__lep4MT",
-        dogrep=True,
+
+        # If one wants to plot just a few
+        # filter_pattern="HighBDT__lep3MT,HighBDT__lep4MT",
+        # dogrep=True,
+
         extraoptions={
             "nbins":15,
             "signal_scale": 1,

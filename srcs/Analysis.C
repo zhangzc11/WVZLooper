@@ -2863,10 +2863,18 @@ float Analysis::VarPtZetaDiff()
     metv3 = RooUtil::Calc::getLV(metv3_);
     lep1 = RooUtil::Calc::getLV(lep1_);
     lep2 = RooUtil::Calc::getLV(lep2_);
-    zeta = lep1 * lep2.mag() + lep2 * lep1.mag();
+
+    float lep1mag = sqrt(lep1.Px()*lep1.Px() + lep1.Py()*lep1.Py() + lep1.Pz()*lep1.Pz());
+    float lep2mag = sqrt(lep2.Px()*lep2.Px() + lep2.Py()*lep2.Py() + lep2.Pz()*lep2.Pz());
+
+    zeta = lep1 * lep2mag + lep2 * lep1mag; // find bisector
+
+    float zetamag = sqrt(zeta.Px()*zeta.Px() + zeta.Py()*zeta.Py() + zeta.Pz()*zeta.Pz());
+
     sum_vis = lep1 + lep2;
     sum = sum_vis + metv3;
-    return sum.Dot(zeta) / zeta.mag() - 1.85 * sum_vis.Dot(zeta) / zeta.mag();
+
+    return (sum.Px()*zeta.Px() + sum.Py()*zeta.Py() + sum.Pz()*zeta.Pz()) / zetamag - 1.85 *  (sum_vis.Px()*zeta.Px() + sum_vis.Py()*zeta.Py() + sum_vis.Pz()*zeta.Pz()) / zetamag;
 }
 
 //______________________________________________________________________________________________
@@ -2882,6 +2890,7 @@ float Analysis::VarPtZeta()
         return -999;
     if (lep_Nom_idx2 < 0)
         return -999;
+
     TLorentzVector metv3_, lep1_, lep2_;
     metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
     lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
@@ -2889,10 +2898,18 @@ float Analysis::VarPtZeta()
     metv3 = RooUtil::Calc::getLV(metv3_);
     lep1 = RooUtil::Calc::getLV(lep1_);
     lep2 = RooUtil::Calc::getLV(lep2_);
-    zeta = lep1 * lep2.mag() + lep2 * lep1.mag(); // find bisector
+    
+    float lep1mag = sqrt(lep1.Px()*lep1.Px() + lep1.Py()*lep1.Py() + lep1.Pz()*lep1.Pz());
+    float lep2mag = sqrt(lep2.Px()*lep2.Px() + lep2.Py()*lep2.Py() + lep2.Pz()*lep2.Pz());
+
+    zeta = lep1 * lep2mag + lep2 * lep1mag; // find bisector
+
+    float zetamag = sqrt(zeta.Px()*zeta.Px() + zeta.Py()*zeta.Py() + zeta.Pz()*zeta.Pz());
     sum_vis = lep1 + lep2;
     sum = sum_vis + metv3;
-    return  sum.Dot(zeta) / zeta.mag();
+
+    return  (sum.Px()*zeta.Px() + sum.Py()*zeta.Py() + sum.Pz()*zeta.Pz()) / zetamag;
+    
 }
 
 //______________________________________________________________________________________________
@@ -2915,9 +2932,15 @@ float Analysis::VarPtZetaVis()
     metv3 = RooUtil::Calc::getLV(metv3_);
     lep1 = RooUtil::Calc::getLV(lep1_);
     lep2 = RooUtil::Calc::getLV(lep2_);
-    zeta = lep1 * lep2.mag() + lep2 * lep1.mag(); // find bisector
+
+    float lep1mag = sqrt(lep1.Px()*lep1.Px() + lep1.Py()*lep1.Py() + lep1.Pz()*lep1.Pz());
+    float lep2mag = sqrt(lep2.Px()*lep2.Px() + lep2.Py()*lep2.Py() + lep2.Pz()*lep2.Pz());
+
+    zeta = lep1 * lep2mag + lep2 * lep1mag; // find bisector
+    float zetamag = sqrt(zeta.Px()*zeta.Px() + zeta.Py()*zeta.Py() + zeta.Pz()*zeta.Pz());
+
     sum_vis = lep1 + lep2;
-    return  sum_vis.Dot(zeta) / zeta.mag();
+    return  (sum_vis.Px()*zeta.Px() + sum_vis.Py()*zeta.Py() + sum_vis.Pz()*zeta.Pz()) / zetamag;
 }
 
 //______________________________________________________________________________________________

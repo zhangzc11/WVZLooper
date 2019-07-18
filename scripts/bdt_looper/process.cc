@@ -367,17 +367,37 @@ int main(int argc, char** argv)
     // And later in the loop when RooUtil::CutName::fill() function is called, the tree structure will be traversed through and the appropriate histograms will be filled with appropriate variables
     // After running the loop check for the histograms in the output root file
 
+    // TMVA
+    RooUtil::TMVAUtil::ReaderX readerx("BDT", "tmvabdt/dataset/weights/TMVA_BDT.weights.xml");
+    RooUtil::TTreeX tx("BDTInput", "Temp tree existing only in run time to read BDT inputs");
+    tx.createBranch<float>("theta0");
+    tx.createBranch<float>("theta1");
+    tx.createBranch<float>("theta2");
+    tx.createBranch<float>("MllN");
+    tx.createBranch<float>("lep3MT");
+    tx.createBranch<float>("lep4MT");
+    tx.createBranch<float>("pt_zeta_vis");
+    tx.createBranch<float>("pt_zeta");
+    float BDT_score;
+
     // Set the cutflow object output file
     ana.cutflow.setTFile(ana.output_tfile);
 
     ana.cutflow.addCut("Weight", [&]() { return 1; }, [&]() { return bdt.eventweight() * bdt.lepsf() * bdt.weight_btagsf(); } );
     ana.cutflow.addCutToLastActiveCut("HighMT", [&]() { return bdt.lep3MT() > 40. and bdt.lep4MT() > 20.; }, UNITY);
+    ana.cutflow.getCut("Weight");
+    ana.cutflow.addCutToLastActiveCut("HighBDT", [&]() { return BDT_score > -0.08; }, UNITY);
 
     // Print cut structure
     ana.cutflow.printCuts();
 
     // Histogram utility object that is used to define the histograms
     ana.histograms.addHistogram("MllNom", 180, 0, 200, [&]() { return bdt.MllN(); } );
+    ana.histograms.addHistogram("lep3MT", 180, 0, 200, [&]() { return bdt.lep3MT(); } );
+    ana.histograms.addHistogram("lep4MT", 180, 0, 200, [&]() { return bdt.lep4MT(); } );
+    ana.histograms.addHistogram("BDTZZ", 180, -0.35, 0.6, [&]() { return BDT_score; } );
+
+    // 2d histograms
     ana.histograms.add2DHistogram("pt_zeta_vis", 50 , -200, 550 , "pt_zeta_sum", 50, -200, 550, [&](){ return bdt.pt_zeta_vis(); }, [&](){ return bdt.pt_zeta(); });
 
     // Book cutflows
@@ -396,6 +416,16 @@ int main(int argc, char** argv)
             if (ana.looper.getNEventsProcessed() % ana.nsplit_jobs != (unsigned int) ana.job_index)
                 continue;
         }
+
+        tx.setBranch<float>("theta0", bdt.theta0());
+        tx.setBranch<float>("theta1", bdt.theta1());
+        tx.setBranch<float>("theta2", bdt.theta2());
+        tx.setBranch<float>("MllN", bdt.MllN());
+        tx.setBranch<float>("lep3MT", bdt.lep3MT());
+        tx.setBranch<float>("lep4MT", bdt.lep4MT());
+        tx.setBranch<float>("pt_zeta_vis", bdt.pt_zeta_vis());
+        tx.setBranch<float>("pt_zeta", bdt.pt_zeta());
+        BDT_score = readerx.eval(tx);
 
         //Do what you need to do in for each event here
         //To save use the following function

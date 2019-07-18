@@ -211,6 +211,10 @@ public:
     METObject metobj;
     METObject metobj_corrected;
 
+    // TVector3 objects are kept here in order to speed up. (why? cause ROOT IS STUPID)
+    // TVector3 lep1, lep2, metv3, zeta, zetaunit, sum, sum_vis;
+    LV lep1, lep2, metv3, zeta, zetaunit, sum, sum_vis;
+
     // Looper
     RooUtil::Looper<wvztree>* looper;
     TTree* t;
@@ -341,6 +345,7 @@ public:
     float VarHTLep5();
     float VarMETPhi(int=0);
     float VarTauTauDisc(int=0);
+    float VarPtZetaDiff();
     float VarPtZeta();
     float VarPtZetaVis();
     float VarMinDRJetsToLep(int);

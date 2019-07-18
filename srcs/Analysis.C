@@ -344,6 +344,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         // histograms.addHistogram("jetPhi1"        , 180 ,-5.      ,  5.    , [&](){ return wvz.jets_p4().size() > 1 ? wvz.jets_p4()[1].phi() : -999; });
         // histograms.addHistogram("jetPhi2"        , 180 ,-5.      ,  5.    , [&](){ return wvz.jets_p4().size() > 2 ? wvz.jets_p4()[2].phi() : -999; });
         // histograms.addHistogram("jetPhi3"        , 180 ,-5.      ,  5.    , [&](){ return wvz.jets_p4().size() > 3 ? wvz.jets_p4()[3].phi() : -999; });
+        histograms.addHistogram("pt_zeta"        , 180 , -200    , 150       , [&](){ return this->VarPtZetaDiff(); });
     }
     else if (ntupleVersion.Contains("Trilep"))
     {
@@ -730,7 +731,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
     cutflow.saveOutput();
     if (ntupleVersion.Contains("WVZ") and doSkim)
+    {
         looper->saveSkim();
+        looper->getSkimFile()->cd();
+        theoryweight.histmap_neventsinfile->hist->Write();
+    }
+
 
 }//end of whole function
 
@@ -801,14 +807,14 @@ void Analysis::fillSkimTree()
     //Z: lep1 is id>0 lepton
     if(wvz.lep_id().at(lep_ZCand_idx1) < 0) 
     {
-	lep1_idx = lep_ZCand_idx2;
-	lep2_idx = lep_ZCand_idx1;
+        lep1_idx = lep_ZCand_idx2;
+        lep2_idx = lep_ZCand_idx1;
     } 
     //W: lep3 is higher pt lepton
     if(wvz.lep_pt().at(lep_Nom_idx1) < wvz.lep_pt().at(lep_Nom_idx2)) 
     {
-	lep3_idx = lep_Nom_idx2;
-	lep4_idx = lep_Nom_idx1;
+        lep3_idx = lep_Nom_idx2;
+        lep4_idx = lep_Nom_idx1;
     } 
 
     LeptonVectors vLeptons = GetLeptonVectors();
@@ -2838,84 +2844,127 @@ float Analysis::VarTauTauDisc(int var)
 }
 
 //______________________________________________________________________________________________
+float Analysis::VarPtZetaDiff()
+{
+    if (nVetoLeptons < 4)
+        return -999;
+    if (lep_ZCand_idx1 < 0)
+        return -999;
+    if (lep_ZCand_idx2 < 0)
+        return -999;
+    if (lep_Nom_idx1 < 0)
+        return -999;
+    if (lep_Nom_idx2 < 0)
+        return -999;
+    TLorentzVector metv3_, lep1_, lep2_;
+    metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
+    lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
+    lep2_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx2), 0,  this->VarLepPhi(lep_Nom_idx2), 0);
+    metv3 = RooUtil::Calc::getLV(metv3_);
+    lep1 = RooUtil::Calc::getLV(lep1_);
+    lep2 = RooUtil::Calc::getLV(lep2_);
+    zeta = lep1 * lep2.mag() + lep2 * lep1.mag();
+    sum_vis = lep1 + lep2;
+    sum = sum_vis + metv3;
+    return sum.Dot(zeta) / zeta.mag() - 1.85 * sum_vis.Dot(zeta) / zeta.mag();
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarPtZeta()
 {
-	TVector3 lep1, lep2, metv3, zeta;
-
-        metv3.SetPtEtaPhi(this->VarMET(), 0., this->VarMETPhi());
-        lep1.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx1), 0,  this->VarLepPhi(lep_ZCand_idx1));
-        lep2.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx2), 0,  this->VarLepPhi(lep_ZCand_idx2));
-
-        zeta = lep1*lep2.Mag() + lep2*lep1.Mag(); // find bisector
-
-        TVector3 sum = lep1 + lep2 + metv3;
-        return  sum.Dot(zeta.Unit());
+    if (nVetoLeptons < 4)
+        return -999;
+    if (lep_ZCand_idx1 < 0)
+        return -999;
+    if (lep_ZCand_idx2 < 0)
+        return -999;
+    if (lep_Nom_idx1 < 0)
+        return -999;
+    if (lep_Nom_idx2 < 0)
+        return -999;
+    TLorentzVector metv3_, lep1_, lep2_;
+    metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
+    lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
+    lep2_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx2), 0,  this->VarLepPhi(lep_Nom_idx2), 0);
+    metv3 = RooUtil::Calc::getLV(metv3_);
+    lep1 = RooUtil::Calc::getLV(lep1_);
+    lep2 = RooUtil::Calc::getLV(lep2_);
+    zeta = lep1 * lep2.mag() + lep2 * lep1.mag(); // find bisector
+    sum_vis = lep1 + lep2;
+    sum = sum_vis + metv3;
+    return  sum.Dot(zeta) / zeta.mag();
 }
 
 //______________________________________________________________________________________________
 float Analysis::VarPtZetaVis()
 {
-	TVector3 lep1, lep2, metv3, zeta;
-
-        metv3.SetPtEtaPhi(this->VarMET(), 0., this->VarMETPhi());
-        lep1.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx1), 0,  this->VarLepPhi(lep_ZCand_idx1));
-        lep2.SetPtEtaPhi(this->VarLepPt(lep_ZCand_idx2), 0,  this->VarLepPhi(lep_ZCand_idx2));
-
-        zeta = lep1*lep2.Mag() + lep2*lep1.Mag(); // find bisector
-
-        TVector3 sum_vis = lep1 + lep2;
-        return  sum_vis.Dot(zeta.Unit());	
+    if (nVetoLeptons < 4)
+        return -999;
+    if (lep_ZCand_idx1 < 0)
+        return -999;
+    if (lep_ZCand_idx2 < 0)
+        return -999;
+    if (lep_Nom_idx1 < 0)
+        return -999;
+    if (lep_Nom_idx2 < 0)
+        return -999;
+    TLorentzVector metv3_, lep1_, lep2_;
+    metv3_.SetPtEtaPhiM(this->VarMET(), 0., this->VarMETPhi(), 0);
+    lep1_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx1), 0,  this->VarLepPhi(lep_Nom_idx1), 0);
+    lep2_.SetPtEtaPhiM(this->VarLepPt(lep_Nom_idx2), 0,  this->VarLepPhi(lep_Nom_idx2), 0);
+    metv3 = RooUtil::Calc::getLV(metv3_);
+    lep1 = RooUtil::Calc::getLV(lep1_);
+    lep2 = RooUtil::Calc::getLV(lep2_);
+    zeta = lep1 * lep2.mag() + lep2 * lep1.mag(); // find bisector
+    sum_vis = lep1 + lep2;
+    return  sum_vis.Dot(zeta) / zeta.mag();
 }
 
 //______________________________________________________________________________________________
 float Analysis::VarMinDRJetsToLep(int idx)
 {
-	float minDR = 9999;
-	for (unsigned int jj = 0 ; jj < wvz.jets_p4().size(); jj++)
-	{	
-		float dphi = wvz.jets_p4()[jj].phi() - lep_phi->at(idx);
-		float deta = wvz.jets_p4()[jj].eta() - lep_eta->at(idx);
-		float dR_this = sqrt(dphi*dphi + deta*deta);
-		if(dR_this < minDR) minDR = dR_this;
-	}
-	
-	if (minDR > 9998) minDR = -999; //default value: -999
-	
-	return minDR;
+    float minDR = 9999;
+    for (unsigned int jj = 0 ; jj < wvz.jets_p4().size(); jj++)
+    {
+        float dphi = wvz.jets_p4()[jj].phi() - lep_phi->at(idx);
+        float deta = wvz.jets_p4()[jj].eta() - lep_eta->at(idx);
+        float dR_this = sqrt(dphi * dphi + deta * deta);
+        if (dR_this < minDR) minDR = dR_this;
+    }
+    if (minDR > 9998) minDR = -999; //default value: -999
+    return minDR;
 }
 
 //______________________________________________________________________________________________
 LeptonVectors Analysis::GetLeptonVectors()
 {
-
-	int lep11_idx = lep_ZCand_idx1, lep12_idx = lep_ZCand_idx2, lep21_idx = lep_Nom_idx1, lep22_idx = lep_Nom_idx2;
-	//Z: lep11 is id>0 lepton
-	if(wvz.lep_id().at(lep_ZCand_idx1) < 0)
-	{
-	lep11_idx = lep_ZCand_idx2;
+    int lep11_idx = lep_ZCand_idx1, lep12_idx = lep_ZCand_idx2, lep21_idx = lep_Nom_idx1, lep22_idx = lep_Nom_idx2;
+    //Z: lep11 is id>0 lepton
+    if (wvz.lep_id().at(lep_ZCand_idx1) < 0)
+    {
+        lep11_idx = lep_ZCand_idx2;
         lep12_idx = lep_ZCand_idx1;
-	}
-	//W: lep21 id>0 lepton
-	if(wvz.lep_id().at(lep_Nom_idx1) < 0)
-	{
-	lep21_idx = lep_Nom_idx2;
+    }
+    //W: lep21 id>0 lepton
+    if (wvz.lep_id().at(lep_Nom_idx1) < 0)
+    {
+        lep21_idx = lep_Nom_idx2;
         lep22_idx = lep_Nom_idx1;
-	}
-	double lep11Mass = 0, lep12Mass = 0, lep21Mass = 0, lep22Mass = 0;
-	if(abs(wvz.lep_id().at(lep11_idx)) == 11) lep11Mass = 0.000511;
-	else if(abs(wvz.lep_id().at(lep11_idx)) == 13) lep11Mass = 0.1057;
-	if(abs(wvz.lep_id().at(lep12_idx)) == 11) lep12Mass = 0.000511;
-	else if(abs(wvz.lep_id().at(lep12_idx)) == 13) lep12Mass = 0.1057;
-	if(abs(wvz.lep_id().at(lep21_idx)) == 11) lep21Mass = 0.000511;
-	else if(abs(wvz.lep_id().at(lep21_idx)) == 13) lep21Mass = 0.1057;
-	if(abs(wvz.lep_id().at(lep22_idx)) == 11) lep22Mass = 0.000511;
-	else if(abs(wvz.lep_id().at(lep22_idx)) == 13) lep22Mass = 0.1057;
-
-	LeptonVectors vLeptons;
-	vLeptons.Lepton11.SetPtEtaPhiMass(this->VarLepPt(lep11_idx), this->VarLepEta(lep11_idx), this->VarLepPhi(lep11_idx), lep11Mass);	
-	vLeptons.Lepton12.SetPtEtaPhiMass(this->VarLepPt(lep12_idx), this->VarLepEta(lep12_idx), this->VarLepPhi(lep12_idx), lep12Mass);	
-	vLeptons.Lepton21.SetPtEtaPhiMass(this->VarLepPt(lep21_idx), this->VarLepEta(lep21_idx), this->VarLepPhi(lep21_idx), lep21Mass);	
-	vLeptons.Lepton22.SetPtEtaPhiMass(this->VarLepPt(lep22_idx), this->VarLepEta(lep22_idx), this->VarLepPhi(lep22_idx), lep22Mass);	
-	return vLeptons;
+    }
+    double lep11Mass = 0, lep12Mass = 0, lep21Mass = 0, lep22Mass = 0;
+    if (abs(wvz.lep_id().at(lep11_idx)) == 11) lep11Mass = 0.000511;
+    else if (abs(wvz.lep_id().at(lep11_idx)) == 13) lep11Mass = 0.1057;
+    if (abs(wvz.lep_id().at(lep12_idx)) == 11) lep12Mass = 0.000511;
+    else if (abs(wvz.lep_id().at(lep12_idx)) == 13) lep12Mass = 0.1057;
+    if (abs(wvz.lep_id().at(lep21_idx)) == 11) lep21Mass = 0.000511;
+    else if (abs(wvz.lep_id().at(lep21_idx)) == 13) lep21Mass = 0.1057;
+    if (abs(wvz.lep_id().at(lep22_idx)) == 11) lep22Mass = 0.000511;
+    else if (abs(wvz.lep_id().at(lep22_idx)) == 13) lep22Mass = 0.1057;
+    LeptonVectors vLeptons;
+    vLeptons.Lepton11.SetPtEtaPhiMass(this->VarLepPt(lep11_idx), this->VarLepEta(lep11_idx), this->VarLepPhi(lep11_idx), lep11Mass);
+    vLeptons.Lepton12.SetPtEtaPhiMass(this->VarLepPt(lep12_idx), this->VarLepEta(lep12_idx), this->VarLepPhi(lep12_idx), lep12Mass);
+    vLeptons.Lepton21.SetPtEtaPhiMass(this->VarLepPt(lep21_idx), this->VarLepEta(lep21_idx), this->VarLepPhi(lep21_idx), lep21Mass);
+    vLeptons.Lepton22.SetPtEtaPhiMass(this->VarLepPt(lep22_idx), this->VarLepEta(lep22_idx), this->VarLepPhi(lep22_idx), lep22Mass);
+    return vLeptons;
 }
 // eof

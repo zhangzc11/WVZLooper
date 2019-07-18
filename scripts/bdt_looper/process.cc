@@ -397,11 +397,43 @@ int main(int argc, char** argv)
     tx_TTZ.createBranch<float>("minDRJetToLep4");
     float BDT_score_TTZ;
 
+    RooUtil::TMVAUtil::ReaderX readerx_All("BDT_All", "tmvabdt/dataset/weights/TMVA_BDT_All.weights.xml");
+    RooUtil::TTreeX tx_All("BDTInput", "Temp tree existing only in run time to read BDT inputs");
+    tx_All.createBranch<float>("phi0");
+    tx_All.createBranch<float>("phi");
+    tx_All.createBranch<float>("theta0");
+    tx_All.createBranch<float>("theta1");
+    tx_All.createBranch<float>("theta2");
+    tx_All.createBranch<float>("MllN");
+    tx_All.createBranch<float>("lep3MT");
+    tx_All.createBranch<float>("lep4MT");
+    tx_All.createBranch<float>("lep34MT");
+    tx_All.createBranch<float>("pt_zeta_vis");
+    tx_All.createBranch<float>("pt_zeta");
+    tx_All.createBranch<float>("ZPt");
+    tx_All.createBranch<float>("nj");
+    tx_All.createBranch<float>("ht");
+    tx_All.createBranch<float>("minDRJetToLep3");
+    tx_All.createBranch<float>("minDRJetToLep4");
+    float BDT_score_All;
+
+    RooUtil::TMVAUtil::ReaderX readerx_Combine("BDT_Combine", "tmvabdt/dataset/weights/TMVA_BDT_Combine.weights.xml");
+    RooUtil::TTreeX tx_Combine("BDTInput", "Temp tree existing only in run time to read BDT inputs");
+    tx_Combine.createBranch<float>("bdt_zz");
+    tx_Combine.createBranch<float>("bdt_ttz");
+    float BDT_score_Combine;
+
     // Set the cutflow object output file
     ana.cutflow.setTFile(ana.output_tfile);
 
     ana.cutflow.addCut("Weight", [&]() { return 1; }, [&]() { return bdt.eventweight() * bdt.lepsf() * bdt.weight_btagsf(); } );
     ana.cutflow.addCutToLastActiveCut("HighMT", [&]() { return bdt.lep3MT() > 40. and bdt.lep4MT() > 20.; }, UNITY);
+    ana.cutflow.getCut("Weight");
+    ana.cutflow.addCutToLastActiveCut("HighBDTTTZ", [&]() { return BDT_score_TTZ > -0.1; }, UNITY);
+    ana.cutflow.getCut("Weight");
+    ana.cutflow.addCutToLastActiveCut("HighBDTZZ", [&]() { return BDT_score_ZZ > 0.0; }, UNITY);
+    ana.cutflow.getCut("Weight");
+    ana.cutflow.addCutToLastActiveCut("HighBDTAll", [&]() { return BDT_score_All > 0.15; }, UNITY);
 
     // Print cut structure
     ana.cutflow.printCuts();
@@ -415,6 +447,8 @@ int main(int argc, char** argv)
     ana.histograms.addHistogram("ZPt", 180, 0, 200, [&]() { return bdt.ZPt(); } );
     ana.histograms.addHistogram("BDTZZ", 180, -0.35, 0.6, [&]() { return BDT_score_ZZ; } );
     ana.histograms.addHistogram("BDTTTZ", 180, -0.35, 0.6, [&]() { return BDT_score_TTZ; } );
+    ana.histograms.addHistogram("BDTAll", 180, -0.35, 0.6, [&]() { return BDT_score_All; } );
+    ana.histograms.addHistogram("BDTCombine", 180, -0.35, 0.6, [&]() { return BDT_score_Combine; } );
     ana.histograms.addHistogram("lepNsumip3d", 180, 0., 0.02, [&]() { return fabs(bdt.lep_ip3d()[bdt.lep_N_idx0()]) + fabs(bdt.lep_ip3d()[bdt.lep_N_idx1()]); } );
     ana.histograms.addHistogram("lepNsumdxy", 180, 0., 0.02, [&]() { return fabs(bdt.lep_dxy()[bdt.lep_N_idx0()]) + fabs(bdt.lep_dxy()[bdt.lep_N_idx1()]); } );
     ana.histograms.addHistogram("lepNsumdz", 180, 0., 0.02, [&]() { return fabs(bdt.lep_dz()[bdt.lep_N_idx0()]) + fabs(bdt.lep_dz()[bdt.lep_N_idx1()]); } );
@@ -434,6 +468,16 @@ int main(int argc, char** argv)
     // Book Histograms
     ana.cutflow.bookHistograms(ana.histograms); // if just want to book everywhere
 
+    // Skim file
+    bool doSkim = false;
+    if (not ana.input_file_list_tstring.Contains("_skim"))
+        doSkim = true;
+    TString skimfile_name = ana.input_file_list_tstring;
+    skimfile_name.ReplaceAll(".root", "_skim.root");
+    if (doSkim)
+        ana.looper.setSkim(skimfile_name);
+    RooUtil::TTreeX* tx_skim;
+
     // Looping input file
     while (ana.looper.nextEvent())
     {
@@ -443,6 +487,16 @@ int main(int argc, char** argv)
         {
             if (ana.looper.getNEventsProcessed() % ana.nsplit_jobs != (unsigned int) ana.job_index)
                 continue;
+        }
+
+        if (ana.looper.isNewFileInChain())
+        {
+            if (doSkim)
+            {
+                tx_skim = new RooUtil::TTreeX(ana.looper.getSkimTree());
+                tx_skim->createBranch<float>("bdt_zz");
+                tx_skim->createBranch<float>("bdt_ttz");
+            }
         }
 
         tx_ZZ.setBranch<float>("phi0", bdt.phi0());
@@ -470,6 +524,35 @@ int main(int argc, char** argv)
         tx_TTZ.setBranch<float>("minDRJetToLep4", bdt.minDRJetToLep4());
         BDT_score_TTZ = readerx_TTZ.eval(tx_TTZ);
 
+        tx_All.setBranch<float>("phi0", bdt.phi0());
+        tx_All.setBranch<float>("phi", bdt.phi());
+        tx_All.setBranch<float>("theta0", bdt.theta0());
+        tx_All.setBranch<float>("theta1", bdt.theta1());
+        tx_All.setBranch<float>("theta2", bdt.theta2());
+        tx_All.setBranch<float>("MllN", bdt.MllN());
+        tx_All.setBranch<float>("lep3MT", bdt.lep3MT());
+        tx_All.setBranch<float>("lep4MT", bdt.lep4MT());
+        tx_All.setBranch<float>("lep34MT", bdt.lep34MT());
+        tx_All.setBranch<float>("pt_zeta_vis", bdt.pt_zeta_vis());
+        tx_All.setBranch<float>("pt_zeta", bdt.pt_zeta());
+        tx_All.setBranch<float>("ZPt", bdt.ZPt());
+        tx_All.setBranch<float>("nj", bdt.nj());
+        tx_All.setBranch<float>("ht", bdt.ht());
+        tx_All.setBranch<float>("minDRJetToLep3", bdt.minDRJetToLep3());
+        tx_All.setBranch<float>("minDRJetToLep4", bdt.minDRJetToLep4());
+        BDT_score_All = readerx_All.eval(tx_All);
+
+        tx_Combine.setBranch<float>("bdt_zz", bdt.bdt_zz());
+        tx_Combine.setBranch<float>("bdt_ttz", bdt.bdt_ttz());
+        BDT_score_Combine = readerx_Combine.eval(tx_Combine);
+
+        if (doSkim)
+        {
+            tx_skim->setBranch<float>("bdt_zz", BDT_score_ZZ);
+            tx_skim->setBranch<float>("bdt_ttz", BDT_score_TTZ);
+            ana.looper.fillSkim();
+        }
+
         //Do what you need to do in for each event here
         //To save use the following function
         ana.cutflow.fill();
@@ -477,6 +560,9 @@ int main(int argc, char** argv)
 
     // Writing output file
     ana.cutflow.saveOutput();
+
+    if (doSkim)
+        ana.looper.saveSkim();
 
     // The below can be sometimes crucial
     delete ana.output_tfile;

@@ -665,7 +665,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     //==========================
 
     // // Book Cutflow
-    // cutflow.bookCutflows();
+    cutflow.bookCutflows();
 
     // Book histograms
     if (ntupleVersion.Contains("WVZ"))
@@ -1718,6 +1718,10 @@ float Analysis::EventWeight()
         if (looper->getCurrentFileName().Contains("v0.1.12.7")
                 and looper->getCurrentFileName().Contains("ggh_hzz4l_powheg_1"))
             fixXsec = 1.1287633316; // Difference between scale1fb and HXSWG twiki
+        if (looper->getCurrentFileName().Contains("v0.1.12.7")
+                and year == 2017
+                and looper->getCurrentFileName().Contains("ggh_hzz4l_powheg_1"))
+            fixXsec = 1.1287633316 * 1.236e-05 / 5.617e-05; // Difference between scale1fb and HXSWG twiki
         if (year == 2016)
             return fixXsec * evt_scale1fb * 35.9 * getTruePUw2016(wvz.nTrueInt());
         else if (year == 2017)

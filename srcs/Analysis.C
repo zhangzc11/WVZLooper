@@ -1713,6 +1713,9 @@ float Analysis::EventWeight()
                 and year == 2017
                 and looper->getCurrentFileName().Contains("wwz_4l2v_amcatnlo"))
             fixXsec = 1.1376131152; // Error from wrong scale1fb
+        if (looper->getCurrentFileName().Contains("v0.1.12.7")
+                and looper->getCurrentFileName().Contains("ggh_hzz4l_powheg_1"))
+            fixXsec = 1.1287633316; // Difference between scale1fb and HXSWG twiki
         if (year == 2016)
             return fixXsec * evt_scale1fb * 35.9 * getTruePUw2016(wvz.nTrueInt());
         else if (year == 2017)
@@ -1872,6 +1875,19 @@ float Analysis::LeptonScaleFactor()
     return scalefactor;
 }
 
+//______________________________________________________________________________________________
+float Analysis::LeptonFourVetoScaleFactor()
+{
+    if (wvz.isData())
+        return 1.;
+    // Based on lep_Veto indices
+    float scalefactor = 1;
+    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx1, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_Z2Cand_idx1, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_Z2Cand_idx2, false);
+    return scalefactor;
+}
 //______________________________________________________________________________________________
 float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal)
 {

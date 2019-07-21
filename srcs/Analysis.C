@@ -126,12 +126,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("Cut4LepLowMll");
         cutflow.addCutToLastActiveCut("Cut4LepBTag"             , [&](){ return this->Cut4LepBTag();             } , [&](){ return this->BTagSF();            } );
 
-	//HZZ4l Control regions
+        //HZZ4l Control regions
         cutflow.getCut("FindZCandLeptons");
-        cutflow.addCutToLastActiveCut("FindTwoOSZ2Leptons" , [&](){ return this->FindTwoOSZ2Leptons(); } , UNITY );
-        cutflow.addCutToLastActiveCut("CutZZ4LepLeptonPt"         , [&](){ return this->CutZZ4LepLeptonPt();         } , UNITY );
-        cutflow.addCutToLastActiveCut("CutHLTZZ4l"                  , [&](){ return this->CutHLT();                  } , UNITY );
-        cutflow.addCutToLastActiveCut("ChannelHZZ4l"       	, [&](){ return this->IsChannelHZZ4l();          } , UNITY );
+        cutflow.addCutToLastActiveCut("FindTwoOSZ2Leptons"      , [&](){ return this->FindTwoOSZ2Leptons();      } , UNITY );
+        cutflow.addCutToLastActiveCut("CutZZ4LepLeptonPt"       , [&](){ return this->CutZZ4LepLeptonPt();       } , UNITY );
+        cutflow.addCutToLastActiveCut("CutHLTZZ4l"              , [&](){ return this->CutHLT();                  } , UNITY );
+        cutflow.addCutToLastActiveCut("ChannelHZZ4l"            , [&](){ return this->IsChannelHZZ4l();          } , UNITY );
 
         // b-tagged emu channel
         cutflow.getCut("Cut4LepBTag");
@@ -2244,7 +2244,7 @@ bool Analysis::Cut4LepLeptonPt(bool isAR)
 bool Analysis::CutZZ4LepLeptonPt()
 {
     if(lep_Z2Cand_idx1<0 || lep_Z2Cand_idx2<0 || lep_ZCand_idx1<0 || lep_ZCand_idx2<0)
-	return false;
+        return false;
 
     float lepZpt1 = wvz.lep_pt().at(lep_ZCand_idx1);
     float lepZpt2 = wvz.lep_pt().at(lep_ZCand_idx2);
@@ -2522,17 +2522,17 @@ bool Analysis::IsChannelOffZHighMll(bool isAR)
 bool Analysis::IsChannelHZZ4l()
 {
     if(lep_Z2Cand_idx1 < 0 || lep_Z2Cand_idx2 <0)
-	return false; 
-    float mll = (leptons.at(lep_Z2Cand_idx1)+leptons.at(lep_Z2Cand_idx2)).M();
-    float m4l = (leptons.at(lep_Z2Cand_idx1)+leptons.at(lep_Z2Cand_idx2) +leptons.at(lep_ZCand_idx1)+leptons.at(lep_ZCand_idx2)).M();
-    if (lep_id->at(lep_Z2Cand_idx1) != -lep_id->at(lep_Z2Cand_idx2)) 
-	return false;
-    if(fabs(mll - 28.5) > 16.5)
-	return false;
-    if(fabs(m4l - 125.0) > 5.0)
-	return false;
+        return false;
+    float mll = (leptons.at(lep_Z2Cand_idx1) + leptons.at(lep_Z2Cand_idx2)).M();
+    float m4l = (leptons.at(lep_Z2Cand_idx1) + leptons.at(lep_Z2Cand_idx2) + leptons.at(lep_ZCand_idx1) + leptons.at(lep_ZCand_idx2)).M();
+    if (lep_id->at(lep_Z2Cand_idx1) != -lep_id->at(lep_Z2Cand_idx2))
+        return false;
+    if (fabs(mll - 28.5) > 16.5)
+        return false;
+    if (fabs(m4l - 125.0) > 5.0)
+        return false;
     else
-	return true;
+        return true;
 }
 
 //______________________________________________________________________________________________

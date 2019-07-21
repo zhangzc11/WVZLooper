@@ -149,6 +149,8 @@ public:
     int lep_Veto_idx4;
     int lep_ZCand_idx1;
     int lep_ZCand_idx2;
+    int lep_Z2Cand_idx1;
+    int lep_Z2Cand_idx2;
     int nNominalLeptons;
     int lep_Nom_idx1;
     int lep_Nom_idx2;
@@ -244,6 +246,7 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void select2ndZCandLeptons();
     void selectTightLeptons();
     void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
@@ -286,12 +289,14 @@ public:
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
+    bool FindTwoOSZ2Leptons();
     bool FindOSOneNomOneVbntLeptons();
     bool FindOSOneNomOneNotNomLeptons();
     bool IsEMuPlusX();
     bool IsDYPlusX();
 
     bool Cut4LepLeptonPt(bool=false);
+    bool CutZZ4LepLeptonPt();
     bool CutHLT();
     bool Cut4LepLowMll(bool=false);
     bool Cut4LepBVeto(int=0);
@@ -306,6 +311,7 @@ public:
     bool IsChannelOffZ(bool=false);
     bool IsChannelOffZHighMll(bool=false);
     bool IsChannelOffZLowMll(bool=false);
+    bool IsChannelHZZ4l();
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();

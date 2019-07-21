@@ -47,10 +47,12 @@ def main_analysis_make_plot_userfilter():
             "outputs/{}/{}/wz.root".format(ntuple_version, tag),
             # "outputs/{}/{}/rare.root".format(ntuple_version, tag),
             # "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag),
-            # "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
-            "outputs/{}/{}/other.root".format(ntuple_version, tag),
+            "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
+            # "outputs/{}/{}/other.root".format(ntuple_version, tag),
+            "outputs/{}/{}/othernoh.root".format(ntuple_version, tag),
             ]
-    bkgnames = ["ZZ", "t#bar{t}Z", "tWZ", "WZ", "Other"]
+    # bkgnames = ["ZZ", "t#bar{t}Z", "tWZ", "WZ", "Other"]
+    bkgnames = ["ZZ", "t#bar{t}Z", "tWZ", "WZ", "Higgs", "Other"]
     # bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other"]
     # bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"]
     sigfiles = [
@@ -88,7 +90,7 @@ def main_analysis_make_plot_userfilter():
     bkgnamesddfake = ["Other", "DY", "t#bar{t}", "WZ"]
 
 
-    colors = [2001, 2005, 2007, 2003, 920, 2012, 2011, 2002]
+    colors = [2001, 2005, 2007, 2003, 2011, 920, 2012, 2011, 2002]
     fakeVRcolors = [920, 2012, 2011, 2003]
 
     if "2016" in ntuple_version: lumi = 35.9
@@ -109,8 +111,8 @@ def main_analysis_make_plot_userfilter():
                 "print_yield":True,
                 "nbins":int(args.nbins),
                 "signal_scale": 1,
-                "legend_scalex":1.5,
-                "legend_scaley":0.9,
+                "legend_scalex":1.3,
+                "legend_scaley":1.2,
                 "legend_ncolumns": 3,
                 # "legend_smart": False if args.yaxis_log else True,
                 "legend_smart": True,
@@ -124,6 +126,7 @@ def main_analysis_make_plot_userfilter():
                 "xaxis_label":args.xaxis_label,
                 "ratio_xaxis_title":args.xaxis_label,
                 "yaxis_range":[float(x) for x in args.yaxis_range.split(",")] if isinstance(args.yaxis_range, basestring) and len(args.yaxis_range) > 0 else [],
+                "no_ratio": False if unblind else True,
                 },
             # _plotter=p.plot_cut_scan,
             )

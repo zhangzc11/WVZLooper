@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap "kill 0" EXIT
+# trap "kill 0" EXIT
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -25,12 +25,16 @@ usage()
   echo "  -y    yaxis-log              (e.g. -y)"
   echo "  -s    do systematics         (e.g. -s)"
   echo "  -k    do skim tree           (e.g. -k)"
+  echo "  -x    xaxis_label            (e.g. -x \"MET [GeV]\")"
+  echo "  -r    yaxis_range            (e.g. -r \"[0., 100.]\")"
+  echo "  -a    run all year           (e.g. -a)"
+  echo "  -c    one combined signal    (e.g. -c)"
   echo
   exit
 }
 
 # Command-line opts
-while getopts ":b:t:v:d:p:n:12uyskh" OPTION; do
+while getopts ":b:t:v:d:p:n:r:x:12uyskach" OPTION; do
   case $OPTION in
     b) BASELINE=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;
@@ -40,10 +44,14 @@ while getopts ":b:t:v:d:p:n:12uyskh" OPTION; do
     1) FORCELOOPER=true;;
     2) FORCEHADDER=true;;
     n) NBINS=" -n "${OPTARG};;
+    x) XAXISLABEL=${OPTARG};;
+    r) YAXISRANGE=${OPTARG};;
     u) UNBLIND=" -u";;
     y) YAXISLOG=" -y";;
     s) DOSYST=" -s";;
     k) DOSKIM=" -k";;
+    a) RUNALLYEAR=true;;
+    c) ONESIGNAL=" -c";;
     h) usage;;
     :) usage;;
   esac
@@ -61,6 +69,10 @@ if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 if [ -z ${YAXISLOG}  ]; then YAXISLOG=""; fi
 if [ -z ${DOSYST}  ]; then DOSYST=""; fi
 if [ -z ${DOSKIM}  ]; then DOSKIM=""; fi
+if [ -z "${XAXISLABEL}" ]; then XAXISLABEL=""; fi
+if [ -z "${YAXISRANGE}" ]; then YAXISRANGE=""; fi
+if [ -z ${RUNALLYEAR}  ]; then RUNALLYEAR=false; fi
+if [ -z ${ONESIGNAL}  ]; then ONESIGNAL=""; fi
 
 # Verbose
 date
@@ -76,10 +88,14 @@ echo "FORCEHADDER    : ${FORCEHADDER}"
 echo "DIRNAME        : ${DIRNAME}"
 echo "PATTERN        : ${PATTERN}"
 echo "NBINS          : ${NBINS}"
+echo "XAXISLABEL     : ${XAXISLABEL}"
+echo "YAXISRANGE     : ${YAXISRANGE}"
 echo "UNBLIND        : ${UNBLIND}"
 echo "YAXISLOG       : ${YAXISLOG}"
 echo "DOSYST         : ${DOSYST}"
 echo "DOSKIM         : ${DOSKIM}"
+echo "RUNALLYEAR     : ${RUNALLYEAR}"
+echo "ONESIGNAL      : ${ONESIGNAL}"
 echo "================================================"
 
 # to shift away the parsed options
@@ -148,13 +164,15 @@ if [ -n ${DIRNAME} ] && [ -n ${PATTERN} ]; then
         exit
     fi
 
-    # Plotting the output histograms by each year
-    python ./scripts/plot.py ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
-    python ./scripts/plot.py ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
-    python ./scripts/plot.py ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+    if ${RUNALLYEAR}; then
+        # Plotting the output histograms by each year
+        python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+        python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+        python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+    fi
 
     # Plotting the output histograms of all year
-    python ./scripts/plot.py ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
+    python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
 
 fi
 

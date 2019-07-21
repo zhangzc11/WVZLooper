@@ -126,6 +126,13 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("Cut4LepLowMll");
         cutflow.addCutToLastActiveCut("Cut4LepBTag"             , [&](){ return this->Cut4LepBTag();             } , [&](){ return this->BTagSF();            } );
 
+	//HZZ4l Control regions
+        cutflow.getCut("FindZCandLeptons");
+        cutflow.addCutToLastActiveCut("FindTwoOSZ2Leptons" , [&](){ return this->FindTwoOSZ2Leptons(); } , UNITY );
+        cutflow.addCutToLastActiveCut("CutZZ4LepLeptonPt"         , [&](){ return this->CutZZ4LepLeptonPt();         } , UNITY );
+        cutflow.addCutToLastActiveCut("CutHLTZZ4l"                  , [&](){ return this->CutHLT();                  } , UNITY );
+        cutflow.addCutToLastActiveCut("ChannelHZZ4l"       	, [&](){ return this->IsChannelHZZ4l();          } , UNITY );
+
         // b-tagged emu channel
         cutflow.getCut("Cut4LepBTag");
         cutflow.addCutToLastActiveCut("ChannelBTagEMu"          , [&](){ return this->IsChannelEMu();            } , UNITY );
@@ -306,8 +313,11 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("lepNdz1"        , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx2 >= 0 ? fabs(wvz.lep_dz()[lep_Nom_idx2]) : -999; });
         histograms.addHistogram("MllZCand"       , 180 , 0       , 200    , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("MllNom"         , 180 , 0       , 200    , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
-        // histograms.addHistogram("M4l"            , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
-        // histograms.addHistogram("M4lZoom"        , 180 , 100     , 150    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
+        histograms.addHistogram("MllZ2Cand"       , 180 , 0       , 200    , [&](){ return this->VarMll(lep_Z2Cand_idx1, lep_Z2Cand_idx2); });
+        //histograms.addHistogram("M4l"            , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
+        //histograms.addHistogram("M4lZoom"        , 180 , 115     , 135    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
+        histograms.addHistogram("MZZ4l"            , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Z2Cand_idx1, lep_Z2Cand_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
+        histograms.addHistogram("MZZ4lZoom"        , 180 , 115     , 135    , [&](){ return this->VarM4l(lep_Z2Cand_idx1, lep_Z2Cand_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("PtllZCand"      , 180 , 0       , 200    , [&](){ return this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("PtllNom"        , 180 , 0       , 200    , [&](){ return this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("HTHad"          , 180 , 0       , 200    , [&](){ return wvz.ht(); });
@@ -663,6 +673,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOnZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZ");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelHZZ4l");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagEMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagOnZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagOffZ");
@@ -677,6 +688,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMET");
             cutflow.bookHistogramsForCut(histograms, "ChannelEMu");
             cutflow.bookHistogramsForCut(histograms, "ChannelOffZ");
+            cutflow.bookHistogramsForCut(histograms, "ChannelHZZ4l");
             cutflow.bookHistogramsForCut(histograms, "ChannelOnZ");
             cutflow.bookHistogramsForCut(histograms, "ChannelOnZHighMT");
             cutflow.bookHistogramsForCut(histograms, "ChannelOnZHighMET");
@@ -734,6 +746,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         selectVetoLeptons();
         selectZCandLeptons();
         selectNominalLeptons();
+        select2ndZCandLeptons();
         select2ndZCandAndWCandLeptons();
         selectFakeableLeptons();
         /* probably not necessary anymore */ sortLeptonIndex();
@@ -1057,6 +1070,39 @@ void Analysis::selectNominalLeptons()
     if (nNominalLeptons > 2) lep_Nom_idx3 = lep_nom_idxs.at(2);
 
 }
+
+//______________________________________________________________________________________________
+void Analysis::select2ndZCandLeptons()
+{
+
+    // The nominal leptons are the leptons that are not tagged as Z
+
+    lep_Z2Cand_idx1 = -999;
+    lep_Z2Cand_idx2 = -999;
+
+    std::vector<int> good_idx;
+    // Loop over the leptons
+    for (unsigned int jj = 0 ; jj < lep_pt->size(); jj++)
+    {
+
+        if (jj == (unsigned int) lep_ZCand_idx1)
+            continue;
+
+        if (jj == (unsigned int) lep_ZCand_idx2)
+            continue;
+
+        if (not passZCandLeptonID(jj))
+            continue;
+
+        good_idx.push_back(jj);
+
+    }
+
+    int nZ2Leptons = good_idx.size(); // # of good z cand leptons
+    if (nZ2Leptons > 0) lep_Z2Cand_idx1 = good_idx[0];
+    if (nZ2Leptons > 1) lep_Z2Cand_idx2 = good_idx[1];
+}
+
 
 //______________________________________________________________________________________________
 void Analysis::selectFakeStudyLeptons()
@@ -2041,6 +2087,19 @@ bool Analysis::FindTwoOSNominalLeptons()
 }
 
 //______________________________________________________________________________________________
+bool Analysis::FindTwoOSZ2Leptons()
+{
+    // Found first nominal lepton
+    if (not (lep_Z2Cand_idx1 != -999                                   )) return false;
+    // Found second nominal lepton
+    if (not (lep_Z2Cand_idx2 != -999                                   )) return false;
+    // The pair makes OS
+    if (not (lep_id->at(lep_Z2Cand_idx1) * lep_id->at(lep_Z2Cand_idx2) < 0)) return false;
+    return true;
+}
+
+
+//______________________________________________________________________________________________
 bool Analysis::FindOSOneNomOneNotNomLeptons()
 {
     if (lep_Nom_idx1 == -999)
@@ -2179,6 +2238,32 @@ bool Analysis::Cut4LepLeptonPt(bool isAR)
         return true;
     else
         return false;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::CutZZ4LepLeptonPt()
+{
+    if(lep_Z2Cand_idx1<0 || lep_Z2Cand_idx2<0 || lep_ZCand_idx1<0 || lep_ZCand_idx2<0)
+	return false;
+
+    float lepZpt1 = wvz.lep_pt().at(lep_ZCand_idx1);
+    float lepZpt2 = wvz.lep_pt().at(lep_ZCand_idx2);
+    float lepNpt1 = wvz.lep_pt().at(lep_Z2Cand_idx1);
+    float lepNpt2 = wvz.lep_pt().at(lep_Z2Cand_idx2);
+
+    if (!(lepZpt1 > 10. and lepZpt2 > 10. and lepNpt1 > 10. and lepNpt2 > 10.)) return false;
+    vector<float> leptonPtVector;
+    leptonPtVector.push_back(lepZpt1);
+    leptonPtVector.push_back(lepZpt2);
+    leptonPtVector.push_back(lepNpt1);
+    leptonPtVector.push_back(lepNpt2);
+    std::sort(leptonPtVector.begin(), leptonPtVector.end());
+    float leadLeptonPt = leptonPtVector[3];
+    float subleadLeptonPt = leptonPtVector[2];
+    if(!(leadLeptonPt > 25 && subleadLeptonPt > 15)) return false;
+
+    return true;
+
 }
 
 //______________________________________________________________________________________________
@@ -2431,6 +2516,23 @@ bool Analysis::IsChannelOffZHighMll(bool isAR)
         return true;
     else
         return false;
+}
+
+//______________________________________________________________________________________________
+bool Analysis::IsChannelHZZ4l()
+{
+    if(lep_Z2Cand_idx1 < 0 || lep_Z2Cand_idx2 <0)
+	return false; 
+    float mll = (leptons.at(lep_Z2Cand_idx1)+leptons.at(lep_Z2Cand_idx2)).M();
+    float m4l = (leptons.at(lep_Z2Cand_idx1)+leptons.at(lep_Z2Cand_idx2) +leptons.at(lep_ZCand_idx1)+leptons.at(lep_ZCand_idx2)).M();
+    if (lep_id->at(lep_Z2Cand_idx1) != -lep_id->at(lep_Z2Cand_idx2)) 
+	return false;
+    if(fabs(mll - 28.5) > 16.5)
+	return false;
+    if(fabs(m4l - 125.0) > 5.0)
+	return false;
+    else
+	return true;
 }
 
 //______________________________________________________________________________________________

@@ -127,7 +127,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addCutToLastActiveCut("Cut4LepBTag"             , [&](){ return this->Cut4LepBTag();             } , [&](){ return this->BTagSF();            } );
 
         //HZZ4l Control regions
-        cutflow.getCut("FindZCandLeptons");
+        cutflow.getCut("Weight");
+        cutflow.addCutToLastActiveCut("FourLeptonsZZ4l"             , [&](){ return this->Is4LeptonEvent();          } , [&](){ return this->LeptonScaleFactorZZ4l(); } );
+        cutflow.addCutToLastActiveCut("FindZCandLeptonsZZ4l"        , [&](){ return this->FindZCandLeptons();        } , UNITY );
         cutflow.addCutToLastActiveCut("FindTwoOSZ2Leptons"      , [&](){ return this->FindTwoOSZ2Leptons();      } , UNITY );
         cutflow.addCutToLastActiveCut("CutZZ4LepLeptonPt"       , [&](){ return this->CutZZ4LepLeptonPt();       } , UNITY );
         cutflow.addCutToLastActiveCut("CutHLTZZ4l"              , [&](){ return this->CutHLT();                  } , UNITY );
@@ -1876,7 +1878,7 @@ float Analysis::LeptonScaleFactor()
 }
 
 //______________________________________________________________________________________________
-float Analysis::LeptonFourVetoScaleFactor()
+float Analysis::LeptonScaleFactorZZ4l()
 {
     if (wvz.isData())
         return 1.;
@@ -1888,6 +1890,7 @@ float Analysis::LeptonFourVetoScaleFactor()
     scalefactor *= IndividualLeptonScaleFactor(lep_Z2Cand_idx2, false);
     return scalefactor;
 }
+
 //______________________________________________________________________________________________
 float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal)
 {

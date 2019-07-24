@@ -48,12 +48,22 @@ conda install -c conda-forge keras
 ```
 
 
-### To append xgboost BDT variables to baby ntuples, do:
+### To convert xgboost models into c++ header file, do
 
 ```
 cd python
-source cmd_append.sh /nfs-7/userdata/zhicaiz/babies/ v0.1.12.7.nbAll
-source cmd_2016.sh
-source cmd_2017.sh
-source cmd_2018.sh
+source convert_to_c.sh
 ```
+
+this will generate the corresponding c++ header files that can be directly used to evaluate BDT on the fly in the looper, for example:
+
+```
+#include "wwz_vs_zz_emuHighTTZBDT.h"
+
+// other code....
+std::vector<float> test_sample_ZZ{bdt.met_pt(),bdt.lep3Pt(),bdt.lep4Pt(),bdt.ZPt(),bdt.lep3dZ(),bdt.lep4dZ(),bdt.lep3MT(),bdt.lep4MT(),bdt.lep34MT(),bdt.phi0(),bdt.theta0(),bdt.phi(),bdt.theta1(),bdt.theta2(),bdt.MllN(),bdt.pt_zeta(),bdt.pt_zeta_vis()};
+float BDT_zz_emuHighTTZBDT = wwz_vs_zz_emuHighTTZBDT(test_sample_ZZ, true)[0]; // true means get probability, which is what we use to get BDT, false means to get weight
+
+```
+
+all the header files of the existing model can be found in models/cpp/ , with the corresponding input variables in python/train_*.py

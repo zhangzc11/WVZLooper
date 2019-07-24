@@ -289,6 +289,38 @@ void wvztree::Init(TTree *tree) {
   if (weight_btagsf_light_DN_branch) weight_btagsf_light_DN_branch->SetAddress(&weight_btagsf_light_DN_);
   weight_btagsf_light_UP_branch = tree->GetBranch("weight_btagsf_light_UP");
   if (weight_btagsf_light_UP_branch) weight_btagsf_light_UP_branch->SetAddress(&weight_btagsf_light_UP_);
+  disc_ttzzz_bVeto_branch = tree->GetBranch("disc_ttzzz_bVeto");
+  if (disc_ttzzz_bVeto_branch) disc_ttzzz_bVeto_branch->SetAddress(&disc_ttzzz_bVeto_);
+  disc_ttzzz_emu_branch = tree->GetBranch("disc_ttzzz_emu");
+  if (disc_ttzzz_emu_branch) disc_ttzzz_emu_branch->SetAddress(&disc_ttzzz_emu_);
+  disc_ttzzz_OffZ_branch = tree->GetBranch("disc_ttzzz_OffZ");
+  if (disc_ttzzz_OffZ_branch) disc_ttzzz_OffZ_branch->SetAddress(&disc_ttzzz_OffZ_);
+  disc_zz_emu_branch = tree->GetBranch("disc_zz_emu");
+  if (disc_zz_emu_branch) disc_zz_emu_branch->SetAddress(&disc_zz_emu_);
+  disc_zz_emuHighTTZBDT_branch = tree->GetBranch("disc_zz_emuHighTTZBDT");
+  if (disc_zz_emuHighTTZBDT_branch) disc_zz_emuHighTTZBDT_branch->SetAddress(&disc_zz_emuHighTTZBDT_);
+  disc_zz_OffZHighTTZBDT_branch = tree->GetBranch("disc_zz_OffZHighTTZBDT");
+  if (disc_zz_OffZHighTTZBDT_branch) disc_zz_OffZHighTTZBDT_branch->SetAddress(&disc_zz_OffZHighTTZBDT_);
+  disc_zz_OffZ_branch = tree->GetBranch("disc_zz_OffZ");
+  if (disc_zz_OffZ_branch) disc_zz_OffZ_branch->SetAddress(&disc_zz_OffZ_);
+  disc_ttz_nbAll_branch = tree->GetBranch("disc_ttz_nbAll");
+  if (disc_ttz_nbAll_branch) disc_ttz_nbAll_branch->SetAddress(&disc_ttz_nbAll_);
+  disc_ttz_bVeto_branch = tree->GetBranch("disc_ttz_bVeto");
+  if (disc_ttz_bVeto_branch) disc_ttz_bVeto_branch->SetAddress(&disc_ttz_bVeto_);
+  disc_ttz_emu_branch = tree->GetBranch("disc_ttz_emu");
+  if (disc_ttz_emu_branch) disc_ttz_emu_branch->SetAddress(&disc_ttz_emu_);
+  disc_ttz_OffZ_branch = tree->GetBranch("disc_ttz_OffZ");
+  if (disc_ttz_OffZ_branch) disc_ttz_OffZ_branch->SetAddress(&disc_ttz_OffZ_);
+  disc_multi_nbAll_branch = tree->GetBranch("disc_multi_nbAll");
+  if (disc_multi_nbAll_branch) disc_multi_nbAll_branch->SetAddress(&disc_multi_nbAll_);
+  disc_multi_emuHighTTZBDT_branch = tree->GetBranch("disc_multi_emuHighTTZBDT");
+  if (disc_multi_emuHighTTZBDT_branch) disc_multi_emuHighTTZBDT_branch->SetAddress(&disc_multi_emuHighTTZBDT_);
+  disc_multi_emu_branch = tree->GetBranch("disc_multi_emu");
+  if (disc_multi_emu_branch) disc_multi_emu_branch->SetAddress(&disc_multi_emu_);
+  disc_multi_OffZHighTTZBDT_branch = tree->GetBranch("disc_multi_OffZHighTTZBDT");
+  if (disc_multi_OffZHighTTZBDT_branch) disc_multi_OffZHighTTZBDT_branch->SetAddress(&disc_multi_OffZHighTTZBDT_);
+  disc_multi_OffZ_branch = tree->GetBranch("disc_multi_OffZ");
+  if (disc_multi_OffZ_branch) disc_multi_OffZ_branch->SetAddress(&disc_multi_OffZ_);
 
   tree->SetMakeClass(0);
 }
@@ -438,6 +470,22 @@ void wvztree::GetEntry(unsigned int idx) {
   weight_btagsf_heavy_UP_isLoaded = false;
   weight_btagsf_light_DN_isLoaded = false;
   weight_btagsf_light_UP_isLoaded = false;
+  disc_ttzzz_bVeto_isLoaded = false;
+  disc_ttzzz_emu_isLoaded = false;
+  disc_ttzzz_OffZ_isLoaded = false;
+  disc_zz_emu_isLoaded = false;
+  disc_zz_emuHighTTZBDT_isLoaded = false;
+  disc_zz_OffZHighTTZBDT_isLoaded = false;
+  disc_zz_OffZ_isLoaded = false;
+  disc_ttz_nbAll_isLoaded = false;
+  disc_ttz_bVeto_isLoaded = false;
+  disc_ttz_emu_isLoaded = false;
+  disc_ttz_OffZ_isLoaded = false;
+  disc_multi_nbAll_isLoaded = false;
+  disc_multi_emuHighTTZBDT_isLoaded = false;
+  disc_multi_emu_isLoaded = false;
+  disc_multi_OffZ_isLoaded = false;
+  disc_multi_OffZHighTTZBDT_isLoaded = false;
 }
 
 void wvztree::LoadAllBranches() {
@@ -584,6 +632,22 @@ void wvztree::LoadAllBranches() {
   if (weight_btagsf_heavy_UP_branch != 0) weight_btagsf_heavy_UP();
   if (weight_btagsf_light_DN_branch != 0) weight_btagsf_light_DN();
   if (weight_btagsf_light_UP_branch != 0) weight_btagsf_light_UP();
+  if (disc_ttzzz_bVeto_branch != 0) disc_ttzzz_bVeto();
+  if (disc_ttzzz_emu_branch != 0) disc_ttzzz_emu();
+  if (disc_ttzzz_OffZ_branch != 0) disc_ttzzz_OffZ();
+  if (disc_zz_emu_branch != 0) disc_zz_emu();
+  if (disc_zz_emuHighTTZBDT_branch != 0) disc_zz_emuHighTTZBDT();
+  if (disc_zz_OffZHighTTZBDT_branch != 0) disc_zz_OffZHighTTZBDT();
+  if (disc_zz_OffZ_branch != 0) disc_zz_OffZ();
+  if (disc_ttz_nbAll_branch != 0) disc_ttz_nbAll();
+  if (disc_ttz_bVeto_branch != 0) disc_ttz_bVeto();
+  if (disc_ttz_emu_branch != 0) disc_ttz_emu();
+  if (disc_ttz_OffZ_branch != 0) disc_ttz_OffZ();
+  if (disc_multi_nbAll_branch != 0) disc_multi_nbAll();
+  if (disc_multi_emuHighTTZBDT_branch != 0) disc_multi_emuHighTTZBDT();
+  if (disc_multi_emu_branch != 0) disc_multi_emu();
+  if (disc_multi_OffZ_branch != 0) disc_multi_OffZ();
+  if (disc_multi_OffZHighTTZBDT_branch != 0) disc_multi_OffZHighTTZBDT();
 }
 
 const int &wvztree::run() {
@@ -2432,6 +2496,236 @@ const float &wvztree::weight_btagsf_light_UP() {
   return weight_btagsf_light_UP_;
 }
 
+const float &wvztree::disc_ttzzz_bVeto() {
+  if (not disc_ttzzz_bVeto_isLoaded) {
+    if (disc_ttzzz_bVeto_branch != 0) {
+      disc_ttzzz_bVeto_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttzzz_bVeto_branch does not exist!\n");
+      //exit(1);
+      disc_ttzzz_bVeto_ = 999;
+    }
+    disc_ttzzz_bVeto_isLoaded = true;
+  }
+  return disc_ttzzz_bVeto_;
+}
+
+const float &wvztree::disc_ttzzz_emu() {
+  if (not disc_ttzzz_emu_isLoaded) {
+    if (disc_ttzzz_emu_branch != 0) {
+      disc_ttzzz_emu_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttzzz_emu_branch does not exist!\n");
+      //exit(1);
+      disc_ttzzz_emu_ = 999;
+    }
+    disc_ttzzz_emu_isLoaded = true;
+  }
+  return disc_ttzzz_emu_;
+}
+
+const float &wvztree::disc_ttzzz_OffZ() {
+  if (not disc_ttzzz_OffZ_isLoaded) {
+    if (disc_ttzzz_OffZ_branch != 0) {
+      disc_ttzzz_OffZ_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttzzz_OffZ_branch does not exist!\n");
+      //exit(1);
+      disc_ttzzz_OffZ_ = 999;
+    }
+    disc_ttzzz_OffZ_isLoaded = true;
+  }
+  return disc_ttzzz_OffZ_;
+}
+
+const float &wvztree::disc_zz_emu() {
+  if (not disc_zz_emu_isLoaded) {
+    if (disc_zz_emu_branch != 0) {
+      disc_zz_emu_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_zz_emu_branch does not exist!\n");
+      //exit(1);
+      disc_zz_emu_ = 999;
+    }
+    disc_zz_emu_isLoaded = true;
+  }
+  return disc_zz_emu_;
+}
+
+const float &wvztree::disc_zz_emuHighTTZBDT() {
+  if (not disc_zz_emuHighTTZBDT_isLoaded) {
+    if (disc_zz_emuHighTTZBDT_branch != 0) {
+      disc_zz_emuHighTTZBDT_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_zz_emuHighTTZBDT_branch does not exist!\n");
+      //exit(1);
+      disc_zz_emuHighTTZBDT_ = 999;
+    }
+    disc_zz_emuHighTTZBDT_isLoaded = true;
+  }
+  return disc_zz_emuHighTTZBDT_;
+}
+
+const float &wvztree::disc_zz_OffZHighTTZBDT() {
+  if (not disc_zz_OffZHighTTZBDT_isLoaded) {
+    if (disc_zz_OffZHighTTZBDT_branch != 0) {
+      disc_zz_OffZHighTTZBDT_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_zz_OffZHighTTZBDT_branch does not exist!\n");
+      //exit(1);
+      disc_zz_OffZHighTTZBDT_ = 999;
+    }
+    disc_zz_OffZHighTTZBDT_isLoaded = true;
+  }
+  return disc_zz_OffZHighTTZBDT_;
+}
+
+const float &wvztree::disc_zz_OffZ() {
+  if (not disc_zz_OffZ_isLoaded) {
+    if (disc_zz_OffZ_branch != 0) {
+      disc_zz_OffZ_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_zz_OffZ_branch does not exist!\n");
+      //exit(1);
+      disc_zz_OffZ_ = 999;
+    }
+    disc_zz_OffZ_isLoaded = true;
+  }
+  return disc_zz_OffZ_;
+}
+
+const float &wvztree::disc_ttz_nbAll() {
+  if (not disc_ttz_nbAll_isLoaded) {
+    if (disc_ttz_nbAll_branch != 0) {
+      disc_ttz_nbAll_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttz_nbAll_branch does not exist!\n");
+      //exit(1);
+      disc_ttz_nbAll_ = 999;
+    }
+    disc_ttz_nbAll_isLoaded = true;
+  }
+  return disc_ttz_nbAll_;
+}
+
+
+const float &wvztree::disc_ttz_bVeto() {
+  if (not disc_ttz_bVeto_isLoaded) {
+    if (disc_ttz_bVeto_branch != 0) {
+      disc_ttz_bVeto_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttz_bVeto_branch does not exist!\n");
+      //exit(1);
+      disc_ttz_bVeto_ = 999;
+    }
+    disc_ttz_bVeto_isLoaded = true;
+  }
+  return disc_ttz_bVeto_;
+}
+
+
+const float &wvztree::disc_ttz_emu() {
+  if (not disc_ttz_emu_isLoaded) {
+    if (disc_ttz_emu_branch != 0) {
+      disc_ttz_emu_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttz_emu_branch does not exist!\n");
+      //exit(1);
+      disc_ttz_emu_ = 999;
+    }
+    disc_ttz_emu_isLoaded = true;
+  }
+  return disc_ttz_emu_;
+}
+
+
+const float &wvztree::disc_ttz_OffZ() {
+  if (not disc_ttz_OffZ_isLoaded) {
+    if (disc_ttz_OffZ_branch != 0) {
+      disc_ttz_OffZ_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_ttz_OffZ_branch does not exist!\n");
+      //exit(1);
+      disc_ttz_OffZ_ = 999;
+    }
+    disc_ttz_OffZ_isLoaded = true;
+  }
+  return disc_ttz_OffZ_;
+}
+
+const float &wvztree::disc_multi_nbAll() {
+  if (not disc_multi_nbAll_isLoaded) {
+    if (disc_multi_nbAll_branch != 0) {
+      disc_multi_nbAll_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_multi_nbAll_branch does not exist!\n");
+      //exit(1);
+      disc_multi_nbAll_ = 999;
+    }
+    disc_multi_nbAll_isLoaded = true;
+  }
+  return disc_multi_nbAll_;
+}
+
+
+const float &wvztree::disc_multi_emuHighTTZBDT() {
+  if (not disc_multi_emuHighTTZBDT_isLoaded) {
+    if (disc_multi_emuHighTTZBDT_branch != 0) {
+      disc_multi_emuHighTTZBDT_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_multi_emuHighTTZBDT_branch does not exist!\n");
+      //exit(1);
+      disc_multi_emuHighTTZBDT_ = 999;
+    }
+    disc_multi_emuHighTTZBDT_isLoaded = true;
+  }
+  return disc_multi_emuHighTTZBDT_;
+}
+
+
+const float &wvztree::disc_multi_emu() {
+  if (not disc_multi_emu_isLoaded) {
+    if (disc_multi_emu_branch != 0) {
+      disc_multi_emu_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_multi_emu_branch does not exist!\n");
+      //exit(1);
+      disc_multi_emu_ = 999;
+    }
+    disc_multi_emu_isLoaded = true;
+  }
+  return disc_multi_emu_;
+}
+
+
+const float &wvztree::disc_multi_OffZ() {
+  if (not disc_multi_OffZ_isLoaded) {
+    if (disc_multi_OffZ_branch != 0) {
+      disc_multi_OffZ_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_multi_OffZ_branch does not exist!\n");
+      //exit(1);
+      disc_multi_OffZ_ = 999;
+    }
+    disc_multi_OffZ_isLoaded = true;
+  }
+  return disc_multi_OffZ_;
+}
+
+
+const float &wvztree::disc_multi_OffZHighTTZBDT() {
+  if (not disc_multi_OffZHighTTZBDT_isLoaded) {
+    if (disc_multi_OffZHighTTZBDT_branch != 0) {
+      disc_multi_OffZHighTTZBDT_branch->GetEntry(index);
+    } else {
+      //printf("branch disc_multi_OffZHighTTZBDT_branch does not exist!\n");
+      //exit(1);
+      disc_multi_OffZHighTTZBDT_ = 999;
+    }
+    disc_multi_OffZHighTTZBDT_isLoaded = true;
+  }
+  return disc_multi_OffZHighTTZBDT_;
+}
 
 void wvztree::progress( int nEventsTotal, int nEventsChain ){
   int period = 1000;
@@ -2597,6 +2891,22 @@ const float &weight_btagsf_heavy_DN() { return wvz.weight_btagsf_heavy_DN(); }
 const float &weight_btagsf_heavy_UP() { return wvz.weight_btagsf_heavy_UP(); }
 const float &weight_btagsf_light_DN() { return wvz.weight_btagsf_light_DN(); }
 const float &weight_btagsf_light_UP() { return wvz.weight_btagsf_light_UP(); }
+const float &disc_ttzzz_bVeto() { return wvz.disc_ttzzz_bVeto(); }
+const float &disc_ttzzz_emu() { return wvz.disc_ttzzz_emu(); }
+const float &disc_ttzzz_OffZ() { return wvz.disc_ttzzz_OffZ(); }
+const float &disc_zz_emu() { return wvz.disc_zz_emu(); }
+const float &disc_zz_emuHighTTZBDT() { return wvz.disc_zz_emuHighTTZBDT(); }
+const float &disc_zz_OffZHighTTZBDT() { return wvz.disc_zz_OffZHighTTZBDT(); }
+const float &disc_zz_OffZ() { return wvz.disc_zz_OffZ(); }
+const float &disc_ttz_nbAll() { return wvz.disc_ttz_nbAll(); }
+const float &disc_ttz_bVeto() { return wvz.disc_ttz_bVeto(); }
+const float &disc_ttz_emu() { return wvz.disc_ttz_emu(); }
+const float &disc_ttz_OffZ() { return wvz.disc_ttz_OffZ(); }
+const float &disc_multi_nbAll() { return wvz.disc_multi_nbAll(); }
+const float &disc_multi_emuHighTTZBDT() { return wvz.disc_multi_emuHighTTZBDT(); }
+const float &disc_multi_emu() { return wvz.disc_multi_emu(); }
+const float &disc_multi_OffZ() { return wvz.disc_multi_OffZ(); }
+const float &disc_multi_OffZHighTTZBDT() { return wvz.disc_multi_OffZHighTTZBDT(); }
 
 }
 

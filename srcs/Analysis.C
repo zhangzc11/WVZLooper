@@ -176,6 +176,39 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("ARCut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelAROffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
         cutflow.addCutToLastActiveCut("ChannelAROffZHighMET", [&](){ return this->CutHighMET(); }, UNITY );
+	
+	if (ntupleVersion.Contains("BDT"))
+	{
+		//Option A-1: use disc_ttzzz_bVeto 
+		//Option A-0: use disc_ttzzz_emu and disc_ttzzz_OffZ
+		//Option A: emu channel: cut on disc_ttz_emu, fit on disc_zz_emu
+		cutflow.getCut("ChannelEMu");
+		cutflow.addCutToLastActiveCut("ChannelEMuHighBDTttZemu"           	, [&](){ return wvz.disc_ttz_emu() > 0.987;            	} , UNITY );
+        	cutflow.addCutToLastActiveCut("ChannelEMuHighMTHighBDTttZemu"      , [&](){ return this->CutHighMT();               	} , UNITY );
+	
+		//Option B: replace bVeto with disc_ttz_nbAll cut; and do fit analysis on disc_zz_emuHighTTZBDT disc_zz_OffZHighTTZBDT
+		//For option B: make new EMu channel and OffZ channel
+		cutflow.getCut("FindZCandLeptons");
+		cutflow.addCutToLastActiveCut("Cut4LepHighBDTttZnbAll"		, [&](){ return wvz.disc_ttz_nbAll() > 0.960;          	} , UNITY );
+		cutflow.addCutToLastActiveCut("ChannelEMuHighBDTttZnbAll"           	, [&](){ return this->IsChannelEMu();            	} , UNITY );
+        	cutflow.addCutToLastActiveCut("ChannelEMuHighMTHighBDTttZnbAll"      , [&](){ return this->CutHighMT();               	} , UNITY );
+
+		cutflow.getCut("Cut4LepHighBDTttZnbAll");
+		cutflow.addCutToLastActiveCut("ChannelOffZHighBDTttZnbAll"           , [&](){ return this->IsChannelOffZ();           	} , UNITY );
+		cutflow.addCutToLastActiveCut("ChannelOffZHighMETHighBDTttZnbAll"    , [&](){ return this->CutHighMET();              	} , UNITY );
+		//Option C-1: use disc_multi_emu and disc_multi_OffZ
+
+		//Option C: replace bVeto with disc_multi_nbAll cut; and do fit analysis on disc_multi_emuHighTTZBDT and disc_multi_OffZHighTTZBDT
+		cutflow.getCut("FindZCandLeptons");
+		cutflow.addCutToLastActiveCut("Cut4LepHighBDTmultinbAll"		, [&](){ return wvz.disc_multi_nbAll() < 1;          	} , UNITY );
+		cutflow.addCutToLastActiveCut("ChannelEMuHighBDTmultinbAll"           	, [&](){ return this->IsChannelEMu();            	} , UNITY );
+        	cutflow.addCutToLastActiveCut("ChannelEMuHighMTHighBDTmultinbAll"      , [&](){ return this->CutHighMT();               	} , UNITY );
+
+		cutflow.getCut("Cut4LepHighBDTmultinbAll");
+		cutflow.addCutToLastActiveCut("ChannelOffZHighBDTmultinbAll"           , [&](){ return this->IsChannelOffZ();           	} , UNITY );
+		cutflow.addCutToLastActiveCut("ChannelOffZHighMETHighBDTmultinbAll"    , [&](){ return this->CutHighMET();              	} , UNITY );
+
+	}
     }
     // For fake rate related studies
     else if (ntupleVersion.Contains("Trilep"))
@@ -353,6 +386,25 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("MTNomMin"       , 180 , 0       , 180    , [&](){ return this->VarMTMin(); });
         // histograms.addHistogram("WindowMllNom"   , 180 , 0       , 50     , [&](){ return fabs(this->VarMll(lep_Nom_idx1, lep_Nom_idx2)-91.1876); });
         histograms.addHistogram("Yield"          , 1   , 0       , 1      , [&](){ return 0; });
+
+	if(ntupleVersion.Contains("BDT"))
+	{
+		histograms.addHistogram("disc_ttzzz_bVeto"    , 180 , 0       , 1      , [&](){ return wvz.disc_ttzzz_bVeto(); });
+		histograms.addHistogram("disc_ttzzz_emu"    , 180 , 0       , 1      , [&](){ return wvz.disc_ttzzz_emu(); });
+		histograms.addHistogram("disc_ttzzz_OffZ"    , 180 , 0       , 1      , [&](){ return wvz.disc_ttzzz_OffZ(); });
+		histograms.addHistogram("disc_zz_emu"       , 180 , 0       , 1      , [&](){ return wvz.disc_zz_emu(); });
+		histograms.addHistogram("disc_zz_emuHighTTZBDT"       , 180 , 0       , 1      , [&](){ return wvz.disc_zz_emuHighTTZBDT(); });
+		histograms.addHistogram("disc_zz_OffZ"      , 180 , 0       , 1      , [&](){ return wvz.disc_zz_OffZ(); });
+		histograms.addHistogram("disc_zz_OffZHighTTZBDT"       , 180 , 0       , 1      , [&](){ return wvz.disc_zz_OffZHighTTZBDT(); });
+		histograms.addHistogram("disc_ttz_nbAll"    , 180 , 0       , 1      , [&](){ return wvz.disc_ttz_nbAll(); });
+		histograms.addHistogram("disc_ttz_emu"    , 180 , 0       , 1      , [&](){ return wvz.disc_ttz_emu(); });
+		histograms.addHistogram("disc_ttz_OffZ"    , 180 , 0       , 1      , [&](){ return wvz.disc_ttz_OffZ(); });
+		histograms.addHistogram("disc_multi_nbAll"  , 180 , -0.5    , 5.5    , [&](){ return wvz.disc_multi_nbAll(); });
+		histograms.addHistogram("disc_multi_emuHighTTZBDT"  , 180 , -0.5    , 5.5    , [&](){ return wvz.disc_multi_emuHighTTZBDT(); });
+		histograms.addHistogram("disc_multi_OffZHighTTZBDT"  , 180 , -0.5    , 5.5    , [&](){ return wvz.disc_multi_OffZHighTTZBDT(); });
+		histograms.addHistogram("disc_multi_emu"  , 180 , -0.5    , 5.5    , [&](){ return wvz.disc_multi_emu(); });
+		histograms.addHistogram("disc_multi_OffZ"  , 180 , -0.5    , 5.5    , [&](){ return wvz.disc_multi_OffZ(); });
+	}
         // histograms.addHistogram("lepFrelIso03EA" , 180 , 0       , 6.0    , [&](){ return lep_Fakeable_idx >= 0 ? wvz.lep_relIso03EA()[lep_Fakeable_idx] : -999; });
         // histograms.addHistogram("lepFrelIso04DB" , 180 , 0       , 6.0    , [&](){ return lep_Fakeable_idx >= 0 ? wvz.lep_relIso04DB()[lep_Fakeable_idx] : -999; });
         // histograms.addHistogram("jetPt0"         , 180 , 0.      , 200    , [&](){ return wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999; });
@@ -685,6 +737,19 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "FiveLeptonsRelIso5th");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAREMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAROffZ");
+	    if (ntupleVersion.Contains("BDT"))
+	    {
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighBDTttZemu");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighMTHighBDTttZemu");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighMTHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighBDTmultinbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighMTHighBDTmultinbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighBDTmultinbAll");
+		    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETHighBDTmultinbAll");
+	    }
         }
         else
         {
@@ -715,6 +780,19 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             histograms_Z_peak.addHistogram("lepVPt2"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx3); });
             histograms_Z_peak.addHistogram("lepVPt3"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx4); });
             cutflow.bookHistogramsForCut(histograms_Z_peak, "Cut4LepLeptonPt");
+	    if (ntupleVersion.Contains("BDT"))
+	    {
+		    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighBDTttZemu");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighMTHighBDTttZemu");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighMTHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelOffZHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelOffZHighMETHighBDTttZnbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighBDTmultinbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighMTHighBDTmultinbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelOffZHighBDTmultinbAll");
+		    cutflow.bookHistogramsForCut(histograms, "ChannelOffZHighMETHighBDTmultinbAll");
+	    }
         }
     }
     else if (ntupleVersion.Contains("Trilep"))
@@ -750,9 +828,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         {
             theoryweight.setFile(looper->getCurrentFileName());
             if (ntupleVersion.Contains("WVZ") and doSkim)
-            {
-                createNewBranches();
-            }
+		createNewBranches();
         }
 
         // Once it enters loop it's 1, and then 2, and so on.
@@ -774,10 +850,13 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
         if (ntupleVersion.Contains("WVZ"))
         {
-            if (cutflow.getCut("CutHLT").pass)
+            //if (cutflow.getCut("ChannelEMuHighBDTttZnbAll").pass)
+            //if (cutflow.getCut("ChannelOffZHighBDTttZnbAll").pass)
+            //if (cutflow.getCut("ChannelEMuHighBDTmultinbAll").pass)
+            if (cutflow.getCut("ChannelOffZHighBDTmultinbAll").pass)
             {
-                if (doSkim)
-                    fillSkimTree();
+                if (doSkim) 
+			fillSkimTree();
             }
         }
     }

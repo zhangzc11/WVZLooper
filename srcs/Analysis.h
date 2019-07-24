@@ -124,6 +124,22 @@ public:
     Float_t         weight_btagsf_heavy_UP;
     Float_t         weight_btagsf_light_DN;
     Float_t         weight_btagsf_light_UP;
+    Float_t         disc_ttzzz_bVeto;
+    Float_t         disc_ttzzz_emu;
+    Float_t         disc_ttzzz_OffZ;
+    Float_t         disc_zz_emu;
+    Float_t         disc_zz_emuHighTTZBDT;
+    Float_t         disc_zz_OffZ;
+    Float_t         disc_zz_OffZHighTTZBDT;
+    Float_t         disc_ttz_nbAll;
+    Float_t         disc_ttz_bVeto;
+    Float_t         disc_ttz_emu;
+    Float_t         disc_ttz_OffZ;
+    Float_t         disc_multi_nbAll;
+    Float_t         disc_multi_emuHighTTZBDT;
+    Float_t         disc_multi_emu;
+    Float_t         disc_multi_OffZ;
+    Float_t         disc_multi_OffZHighTTZBDT;
 
 
     Float_t         lumi_weight = 41.3;
@@ -509,6 +525,22 @@ void Analysis::Initial(const char* RootName, int RootNumber)
     fTTree->SetBranchAddress("weight_btagsf_heavy_UP", &weight_btagsf_heavy_UP);
     fTTree->SetBranchAddress("weight_btagsf_light_DN", &weight_btagsf_light_DN);
     fTTree->SetBranchAddress("weight_btagsf_light_UP", &weight_btagsf_light_UP);
+    fTTree->SetBranchAddress("disc_ttzzz_bVeto", &disc_ttzzz_bVeto);
+    fTTree->SetBranchAddress("disc_ttzzz_emu", &disc_ttzzz_emu);
+    fTTree->SetBranchAddress("disc_ttzzz_OffZ", &disc_ttzzz_OffZ);
+    fTTree->SetBranchAddress("disc_zz_emu", &disc_zz_emu);
+    fTTree->SetBranchAddress("disc_zz_emuHighTTZBDT", &disc_zz_emuHighTTZBDT);
+    fTTree->SetBranchAddress("disc_zz_OffZHighTTZBDT", &disc_zz_OffZHighTTZBDT);
+    fTTree->SetBranchAddress("disc_zz_OffZ", &disc_zz_OffZ);
+    fTTree->SetBranchAddress("disc_ttz_nbAll", &disc_ttz_nbAll);
+    fTTree->SetBranchAddress("disc_ttz_bVeto", &disc_ttz_bVeto);
+    fTTree->SetBranchAddress("disc_ttz_emu", &disc_ttz_emu);
+    fTTree->SetBranchAddress("disc_ttz_OffZ", &disc_ttz_OffZ);
+    fTTree->SetBranchAddress("disc_multi_nbAll", &disc_multi_nbAll);
+    fTTree->SetBranchAddress("disc_multi_emuHighTTZBDT", &disc_multi_emuHighTTZBDT);
+    fTTree->SetBranchAddress("disc_multi_emu", &disc_multi_emu);
+    fTTree->SetBranchAddress("disc_multi_OffZ", &disc_multi_OffZ);
+    fTTree->SetBranchAddress("disc_multi_OffZHighTTZBDT", &disc_multi_OffZHighTTZBDT);
 }
 
 //===========================================================================

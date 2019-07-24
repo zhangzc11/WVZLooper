@@ -47,3 +47,13 @@ conda install -c conda-forge tensorflow
 conda install -c conda-forge keras
 ```
 
+
+### To append xgboost BDT variables to baby ntuples, do:
+
+```
+cd python
+source cmd_append.sh /nfs-7/userdata/zhicaiz/babies/ v0.1.12.7.nbAll
+source cmd_2016.sh
+source cmd_2017.sh
+source cmd_2018.sh
+```

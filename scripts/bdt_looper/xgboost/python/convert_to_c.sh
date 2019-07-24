@@ -14,4 +14,5 @@ wwz_vs_ttz_OffZ
 
 do
 	python raw_to_cpp.py --xgb_dump=../models/model_xgb_${model}.txt --num_classes=1 --func_name=${model}
+	mv ${model}.h ../models/cpp/
 done

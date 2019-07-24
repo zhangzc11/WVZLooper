@@ -22,6 +22,9 @@ def main_analysis_make_plot_userfilter():
     # parser.add_argument('-f' , '--fake_rate_study' , dest='fake_rate_study' , help='Use MC bkg grouping intended for fake rate study ', default=False, action='store_true'                                           )
     parser.add_argument('-n' , '--nbins'           , dest='nbins'           , help='# of bins'           , default=15                                                                                                )
     parser.add_argument('-y' , '--yaxis_log'       , dest='yaxis_log'       , help='yaxis log'           , default=False, action='store_true'                                                                        )
+    parser.add_argument('-c' , '--one_signal'      , dest='one_signal'      , help='one signal hist'     , default=False, action='store_true'                                                                        )
+    parser.add_argument('-x' , '--xaxis_label'     , dest='xaxis_label'     , help='xaxis title'         , default=""                                                                                                )
+    parser.add_argument('-r' , '--yaxis_range'     , dest='yaxis_range'     , help='yaxis range'         , default=[]                                                                                                )
     
     args = parser.parse_args()
 
@@ -38,16 +41,19 @@ def main_analysis_make_plot_userfilter():
     unblind = args.unblind
 
     bkgfiles = [
-            "outputs/{}/{}/ttz.root".format(ntuple_version, tag),
             "outputs/{}/{}/zz.root".format(ntuple_version, tag),
-            "outputs/{}/{}/wz.root".format(ntuple_version, tag),
+            "outputs/{}/{}/ttz.root".format(ntuple_version, tag),
             "outputs/{}/{}/twz.root".format(ntuple_version, tag),
+            "outputs/{}/{}/wz.root".format(ntuple_version, tag),
             # "outputs/{}/{}/rare.root".format(ntuple_version, tag),
             # "outputs/{}/{}/dyttbar.root".format(ntuple_version, tag),
-            # "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
-            "outputs/{}/{}/other.root".format(ntuple_version, tag),
+            "outputs/{}/{}/higgs.root".format(ntuple_version, tag),
+            # "outputs/{}/{}/other.root".format(ntuple_version, tag),
+            "outputs/{}/{}/othernoh.root".format(ntuple_version, tag),
             ]
-    bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other"]
+    # bkgnames = ["ZZ", "t#bar{t}Z", "tWZ", "WZ", "Other"]
+    bkgnames = ["ZZ", "t#bar{t}Z", "tWZ", "WZ", "Higgs", "Other"]
+    # bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other"]
     # bkgnames = ["t#bar{t}Z", "ZZ", "WZ", "tWZ", "Other", "Z/Z#gamma/t#bar{t}", "Higgs"]
     sigfiles = [
             # "outputs/{}/{}/zh_wwz.root".format(ntuple_version, tag),
@@ -56,6 +62,14 @@ def main_analysis_make_plot_userfilter():
             #"outputs/{}/{}/www.root".format(ntuple_version, tag),
             "outputs/{}/{}/zzz.root".format(ntuple_version, tag),
             # "outputs/{}/{}/sig.root".format(ntuple_version, tag),
+            ]
+    onesigfiles = [
+            # "outputs/{}/{}/zh_wwz.root".format(ntuple_version, tag),
+            # "outputs/{}/{}/wwz.root".format(ntuple_version, tag),
+            # "outputs/{}/{}/wzz.root".format(ntuple_version, tag),
+            #"outputs/{}/{}/www.root".format(ntuple_version, tag),
+            # "outputs/{}/{}/zzz.root".format(ntuple_version, tag),
+            "outputs/{}/{}/sig.root".format(ntuple_version, tag),
             ]
     sigfiles_detail = [
             "outputs/{}/{}/nonh_wwz.root".format(ntuple_version, tag),
@@ -76,7 +90,7 @@ def main_analysis_make_plot_userfilter():
     bkgnamesddfake = ["Other", "DY", "t#bar{t}", "WZ"]
 
 
-    colors = [2005, 2001, 2003, 2007, 920, 2012, 2011, 2002]
+    colors = [2001, 2005, 2007, 2003, 2011, 920, 2012, 2011, 2002]
     fakeVRcolors = [920, 2012, 2011, 2003]
 
     if "2016" in ntuple_version: lumi = 35.9
@@ -85,7 +99,7 @@ def main_analysis_make_plot_userfilter():
     if "2016" in ntuple_version and "2017" in ntuple_version and "2018" in ntuple_version: lumi = 137
 
     p.dump_plot(fnames=bkgfilesfake if "PlusX" in filter_pattern else bkgfiles,
-            sig_fnames=[] if "PlusX" in filter_pattern else sigfiles,
+            sig_fnames=[] if "PlusX" in filter_pattern else (onesigfiles if args.one_signal else sigfiles),
             data_fname="outputs/{}/{}/data.root".format(ntuple_version, tag) if unblind else None,
             usercolors=fakeVRcolors if "PlusX" in filter_pattern else colors,
             legend_labels=bkgnamesddfake if "PlusX" in filter_pattern else bkgnames,
@@ -97,10 +111,11 @@ def main_analysis_make_plot_userfilter():
                 "print_yield":True,
                 "nbins":int(args.nbins),
                 "signal_scale": 1,
-                "legend_scalex":1.8,
-                "legend_scaley":1.1,
+                "legend_scalex":1.3,
+                "legend_scaley":1.2,
                 "legend_ncolumns": 3,
-                "legend_smart": False if args.yaxis_log else True,
+                # "legend_smart": False if args.yaxis_log else True,
+                "legend_smart": True,
                 "yaxis_log":args.yaxis_log,
                 "ymax_scale": 1.2,
                 "lumi_value":lumi,
@@ -108,6 +123,10 @@ def main_analysis_make_plot_userfilter():
                 "remove_underflow": True,
                 "xaxis_ndivisions":505,
                 "ratio_range":[0.,2.],
+                "xaxis_label":args.xaxis_label,
+                "ratio_xaxis_title":args.xaxis_label,
+                "yaxis_range":[float(x) for x in args.yaxis_range.split(",")] if isinstance(args.yaxis_range, basestring) and len(args.yaxis_range) > 0 else [],
+                "no_ratio": False if unblind else True,
                 },
             # _plotter=p.plot_cut_scan,
             )

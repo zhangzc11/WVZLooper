@@ -11,8 +11,11 @@ from array import array
 import pyrootutil as pr
 import math
 
-syst_list_all = ["Nominal", "JES", "Pileup", "BTagHF", "BTagLF", "PDF", "Qsq", "AlphaS", "MET"]
-syst_list = ["Nominal", "JES", "Pileup", "MET"]
+Ntuple_Version = "v0.1.12.7"
+Baseline_Version = "syst"
+
+syst_list_all = ["Nominal", "JES", "JER", "Pileup", "BTagHF", "BTagLF", "MET", "PDF", "Qsq", "AlphaS", "METPileup"]
+syst_list = ["Nominal", "JES", "JER", "Pileup", "MET", "METPileup"]
 syst_list = syst_list_all
 
 def get_alpha_uncertainty(ntuple_version, tag, numerator, denominator, num_proc, valopt):
@@ -226,8 +229,8 @@ def get_extrapolation_uncertainty(ntuple_version, tag, numerator, denominator, n
 
 def run_for_variation(variation=""):
 
-    ntuple_version = "WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11"
-    tag = "y2016_baseline_0711_METCorr_w_syst_y2017_baseline_0711_METCorr_w_syst_y2018_baseline_0711_METCorr_w_syst"
+    ntuple_version = "WVZ2016_{}_WVZ2017_{}_WVZ2018_{}".format(Ntuple_Version, Ntuple_Version, Ntuple_Version)
+    tag = "y2016_{}_y2017_{}_y2018_{}".format(Baseline_Version, Baseline_Version, Baseline_Version)
 
     denominator = "ChannelBTagEMu{}__Yield".format(variation)
     numerator = "ChannelBTagEMuHighMET{}__Yield".format(variation)
@@ -262,16 +265,16 @@ def run_for_variation(variation=""):
     print ""
 
 def run(process, region, variable, variation="", valopt="ratio"):
-    ntuple_version = "WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11"
-    tag = "y2016_baseline_0711_METCorr_w_syst_y2017_baseline_0711_METCorr_w_syst_y2018_baseline_0711_METCorr_w_syst"
+    ntuple_version = "WVZ2016_{}_WVZ2017_{}_WVZ2018_{}".format(Ntuple_Version,Ntuple_Version,Ntuple_Version)
+    tag = "y2016_{}_y2017_{}_y2018_{}".format(Baseline_Version, Baseline_Version, Baseline_Version)
     denominator = "Channel{}{}__Yield".format(region, variation)
     numerator = "Channel{}High{}{}__Yield".format(region, variable, variation)
     # print denominator, numerator
     return get_extrapolation_uncertainty(ntuple_version, tag, numerator, denominator, process, valopt)
 
 def run_alpha(process, numerator_region, denominator_region, variation="", valopt="eff"):
-    ntuple_version = "WVZ2016_v0.1.11_WVZ2017_v0.1.11_WVZ2018_v0.1.11"
-    tag = "y2016_baseline_0711_METCorr_w_syst_y2017_baseline_0711_METCorr_w_syst_y2018_baseline_0711_METCorr_w_syst"
+    ntuple_version = "WVZ2016_{}_WVZ2017_{}_WVZ2018_{}".format(Ntuple_Version, Ntuple_Version, Ntuple_Version)
+    tag = "y2016_{}_y2017_{}_y2018_{}".format(Baseline_Version, Baseline_Version, Baseline_Version)
     denominator = "{}{}__Yield".format(denominator_region, variation)
     numerator = "{}{}__Yield".format(numerator_region, variation)
     # print denominator, numerator
@@ -295,12 +298,21 @@ def get_eff_ratios(process, region, variable, valopt="ratio"):
         rtn_val[syst] = var
         # print syst, varup, vardn, nominal
 
-    for key in syst_list:
-        print "{:<10s} {:.4f} {:.4f} {:.4f}".format(key, rtn_val[key].val, rtn_val[key].err, rtn_val[key].err / rtn_val[key].val)
+    # Not entirely a correct treatment... but a work around
+    pufracerr = rtn_val["Pileup"].err / rtn_val["Pileup"].val
+    metpufracerr = rtn_val["METPileup"].err / rtn_val["METPileup"].val
+    rtn_val["Pileup"] = E(rtn_val["Pileup"].val, rtn_val["Pileup"].val * math.sqrt(pufracerr**2 + metpufracerr**2))
+    del rtn_val["METPileup"]
+
+
+    # for key in syst_list:
+    #     if key == "METPileup": continue
+    #     print "{:<10s} {:.4f} {:.4f} {:.4f}".format(key, rtn_val[key].val, rtn_val[key].err, rtn_val[key].err / rtn_val[key].val)
 
     hists = []
 
     for index, key in enumerate(syst_list):
+        if key == "METPileup": continue
         h = r.TH1F("{}".format(key), "", 1, 0, 1)
         h.SetBinContent(1, rtn_val[key].val)
         h.SetBinError(1, rtn_val[key].err)
@@ -326,12 +338,20 @@ def get_alpha(process, numerator_region, denominator_region, valopt="eff"):
         rtn_val[syst] = var
         # print syst, varup, vardn, nominal
 
-    for key in syst_list_all:
-        print "{:<10s} {:.3f} {:.3f} {:.3f}".format(key, rtn_val[key].val, rtn_val[key].err, rtn_val[key].err / rtn_val[key].val)
+    # Not entirely a correct treatment... but a work around
+    pufracerr = rtn_val["Pileup"].err / rtn_val["Pileup"].val
+    metpufracerr = rtn_val["METPileup"].err / rtn_val["METPileup"].val
+    rtn_val["Pileup"] = E(rtn_val["Pileup"].val, rtn_val["Pileup"].val * math.sqrt(pufracerr**2 + metpufracerr**2))
+    del rtn_val["METPileup"]
+
+    # for key in syst_list_all:
+    #     if key == "METPileup": continue
+    #     print "{:<10s} {:.3f} {:.3f} {:.3f}".format(key, rtn_val[key].val, rtn_val[key].err, rtn_val[key].err / rtn_val[key].val)
 
     hists = []
 
     for index, key in enumerate(syst_list_all):
+        if key == "METPileup": continue
         h = r.TH1F("{}".format(key), "", 1, 0, 1)
         h.SetBinContent(1, rtn_val[key].val)
         h.SetBinError(1, rtn_val[key].err)
@@ -343,29 +363,46 @@ def main_onz_ttz_only():
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_ttz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data") , options={"output_name":"exp/data_eff_ttz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_num") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_den") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_num") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_den") , options={"output_name":"exp/eff_ratio_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_met.pdf"  , "print_yield":True} ) 
 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc") , options={"output_name":"exp/mc_eff_ttz_mt.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data") , options={"output_name":"exp/data_eff_ttz_mt.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_num") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_den") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_num") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_den") , options={"output_name":"exp/eff_ratio_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "BTagEMu"     , "MT" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_mt.pdf"  , "print_yield":True} ) 
+
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "data") , options={"output_name":"exp/data_eff_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_sr_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "OffZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_sr_met.pdf"  , "print_yield":True} ) 
+
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "mc") , options={"output_name":"exp/mc_eff_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "data") , options={"output_name":"exp/data_eff_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "ratio") , options={"output_name":"exp/eff_ratio_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "mc_num") , options={"output_name":"exp/eff_mc_num_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "mc_den") , options={"output_name":"exp/eff_mc_den_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "data_num") , options={"output_name":"exp/eff_data_num_ttz_sr_mt.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("ttz"  , "EMu"     , "MT" , "data_den") , options={"output_name":"exp/eff_data_den_ttz_sr_mt.pdf"  , "print_yield":True} ) 
 
 def main_onz_zz_met_only():
+
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data") , options={"output_name":"exp/data_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_zz_met.pdf"  , "print_yield":True} ) 
 
-def main():
+def main_old():
 
     # Get TTZ MET Modeling Uncertainty
     p.plot_hist(bgs=get_eff_ratios("ttz" , "BTagEMu" , "MET" , "mc") , options={"output_name":"exp/mc_eff_ttz_met.pdf" , "print_yield":True} ) 
@@ -379,10 +416,10 @@ def main():
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc") , options={"output_name":"exp/mc_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data") , options={"output_name":"exp/data_eff_zz_met.pdf"  , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "ratio") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
-    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_ratio_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_num") , options={"output_name":"exp/eff_mc_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "mc_den") , options={"output_name":"exp/eff_mc_den_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_num") , options={"output_name":"exp/eff_data_num_zz_met.pdf"  , "print_yield":True} ) 
+    p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MET" , "data_den") , options={"output_name":"exp/eff_data_den_zz_met.pdf"  , "print_yield":True} ) 
 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MT"  , "mc") , options={"output_name":"exp/mc_eff_zz_mt.pdf"   , "print_yield":True} ) 
     p.plot_hist(bgs=get_eff_ratios("zz"  , "OnZ"     , "MT"  , "data") , options={"output_name":"exp/data_eff_zz_mt.pdf"   , "print_yield":True} ) 
@@ -402,7 +439,99 @@ def main():
     p.plot_hist(bgs=get_alpha("zz", "ChannelOffZ", "ChannelOnZ", "den"), options={"output_name":"exp/zz_offz_alpha.pdf", "print_yield":True})
     p.plot_hist(bgs=get_alpha("zz", "ChannelOffZ", "ChannelOnZ", "eff"), options={"output_name":"exp/zz_offz_alpha.pdf", "print_yield":True})
 
+def get_alpha_hists(proc, num, den):
+    hists_num = get_alpha(proc, num, den, "num")
+    hists_den = get_alpha(proc, num, den, "den")
+    hists_eff = get_alpha(proc, num, den, "eff")
+    hists = []
+    totalerrors = [E(1,0), E(1,0), E(1,0)]
+    for hist_num, hist_den, hist_eff in zip(hists_num, hists_den, hists_eff):
+        syst = hist_num.GetName()
+        if syst == "Nominal":
+            h = r.TH1F("{}".format(hist_num.GetName()), "", 3, 0, 3)
+            h.SetBinContent(1, hist_eff.GetBinContent(1))
+            h.SetBinError  (1, hist_eff.GetBinError  (1))
+            h.SetBinContent(2, hist_num.GetBinContent(1))
+            h.SetBinError  (2, hist_num.GetBinError  (1))
+            h.SetBinContent(3, hist_den.GetBinContent(1))
+            h.SetBinError  (3, hist_den.GetBinError  (1))
+            h_ratio = h.Clone("Ratio")
+            h_ratio.SetBinContent(2,0)
+            h_ratio.SetBinContent(3,0)
+            h_ratio.SetBinError(2,0)
+            h_ratio.SetBinError(3,0)
+            h_yield = h.Clone("Yield")
+            h_yield.SetBinContent(1,0)
+            h_yield.SetBinError(1,0)
+            hists.append(h_ratio)
+            hists.append(h_yield)
+            h = r.TH1F("Stat", "", 3, 0, 3)
+            h.SetBinContent(1, hist_eff.GetBinError(1) / hist_eff.GetBinContent(1) * 100.)
+            h.SetBinContent(2, hist_num.GetBinError(1) / hist_num.GetBinContent(1) * 100.)
+            h.SetBinContent(3, hist_den.GetBinError(1) / hist_den.GetBinContent(1) * 100.)
+            hists.append(h)
+            totalerrors[0] *= E(1, hist_eff.GetBinError(1) / hist_eff.GetBinContent(1))
+            totalerrors[1] *= E(1, hist_num.GetBinError(1) / hist_num.GetBinContent(1))
+            totalerrors[2] *= E(1, hist_den.GetBinError(1) / hist_den.GetBinContent(1))
+        else:
+            h = r.TH1F("{}".format(hist_num.GetName()), "", 3, 0, 3)
+            h.SetBinContent(1, hist_eff.GetBinError(1) / hist_eff.GetBinContent(1) * 100.)
+            h.SetBinContent(2, hist_num.GetBinError(1) / hist_num.GetBinContent(1) * 100.)
+            h.SetBinContent(3, hist_den.GetBinError(1) / hist_den.GetBinContent(1) * 100.)
+            hists.append(h)
+            totalerrors[0] *= E(1, hist_eff.GetBinError(1) / hist_eff.GetBinContent(1))
+            totalerrors[1] *= E(1, hist_num.GetBinError(1) / hist_num.GetBinContent(1))
+            totalerrors[2] *= E(1, hist_den.GetBinError(1) / hist_den.GetBinContent(1))
+    h = r.TH1F("Total", "", 3, 0, 3)
+    h.SetBinContent(1, totalerrors[0].err * 100.)
+    h.SetBinContent(2, totalerrors[1].err * 100.)
+    h.SetBinContent(3, totalerrors[2].err * 100.)
+    hists.insert(2, h)
+    return hists
+
+def main():
+
+    # # N btag extrapolation uncertainty from simulation
+    # hists = get_alpha_hists("ttz", "ChannelEMu", "ChannelBTagEMu")
+    # p.print_yield_table_from_list(hists, "exp/ttz_emu_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_alpha.tex", prec=2, caption="Nb extrapolation", noerror=True)
+
+    # # N btag and em to eemm extrapolation uncertainty from simulation
+    # hists = get_alpha_hists("ttz", "ChannelOffZ", "ChannelBTagEMu")
+    # p.print_yield_table_from_list(hists, "exp/ttz_offz_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/ttz_offz_alpha.tex", prec=2, caption="Nb plus emu eemm Extrapolation", noerror=True)
+
+    # # MT extrapolation
+    # hists = get_alpha_hists("ttz", "ChannelEMuHighMT", "ChannelEMu")
+    # p.print_yield_table_from_list(hists, "exp/ttz_emu_mt_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_mt_alpha.tex", prec=2, caption="emu MT extrapolation", noerror=True)
+
+    # # MET extrapolation
+    # hists = get_alpha_hists("ttz", "ChannelOffZHighMET", "ChannelOffZ")
+    # p.print_yield_table_from_list(hists, "exp/ttz_eemm_met_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/ttz_eemm_met_alpha.tex", prec=2, caption="eemm MET extrapolation", noerror=True)
+
+    # # Mll extrapolation
+    # hists = get_alpha_hists("zz", "ChannelOffZ", "ChannelOnZ")
+    # p.print_yield_table_from_list(hists, "exp/zz_eemm_mll_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_mll_alpha.tex", prec=2, caption="eemm Mll extrapolation", noerror=True)
+
+    # # MET extrapolation
+    # hists = get_alpha_hists("zz", "ChannelOffZHighMET", "ChannelOffZ")
+    # p.print_yield_table_from_list(hists, "exp/zz_eemm_met_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_met_alpha.tex", prec=2, caption="eemm Mll extrapolation", noerror=True)
+
+    # # MET extrapolation
+    # hists = get_alpha_hists("zz", "ChannelEMu", "ChannelOnZ")
+    # p.print_yield_table_from_list(hists, "exp/zz_emu_flav_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    # p.print_yield_tex_table_from_list(hists, "exp/zz_emu_flav_alpha.tex", prec=2, caption="emu flavor extrapolation", noerror=True)
+
+    # MT extrapolation
+    hists = get_alpha_hists("zz", "ChannelEMuHighMT", "ChannelEMu")
+    p.print_yield_table_from_list(hists, "exp/zz_emu_mt_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/zz_emu_mt_alpha.tex", prec=2, caption="emu mtor extrapolation", noerror=True)
+
 if __name__ == "__main__":
 
-    main_onz_ttz_only()
+    main()
 

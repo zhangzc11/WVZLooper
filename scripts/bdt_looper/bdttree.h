@@ -1,9 +1,9 @@
 // -*- C++ -*-
 // This is a header file generated with the command:
-// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/WVZ2017_v0.1.12.5/wwz_amcatnlo_1.root", "t", "wvztree", "tas", "wvz")
+// makeCMS3ClassFiles("/nfs-7/userdata/phchang/babies/BDT_v0.1.12.7/wwz_20172018_skim.root", "t", "bdttree", "tas", "bdt")
 
-#ifndef wvztree_H
-#define wvztree_H
+#ifndef bdttree_H
+#define bdttree_H
 
 #include "Math/LorentzVector.h"
 #include "Math/Point3D.h"
@@ -18,7 +18,7 @@
 typedef ROOT::Math::LorentzVector< ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 using namespace std; 
-class wvztree {
+class bdttree {
  private: 
  protected: 
   unsigned int index;
@@ -466,6 +466,132 @@ class wvztree {
   float    weight_btagsf_light_UP_;
   TBranch *weight_btagsf_light_UP_branch;
   bool     weight_btagsf_light_UP_isLoaded;
+  int      lep_Z_idx0_;
+  TBranch *lep_Z_idx0_branch;
+  bool     lep_Z_idx0_isLoaded;
+  int      lep_Z_idx1_;
+  TBranch *lep_Z_idx1_branch;
+  bool     lep_Z_idx1_isLoaded;
+  int      lep_N_idx0_;
+  TBranch *lep_N_idx0_branch;
+  bool     lep_N_idx0_isLoaded;
+  int      lep_N_idx1_;
+  TBranch *lep_N_idx1_branch;
+  bool     lep_N_idx1_isLoaded;
+  float    eventweight_;
+  TBranch *eventweight_branch;
+  bool     eventweight_isLoaded;
+  float    lepsf_;
+  TBranch *lepsf_branch;
+  bool     lepsf_isLoaded;
+  float    MllN_;
+  TBranch *MllN_branch;
+  bool     MllN_isLoaded;
+  float    MllZ_;
+  TBranch *MllZ_branch;
+  bool     MllZ_isLoaded;
+  float    ZPt_;
+  TBranch *ZPt_branch;
+  bool     ZPt_isLoaded;
+  float    lep1Pt_;
+  TBranch *lep1Pt_branch;
+  bool     lep1Pt_isLoaded;
+  float    lep2Pt_;
+  TBranch *lep2Pt_branch;
+  bool     lep2Pt_isLoaded;
+  float    lep3Pt_;
+  TBranch *lep3Pt_branch;
+  bool     lep3Pt_isLoaded;
+  float    lep4Pt_;
+  TBranch *lep4Pt_branch;
+  bool     lep4Pt_isLoaded;
+  float    lep3Id_;
+  TBranch *lep3Id_branch;
+  bool     lep3Id_isLoaded;
+  float    lep4Id_;
+  TBranch *lep4Id_branch;
+  bool     lep4Id_isLoaded;
+  float    lep3MT_;
+  TBranch *lep3MT_branch;
+  bool     lep3MT_isLoaded;
+  float    lep4MT_;
+  TBranch *lep4MT_branch;
+  bool     lep4MT_isLoaded;
+  float    lep34MT_;
+  TBranch *lep34MT_branch;
+  bool     lep34MT_isLoaded;
+  float    lep1dZ_;
+  TBranch *lep1dZ_branch;
+  bool     lep1dZ_isLoaded;
+  float    lep2dZ_;
+  TBranch *lep2dZ_branch;
+  bool     lep2dZ_isLoaded;
+  float    lep3dZ_;
+  TBranch *lep3dZ_branch;
+  bool     lep3dZ_isLoaded;
+  float    lep4dZ_;
+  TBranch *lep4dZ_branch;
+  bool     lep4dZ_isLoaded;
+  float    pt_zeta_;
+  TBranch *pt_zeta_branch;
+  bool     pt_zeta_isLoaded;
+  float    pt_zeta_vis_;
+  TBranch *pt_zeta_vis_branch;
+  bool     pt_zeta_vis_isLoaded;
+  float    phi0_;
+  TBranch *phi0_branch;
+  bool     phi0_isLoaded;
+  float    phi_;
+  TBranch *phi_branch;
+  bool     phi_isLoaded;
+  float    phiH_;
+  TBranch *phiH_branch;
+  bool     phiH_isLoaded;
+  float    theta0_;
+  TBranch *theta0_branch;
+  bool     theta0_isLoaded;
+  float    theta1_;
+  TBranch *theta1_branch;
+  bool     theta1_isLoaded;
+  float    theta2_;
+  TBranch *theta2_branch;
+  bool     theta2_isLoaded;
+  float    minDRJetToLep3_;
+  TBranch *minDRJetToLep3_branch;
+  bool     minDRJetToLep3_isLoaded;
+  float    minDRJetToLep4_;
+  TBranch *minDRJetToLep4_branch;
+  bool     minDRJetToLep4_isLoaded;
+  float    jet1Pt_;
+  TBranch *jet1Pt_branch;
+  bool     jet1Pt_isLoaded;
+  float    jet2Pt_;
+  TBranch *jet2Pt_branch;
+  bool     jet2Pt_isLoaded;
+  float    jet3Pt_;
+  TBranch *jet3Pt_branch;
+  bool     jet3Pt_isLoaded;
+  float    jet4Pt_;
+  TBranch *jet4Pt_branch;
+  bool     jet4Pt_isLoaded;
+  float    jet1BtagScore_;
+  TBranch *jet1BtagScore_branch;
+  bool     jet1BtagScore_isLoaded;
+  float    jet2BtagScore_;
+  TBranch *jet2BtagScore_branch;
+  bool     jet2BtagScore_isLoaded;
+  float    jet3BtagScore_;
+  TBranch *jet3BtagScore_branch;
+  bool     jet3BtagScore_isLoaded;
+  float    jet4BtagScore_;
+  TBranch *jet4BtagScore_branch;
+  bool     jet4BtagScore_isLoaded;
+  float    bdt_zz_;
+  TBranch *bdt_zz_branch;
+  bool     bdt_zz_isLoaded;
+  float    bdt_ttz_;
+  TBranch *bdt_ttz_branch;
+  bool     bdt_ttz_isLoaded;
 public: 
 void Init(TTree *tree);
 void GetEntry(unsigned int idx); 
@@ -618,12 +744,54 @@ void LoadAllBranches();
   const float &weight_btagsf_heavy_UP();
   const float &weight_btagsf_light_DN();
   const float &weight_btagsf_light_UP();
+  const int &lep_Z_idx0();
+  const int &lep_Z_idx1();
+  const int &lep_N_idx0();
+  const int &lep_N_idx1();
+  const float &eventweight();
+  const float &lepsf();
+  const float &MllN();
+  const float &MllZ();
+  const float &ZPt();
+  const float &lep1Pt();
+  const float &lep2Pt();
+  const float &lep3Pt();
+  const float &lep4Pt();
+  const float &lep3Id();
+  const float &lep4Id();
+  const float &lep3MT();
+  const float &lep4MT();
+  const float &lep34MT();
+  const float &lep1dZ();
+  const float &lep2dZ();
+  const float &lep3dZ();
+  const float &lep4dZ();
+  const float &pt_zeta();
+  const float &pt_zeta_vis();
+  const float &phi0();
+  const float &phi();
+  const float &phiH();
+  const float &theta0();
+  const float &theta1();
+  const float &theta2();
+  const float &minDRJetToLep3();
+  const float &minDRJetToLep4();
+  const float &jet1Pt();
+  const float &jet2Pt();
+  const float &jet3Pt();
+  const float &jet4Pt();
+  const float &jet1BtagScore();
+  const float &jet2BtagScore();
+  const float &jet3BtagScore();
+  const float &jet4BtagScore();
+  const float &bdt_zz();
+  const float &bdt_ttz();
 
   static void progress(int nEventsTotal, int nEventsChain);
 };
 
 #ifndef __CINT__
-extern wvztree wvz;
+extern bdttree bdt;
 #endif
 
 namespace tas {
@@ -775,6 +943,48 @@ namespace tas {
   const float &weight_btagsf_heavy_UP();
   const float &weight_btagsf_light_DN();
   const float &weight_btagsf_light_UP();
+  const int &lep_Z_idx0();
+  const int &lep_Z_idx1();
+  const int &lep_N_idx0();
+  const int &lep_N_idx1();
+  const float &eventweight();
+  const float &lepsf();
+  const float &MllN();
+  const float &MllZ();
+  const float &ZPt();
+  const float &lep1Pt();
+  const float &lep2Pt();
+  const float &lep3Pt();
+  const float &lep4Pt();
+  const float &lep3Id();
+  const float &lep4Id();
+  const float &lep3MT();
+  const float &lep4MT();
+  const float &lep34MT();
+  const float &lep1dZ();
+  const float &lep2dZ();
+  const float &lep3dZ();
+  const float &lep4dZ();
+  const float &pt_zeta();
+  const float &pt_zeta_vis();
+  const float &phi0();
+  const float &phi();
+  const float &phiH();
+  const float &theta0();
+  const float &theta1();
+  const float &theta2();
+  const float &minDRJetToLep3();
+  const float &minDRJetToLep4();
+  const float &jet1Pt();
+  const float &jet2Pt();
+  const float &jet3Pt();
+  const float &jet4Pt();
+  const float &jet1BtagScore();
+  const float &jet2BtagScore();
+  const float &jet3BtagScore();
+  const float &jet4BtagScore();
+  const float &bdt_zz();
+  const float &bdt_ttz();
 }
 #include "rooutil.h"
 #endif

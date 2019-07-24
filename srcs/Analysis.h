@@ -149,6 +149,8 @@ public:
     int lep_Veto_idx4;
     int lep_ZCand_idx1;
     int lep_ZCand_idx2;
+    int lep_Z2Cand_idx1;
+    int lep_Z2Cand_idx2;
     int nNominalLeptons;
     int lep_Nom_idx1;
     int lep_Nom_idx2;
@@ -211,6 +213,10 @@ public:
     METObject metobj;
     METObject metobj_corrected;
 
+    // TVector3 objects are kept here in order to speed up. (why? cause ROOT IS STUPID)
+    // TVector3 lep1, lep2, metv3, zeta, zetaunit, sum, sum_vis;
+    LV lep1, lep2, metv3, zeta, zetaunit, sum, sum_vis;
+
     // Looper
     RooUtil::Looper<wvztree>* looper;
     TTree* t;
@@ -240,6 +246,7 @@ public:
     void selectVetoLeptons();
     void selectZCandLeptons();
     void selectNominalLeptons();
+    void select2ndZCandLeptons();
     void selectTightLeptons();
     void selectFakeStudyLeptons();
     void select2ndZCandAndWCandLeptons();
@@ -251,6 +258,7 @@ public:
 
     float EventWeight();
     float LeptonScaleFactor();
+    float LeptonScaleFactorZZ4l();
     float LeptonScaleFactorv1();
     float IndividualLeptonScaleFactor(int, bool);
     float FakeFactor();
@@ -274,6 +282,7 @@ public:
 
     bool CutGenFilter();
     bool Is3LeptonEvent();
+    bool Is3LeptonTTZEvent();
     bool Is4LeptonEvent();
     bool Is4LeptonFakeValidationEvents();
     bool Is3LeptonFakeValidationEvents();
@@ -281,12 +290,14 @@ public:
     bool IsTwoOSLeptonEvent();
     bool FindZCandLeptons();
     bool FindTwoOSNominalLeptons();
+    bool FindTwoOSZ2Leptons();
     bool FindOSOneNomOneVbntLeptons();
     bool FindOSOneNomOneNotNomLeptons();
     bool IsEMuPlusX();
     bool IsDYPlusX();
 
     bool Cut4LepLeptonPt(bool=false);
+    bool CutZZ4LepLeptonPt();
     bool CutHLT();
     bool Cut4LepLowMll(bool=false);
     bool Cut4LepBVeto(int=0);
@@ -294,12 +305,14 @@ public:
     bool CutHighMT(int=0);
     bool CutHighMET(int=0);
     bool CutHighMTAR(int=0);
+    bool CutLowPtZeta(int=0);
 
     bool IsChannelEMu(bool=false);
     bool IsChannelOnZ(bool=false);
     bool IsChannelOffZ(bool=false);
     bool IsChannelOffZHighMll(bool=false);
     bool IsChannelOffZLowMll(bool=false);
+    bool IsChannelHZZ4l();
     bool Is2ndOnZFiveLepton();
     bool Is5thNominal();
     bool IsNjetGeq2();
@@ -340,8 +353,9 @@ public:
     float VarHTLep5();
     float VarMETPhi(int=0);
     float VarTauTauDisc(int=0);
-    float VarPtZeta();
-    float VarPtZetaVis();
+    float VarPtZetaDiff(int=0);
+    float VarPtZeta(int=0);
+    float VarPtZetaVis(int=0);
     float VarMinDRJetsToLep(int);
 
     LeptonVectors GetLeptonVectors();

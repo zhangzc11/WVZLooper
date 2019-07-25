@@ -3,7 +3,7 @@ for model in \
 wwz_vs_zz_emuHighTTZBDT \
 wwz_vs_zz_OffZ \
 wwz_vs_zz_emu \
-wwz_vs_zz_emuHighTTZBDT \
+wwz_vs_zz_OffZHighTTZBDT \
 wwz_vs_ttzzz_emu \
 wwz_vs_ttzzz_bVeto \
 wwz_vs_ttzzz_OffZ \

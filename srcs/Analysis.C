@@ -6,6 +6,18 @@
 #include "METCorrectionHandler.cc"
 #include "METObject.cc"
 
+#include "xgboost/wwz_vs_ttz_bVeto.h"
+#include "xgboost/wwz_vs_ttz_emu.h"
+#include "xgboost/wwz_vs_ttz_nbAll.h"
+#include "xgboost/wwz_vs_ttz_OffZ.h"
+#include "xgboost/wwz_vs_ttzzz_bVeto.h"
+#include "xgboost/wwz_vs_ttzzz_emu.h"
+#include "xgboost/wwz_vs_ttzzz_OffZ.h"
+#include "xgboost/wwz_vs_zz_emu.h"
+#include "xgboost/wwz_vs_zz_emuHighTTZBDT.h"
+#include "xgboost/wwz_vs_zz_OffZ.h"
+#include "xgboost/wwz_vs_zz_OffZHighTTZBDT.h"
+
 TheoryWeight theoryweight;
 
 //______________________________________________________________________________________________
@@ -176,6 +188,27 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("ARCut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelAROffZ", [&](){ return this->IsChannelOffZ(true); }, UNITY );
         cutflow.addCutToLastActiveCut("ChannelAROffZHighMET", [&](){ return this->CutHighMET(); }, UNITY );
+
+	if (ntupleVersion.Contains("BDT"))
+        {
+                //Option A: emu channel: cut on disc_ttz_emu, fit on disc_zz_emu
+                cutflow.getCut("ChannelEMu");
+                cutflow.addCutToLastActiveCut("ChannelEMuHighBDTttZemu"       		, [&](){ return this->VarXGBBDT(1) > 0.987;             	} , UNITY );
+                cutflow.addCutToLastActiveCut("ChannelEMuHighMTHighBDTttZemu"      	, [&](){ return this->CutHighMT();                   	} , UNITY );
+
+                //Option B: replace bVeto with disc_ttz_nbAll cut; and do fit analysis on disc_zz_emuHighTTZBDT disc_zz_OffZHighTTZBDT
+                //For option B: make new EMu channel and OffZ channel
+                cutflow.getCut("FindZCandLeptons");
+                cutflow.addCutToLastActiveCut("Cut4LepHighBDTttZnbAll"          	, [&](){ return this->VarXGBBDT(2) > 0.960;           } , UNITY );
+                cutflow.addCutToLastActiveCut("ChannelEMuHighBDTttZnbAll"               , [&](){ return this->IsChannelEMu();                   } , UNITY );
+                cutflow.addCutToLastActiveCut("ChannelEMuHighMTHighBDTttZnbAll"      	, [&](){ return this->CutHighMT();                 	} , UNITY );
+
+                cutflow.getCut("Cut4LepHighBDTttZnbAll");
+                cutflow.addCutToLastActiveCut("ChannelOffZHighBDTttZnbAll"           	, [&](){ return this->IsChannelOffZ();             	} , UNITY );
+                cutflow.addCutToLastActiveCut("ChannelOffZHighMETHighBDTttZnbAll"    	, [&](){ return this->CutHighMET();                	} , UNITY );
+
+        }
+	
     }
     // For fake rate related studies
     else if (ntupleVersion.Contains("Trilep"))
@@ -353,6 +386,22 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("MTNomMin"       , 180 , 0       , 180    , [&](){ return this->VarMTMin(); });
         // histograms.addHistogram("WindowMllNom"   , 180 , 0       , 50     , [&](){ return fabs(this->VarMll(lep_Nom_idx1, lep_Nom_idx2)-91.1876); });
         histograms.addHistogram("Yield"          , 1   , 0       , 1      , [&](){ return 0; });
+
+	if(ntupleVersion.Contains("BDT"))
+        {
+                histograms.addHistogram("disc_ttz_bVeto"    	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(0); });
+                histograms.addHistogram("disc_ttz_emu"      	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(1); });
+                histograms.addHistogram("disc_ttz_nbAll"    	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(2); });
+                histograms.addHistogram("disc_ttz_OffZ"     	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(3); });
+                histograms.addHistogram("disc_ttzzz_bVeto"  	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(4); });
+                histograms.addHistogram("disc_ttzzz_emu"    	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(5); });
+                histograms.addHistogram("disc_ttzzz_OffZ"   	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(6); });
+                histograms.addHistogram("disc_zz_emu"       	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(7); });
+                histograms.addHistogram("disc_zz_emuHighTTZBDT" , 180 , 0       , 1      , [&](){ return this->VarXGBBDT(8); });
+                histograms.addHistogram("disc_zz_OffZ"    	, 180 , 0       , 1      , [&](){ return this->VarXGBBDT(9); });
+                histograms.addHistogram("disc_zz_OffZHighTTZBDT", 180 , 0       , 1      , [&](){ return this->VarXGBBDT(10); });
+        }
+
         // histograms.addHistogram("lepFrelIso03EA" , 180 , 0       , 6.0    , [&](){ return lep_Fakeable_idx >= 0 ? wvz.lep_relIso03EA()[lep_Fakeable_idx] : -999; });
         // histograms.addHistogram("lepFrelIso04DB" , 180 , 0       , 6.0    , [&](){ return lep_Fakeable_idx >= 0 ? wvz.lep_relIso04DB()[lep_Fakeable_idx] : -999; });
         // histograms.addHistogram("jetPt0"         , 180 , 0.      , 200    , [&](){ return wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999; });
@@ -685,6 +734,15 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "FiveLeptonsRelIso5th");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAREMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAROffZ");
+	    if (ntupleVersion.Contains("BDT"))
+            {
+                    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighBDTttZemu");
+                    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighMTHighBDTttZemu");
+                    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighBDTttZnbAll");
+                    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuHighMTHighBDTttZnbAll");
+                    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighBDTttZnbAll");
+                    cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETHighBDTttZnbAll");
+            }
         }
         else
         {
@@ -715,6 +773,15 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             histograms_Z_peak.addHistogram("lepVPt2"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx3); });
             histograms_Z_peak.addHistogram("lepVPt3"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx4); });
             cutflow.bookHistogramsForCut(histograms_Z_peak, "Cut4LepLeptonPt");
+	    if (ntupleVersion.Contains("BDT"))
+            {
+                    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighBDTttZemu");
+                    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighMTHighBDTttZemu");
+                    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighBDTttZnbAll");
+                    cutflow.bookHistogramsForCut(histograms, "ChannelEMuHighMTHighBDTttZnbAll");
+                    cutflow.bookHistogramsForCut(histograms, "ChannelOffZHighBDTttZnbAll");
+                    cutflow.bookHistogramsForCut(histograms, "ChannelOffZHighMETHighBDTttZnbAll");
+            }
         }
     }
     else if (ntupleVersion.Contains("Trilep"))
@@ -771,6 +838,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         selectFakeStudyLeptons();
         correctMET();
         cutflow.fill();
+
 
         if (ntupleVersion.Contains("WVZ"))
         {
@@ -3188,6 +3256,107 @@ float Analysis::VarMinDRJetsToLep(int idx)
     }
     if (minDR > 9998) minDR = -999; //default value: -999
     return minDR;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarXGBBDT(int idx)
+{
+   //index:
+   //0 - wwz_vs_ttz_bVeto
+   //1 - wwz_vs_ttz_emu
+   //2 - wwz_vs_ttz_nbAll
+   //3 - wwz_vs_ttz_OffZ
+   //4 - wwz_vs_ttzzz_bVeto
+   //5 - wwz_vs_ttzzz_emu
+   //6 - wwz_vs_ttzzz_OffZ
+   //7 - wwz_vs_zz_emu
+   //8 - wwz_vs_zz_emuHighTTZBDT
+   //9 - wwz_vs_zz_OffZ	
+   //10 - wwz_vs_zz_OffZHighTTZBDT	
+
+    //////get all the input variables
+    int lep1_idx = lep_ZCand_idx1, lep2_idx = lep_ZCand_idx2, lep3_idx = lep_Nom_idx1, lep4_idx = lep_Nom_idx2;
+    if(lep1_idx <0 || lep2_idx<0 || lep3_idx < 0 || lep4_idx < 0) return 999;
+    //Z: lep1 is id>0 lepton
+    if(wvz.lep_id().at(lep_ZCand_idx1) < 0)
+    {
+        lep1_idx = lep_ZCand_idx2;
+        lep2_idx = lep_ZCand_idx1;
+    }
+    //W: lep3 is higher pt lepton
+    if(wvz.lep_pt().at(lep_Nom_idx1) < wvz.lep_pt().at(lep_Nom_idx2))
+    {
+        lep3_idx = lep_Nom_idx2;
+        lep4_idx = lep_Nom_idx1;
+    }
+
+    LeptonVectors vLeptons = GetLeptonVectors();
+    HZZ4lEventParameters eventParameters = ConvertVectorsToAngles( vLeptons );
+    float evt_MllN = this->VarMll(lep_Nom_idx1, lep_Nom_idx2);
+    float evt_MllZ = this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2);
+    float evt_ZPt = this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2);
+    float evt_met_pt = wvz.met_pt();
+    float evt_nj = wvz.nj();
+    float evt_nb = wvz.nb();
+    float evt_lep1Pt = this->VarLepPt(lep1_idx);
+    float evt_lep2Pt = this->VarLepPt(lep2_idx);
+    float evt_lep3Pt = this->VarLepPt(lep3_idx);
+    float evt_lep4Pt = this->VarLepPt(lep4_idx);
+    float evt_lep3Id = wvz.lep_id().at(lep3_idx);
+    float evt_lep4Id = wvz.lep_id().at(lep4_idx);
+    float evt_lep3MT = this->VarMT(lep3_idx);
+    float evt_lep4MT = this->VarMT(lep4_idx);
+    float evt_lep34MT = this->VarMTll(lep3_idx, lep4_idx);
+    float evt_lep1dZ = wvz.lep_dz().at(lep1_idx);
+    float evt_lep2dZ = wvz.lep_dz().at(lep2_idx);
+    float evt_lep3dZ = wvz.lep_dz().at(lep3_idx);
+    float evt_lep4dZ = wvz.lep_dz().at(lep4_idx);
+    float evt_pt_zeta = this->VarPtZeta();
+    float evt_pt_zeta_vis = this->VarPtZetaVis();
+    float evt_phi0 = eventParameters.Phi0;
+    float evt_phi = eventParameters.Phi;
+    float evt_phiH = eventParameters.PhiH;
+    float evt_theta0 = eventParameters.Theta0;
+    float evt_theta1 = eventParameters.Theta1;
+    float evt_theta2 = eventParameters.Theta2;
+    float evt_minDRJetToLep3 = this->VarMinDRJetsToLep(lep3_idx);
+    float evt_minDRJetToLep4 = this->VarMinDRJetsToLep(lep4_idx);
+    float evt_jet1Pt = wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999 ;
+    float evt_jet2Pt = wvz.jets_p4().size() > 1 ? wvz.jets_p4()[1].pt() : -999 ;
+    float evt_jet3Pt = wvz.jets_p4().size() > 2 ? wvz.jets_p4()[2].pt() : -999 ;
+    float evt_jet4Pt = wvz.jets_p4().size() > 3 ? wvz.jets_p4()[3].pt() : -999 ;
+    float evt_jet1BtagScore = wvz.jets_btag_score().size() > 0 ? wvz.jets_btag_score()[0] : -999;
+    float evt_jet2BtagScore = wvz.jets_btag_score().size() > 1 ? wvz.jets_btag_score()[1] : -999;
+    float evt_jet3BtagScore = wvz.jets_btag_score().size() > 2 ? wvz.jets_btag_score()[2] : -999;
+    float evt_jet4BtagScore = wvz.jets_btag_score().size() > 3 ? wvz.jets_btag_score()[3] : -999;
+    
+
+    std::vector<float> test_sample_ttz_bVeto{evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore,evt_MllN,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_ZPt};
+    std::vector<float> test_sample_ttz_emu{evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore,evt_MllN,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_ZPt};
+    std::vector<float> test_sample_ttz_nbAll{evt_nb,evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore,evt_MllN,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_ZPt};
+    std::vector<float> test_sample_ttz_OffZ{evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore,evt_MllN,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_ZPt};
+    std::vector<float> test_sample_ttzzz_bVeto{evt_met_pt,evt_lep3Id,evt_lep4Id,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore};
+    std::vector<float> test_sample_ttzzz_emu{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore};
+    std::vector<float> test_sample_ttzzz_OffZ{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_nj,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore};
+    std::vector<float> test_sample_zz_emu{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis};
+    std::vector<float> test_sample_zz_emuHighTTZBDT{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis};
+    std::vector<float> test_sample_zz_OffZ{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis};
+    std::vector<float> test_sample_zz_OffZHighTTZBDT{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis};
+    
+    if(idx == 0) return wwz_vs_ttz_bVeto(test_sample_ttz_bVeto, true)[0];
+    if(idx == 1) return wwz_vs_ttz_emu(test_sample_ttz_emu, true)[0];
+    if(idx == 2) return wwz_vs_ttz_nbAll(test_sample_ttz_nbAll, true)[0];
+    if(idx == 3) return wwz_vs_ttz_OffZ(test_sample_ttz_OffZ, true)[0];
+    if(idx == 4) return wwz_vs_ttzzz_bVeto(test_sample_ttzzz_bVeto, true)[0];
+    if(idx == 5) return wwz_vs_ttzzz_emu(test_sample_ttzzz_emu, true)[0];
+    if(idx == 6) return wwz_vs_ttzzz_OffZ(test_sample_ttzzz_OffZ, true)[0];
+    if(idx == 7) return wwz_vs_zz_emu(test_sample_zz_emu, true)[0];
+    if(idx == 8) return wwz_vs_zz_emuHighTTZBDT(test_sample_zz_emuHighTTZBDT, true)[0];
+    if(idx == 9) return wwz_vs_zz_OffZ(test_sample_zz_OffZ, true)[0];
+    if(idx == 10) return wwz_vs_zz_OffZHighTTZBDT(test_sample_zz_OffZHighTTZBDT, true)[0];
+
+    else return 999;  
+
 }
 
 //______________________________________________________________________________________________

@@ -3295,7 +3295,7 @@ float Analysis::VarXGBBDT(int idx)
     float evt_MllN = this->VarMll(lep_Nom_idx1, lep_Nom_idx2);
     float evt_MllZ = this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2);
     float evt_ZPt = this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2);
-    float evt_met_pt = wvz.met_pt();
+    float evt_met_pt = this->VarMET();
     float evt_nj = wvz.nj();
     float evt_nb = wvz.nb();
     float evt_lep1Pt = this->VarLepPt(lep1_idx);

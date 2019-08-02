@@ -26,7 +26,7 @@ root.gStyle.SetOptFit(111)
 root.gStyle.SetPaintTextFormat("2.1f")
 
 
-test_name = 'xgb_wwz_vs_zz_OffZHighTTZBDT_full'
+test_name = 'xgb_wwz_vs_zz_OffZHighTTZBDT'
 
 lumi_sf_sig = 1.0 # scale lumi from 2018 sample to full run2
 lumi_sf_bkg = 1.0
@@ -61,8 +61,11 @@ bkgEvents = lumi_sf_bkg*bkgHisto.Integral()
 print('[INFO]: S =' + str(signalEvents) + '; B =' + str(bkgEvents) +"; S/sqrt(B) = " + str(signalEvents/math.sqrt(bkgEvents)))
 
 ##Define variables to be used
-variables = ['met_pt','lep3Pt','lep4Pt','ZPt','lep3dZ', 'lep4dZ','lep3MT','lep4MT','lep34MT','phi0','theta0','phi','theta1','theta2','MllN', 'pt_zeta', 'pt_zeta_vis']
-variables_names = ['met_pt','lep3Pt','lep4Pt','ZPt','lep3dZ', 'lep4dZ','lep3MT','lep4MT','lep34MT','phi0','theta0','phi','theta1','theta2','Mll34', 'pt_zeta', 'pt_zeta_vis']
+#variables = ['met_pt','lep3Pt','lep4Pt','ZPt','lep3dZ', 'lep4dZ','lep3MT','lep4MT','lep34MT','phi0','theta0','phi','theta1','theta2','MllN', 'pt_zeta', 'pt_zeta_vis']
+#variables_names = ['met_pt','lep3Pt','lep4Pt','ZPt','lep3dZ', 'lep4dZ','lep3MT','lep4MT','lep34MT','phi0','theta0','phi','theta1','theta2','Mll34', 'pt_zeta', 'pt_zeta_vis']
+variables = ['met_pt','lep3Pt','lep4Pt','ZPt','lep3dZ', 'lep4dZ','lep3MT','lep4MT','MllN', 'pt_zeta', 'pt_zeta_vis']
+variables_names = ['met_pt','lep3Pt','lep4Pt','ZPt','lep3dZ', 'lep4dZ','lep3MT','lep4MT','Mll34', 'pt_zeta', 'pt_zeta_vis']
+
 print(len(variables))
 
 ##Getting ROOT files into pandas

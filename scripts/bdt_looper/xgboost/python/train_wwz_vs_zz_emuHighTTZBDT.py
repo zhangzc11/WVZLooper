@@ -21,7 +21,12 @@ import uproot
 doAppend = False
 
 root.gROOT.SetBatch(True)
-test_name = 'xgb_wwz_vs_zz_emuHighTTZBDT'
+root.gStyle.SetOptStat(0)
+root.gStyle.SetOptFit(111)
+root.gStyle.SetPaintTextFormat("2.1f")
+
+
+test_name = 'xgb_wwz_vs_zz_emuHighTTZBDT_full'
 
 lumi_sf_sig = 1.0 # scale lumi from 2018 sample to full run2
 lumi_sf_bkg = 1.0
@@ -85,6 +90,64 @@ x = np.concatenate([df_bkg.values,df_signal.values])
 #creating numpy array for target variables
 y = np.concatenate([np.zeros(len(df_bkg)),
                         np.ones(len(df_signal))])
+
+###plot correlation 
+file_sig = root.TFile(signalFileName)
+tree_sig = file_sig.Get("t")
+file_bkg = root.TFile(bkgFileName)
+tree_bkg = file_sig.Get("t")
+h2_corr_sig = root.TH2F("h2_corr_sig", "h2_corr_sig", len(variables), 0, len(variables), len(variables), 0, len(variables))
+h2_corr_bkg = root.TH2F("h2_corr_bkg", "h2_corr_bkg", len(variables), 0, len(variables), len(variables), 0, len(variables))
+
+for idx1 in range(len(variables)):
+	for idx2 in range(len(variables)):
+		tree_sig.Draw(variables[idx1]+":"+variables[idx2]+">>temp_sig")
+		tree_bkg.Draw(variables[idx1]+":"+variables[idx2]+">>temp_bkg")
+		sig_hist = root.gDirectory.Get('temp_sig')
+		h2_corr_sig.SetBinContent(idx1+1, idx2+1, sig_hist.GetCorrelationFactor())
+		bkg_hist = root.gDirectory.Get('temp_bkg')
+		h2_corr_bkg.SetBinContent(idx1+1, idx2+1, bkg_hist.GetCorrelationFactor())
+		root.gDirectory.Delete('temp_sig')
+		root.gDirectory.Delete('temp_bkg')
+h2_corr_sig.GetZaxis().SetRangeUser(-1.0, 1.0)
+h2_corr_bkg.GetZaxis().SetRangeUser(-1.0, 1.0)
+
+for idx in range(len(variables)):
+	h2_corr_sig.GetXaxis().SetBinLabel(idx+1, variables_names[idx])
+	h2_corr_sig.GetYaxis().SetBinLabel(idx+1, variables_names[idx])
+	h2_corr_bkg.GetXaxis().SetBinLabel(idx+1, variables_names[idx])
+	h2_corr_bkg.GetYaxis().SetBinLabel(idx+1, variables_names[idx])
+
+myC = root.TCanvas( "myC", "myC", 200, 10, 900, 800 )
+myC.SetHighLightColor(2)
+myC.SetFillColor(0)
+myC.SetBorderMode(0)
+myC.SetBorderSize(2)
+myC.SetLeftMargin( 0.12 )
+myC.SetRightMargin( 0.12 )
+myC.SetBottomMargin( 0.12 )
+myC.SetTopMargin( 0.12 )
+myC.SetFrameBorderMode(0)
+myC.SetFrameBorderMode(0)
+
+stops = np.array([0.00, 0.34, 0.61, 0.84, 1.00])
+red= np.array([0.50, 0.50, 1.00, 1.00, 1.00])
+green = np.array([ 0.50, 1.00, 1.00, 0.60, 0.50])
+blue = np.array([1.00, 1.00, 0.50, 0.40, 0.50])
+root.TColor.CreateGradientColorTable(len(stops), stops, red, green, blue, 255)
+root.gStyle.SetNumberContours(255)
+
+h2_corr_sig.Draw("COLZTEXT")
+h2_corr_sig.SetTitle("")
+myC.SaveAs(plotDir+'variables/'+test_name + '_correlation_matrix_sig.pdf')
+myC.SaveAs(plotDir+'variables/'+test_name + '_correlation_matrix_sig.png')
+myC.SaveAs(plotDir+'variables/'+test_name + '_correlation_matrix_sig.C')
+h2_corr_bkg.Draw("COLZTEXT")
+h2_corr_bkg.SetTitle("")
+myC.SaveAs(plotDir+'variables/'+test_name + '_correlation_matrix_bkg.pdf')
+myC.SaveAs(plotDir+'variables/'+test_name + '_correlation_matrix_bkg.png')
+myC.SaveAs(plotDir+'variables/'+test_name + '_correlation_matrix_bkg.C')
+os.system("chmod 755 "+plotDir+"variables/*")
 
 ####Plot input variables######
 

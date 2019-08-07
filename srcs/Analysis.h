@@ -257,10 +257,10 @@ public:
     void correctMET();
 
     float EventWeight();
-    float LeptonScaleFactor();
+    float LeptonScaleFactor(int=0, int=0);
     float LeptonScaleFactorZZ4l();
     float LeptonScaleFactorv1();
-    float IndividualLeptonScaleFactor(int, bool);
+    float IndividualLeptonScaleFactor(int, bool, int=0, int=0);
     float FakeFactor();
     float BTagSF();
 
@@ -323,6 +323,8 @@ public:
     bool ChannelOffZHighMET();
 
     float VarMll();
+    float VarMjj();
+    float VarMjjMinDR();
     float VarMET(int=0);
     float VarNvtx();
     float VarMll2ndZ();
@@ -341,6 +343,7 @@ public:
     float VarNEENoiseJet();
     float VarNfwdjet();
     float VarNb();
+    float VarNbmed();
     float VarMll2l();
     float VarNSFOS();
     float VarLepPt(int);

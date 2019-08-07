@@ -135,6 +135,17 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addCutToLastActiveCut("CutHLTZZ4l"              , [&](){ return this->CutHLT();                  } , UNITY );
         cutflow.addCutToLastActiveCut("ChannelHZZ4l"            , [&](){ return this->IsChannelHZZ4l();          } , UNITY );
 
+        cutflow.getCut("CutHLTZZ4l");
+        cutflow.addCutToLastActiveCut("CutMll2nd"               , [&](){ return fabs(this->VarMll(lep_Z2Cand_idx1, lep_Z2Cand_idx2) - 91.1876) < 10.; } , UNITY );
+        cutflow.addCutToLastActiveCut("CutNjetGeq2"             , [&](){ return wvz.nj() >= 2;                   } , UNITY );
+        cutflow.addCutToLastActiveCut("CutMjj"                  , [&](){ return this->VarMjjMinDR() > 60. and this->VarMjjMinDR() < 105.;  } , UNITY );
+        cutflow.getCut("CutMll2nd");
+        cutflow.addCutToLastActiveCut("CutZZ4lHighMET"          , [&](){ return this->CutHighMET(); }, UNITY );
+        cutflow.addCutToLastActiveCut("CutZZ4lBMedVeto"         , [&](){ return wvz.nbmed() == 0; }, UNITY );
+        cutflow.addCutToLastActiveCut("CutZZ4lHighMETHigh"      , [&](){ return this->VarMET() > 150.; }, UNITY );
+        cutflow.getCut("CutZZ4lHighMET");
+        cutflow.addCutToLastActiveCut("CutZZ4lBVeto"            , [&](){ return wvz.nb() == 0; }, UNITY );
+
         // b-tagged emu channel
         cutflow.getCut("Cut4LepBTag");
         cutflow.addCutToLastActiveCut("ChannelBTagEMu"          , [&](){ return this->IsChannelEMu();            } , UNITY );
@@ -287,9 +298,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         // histograms.addHistogram("RelIso5th"      , 180 , 0       , 0.4    , [&](){ return this->VarRelIso5th(); });
         // histograms.addHistogram("Pt5th"          , 180 , 0       , 200    , [&](){ return this->VarPt5th(); });
         histograms.addHistogram("Njet"           , 6   , 0       , 6      , [&](){ return this->VarNjet(); });
+        histograms.addHistogram("Mjj"            , 180 , 0       , 300    , [&](){ return this->VarMjj(); });
+        histograms.addHistogram("MjjMinDR"       , 180 , 0       , 300    , [&](){ return this->VarMjjMinDR(); });
         // histograms.addHistogram("Nfwdjet"        , 4   , 0       , 4      , [&](){ return wvz.nj() - wvz.nj_cen(); });
         // histograms.addHistogram("Neenoisejet"    , 4   , 0       , 4      , [&](){ return this->VarNEENoiseJet(); });
         histograms.addHistogram("Nbjet"          , 6   , 0       , 6      , [&](){ return this->VarNb(); });
+        histograms.addHistogram("Nbjetmed"       , 6   , 0       , 6      , [&](){ return this->VarNbmed(); });
         // histograms.addHistogram("Mll2l"          , 180 , 0       , 300    , [&](){ return this->VarMll2l(); });
         // histograms.addHistogram("lepZ2isNom0"    , 2   , 0       , 2      , [&](){ return lep_2ndZCand_idx1 >= 0 ? passNominalLeptonID(lep_2ndZCand_idx1) : -999; });
         // histograms.addHistogram("lepZ2isNom1"    , 2   , 0       , 2      , [&](){ return lep_2ndZCand_idx2 >= 0 ? passNominalLeptonID(lep_2ndZCand_idx2) : -999; });
@@ -306,10 +320,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("lepZPt1"        , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_ZCand_idx2); });
         histograms.addHistogram("lepNPt0"        , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Nom_idx1); });
         histograms.addHistogram("lepNPt1"        , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Nom_idx2); });
+        histograms.addHistogram("lepZ2Pt0"       , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Z2Cand_idx1); });
+        histograms.addHistogram("lepZ2Pt1"       , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Z2Cand_idx2); });
         histograms.addHistogram("lepZEta0"       , 180 , -5      , 5      , [&](){ return lep_ZCand_idx1 >= 0 ? wvz.lep_eta()[lep_ZCand_idx1] : -999; });
         histograms.addHistogram("lepZEta1"       , 180 , -5      , 5      , [&](){ return lep_ZCand_idx2 >= 0 ? wvz.lep_eta()[lep_ZCand_idx2] : -999; });
         histograms.addHistogram("lepNEta0"       , 180 , -5      , 5      , [&](){ return lep_Nom_idx1 >= 0 ? wvz.lep_eta()[lep_Nom_idx1] : -999; });
         histograms.addHistogram("lepNEta1"       , 180 , -5      , 5      , [&](){ return lep_Nom_idx2 >= 0 ? wvz.lep_eta()[lep_Nom_idx2] : -999; });
+        histograms.addHistogram("lepZ2Eta0"      , 180 , -5      , 5      , [&](){ return lep_Z2Cand_idx1 >= 0 ? wvz.lep_eta()[lep_Z2Cand_idx1] : -999; });
+        histograms.addHistogram("lepZ2Eta1"      , 180 , -5      , 5      , [&](){ return lep_Z2Cand_idx2 >= 0 ? wvz.lep_eta()[lep_Z2Cand_idx2] : -999; });
         histograms.addHistogram("lepNip3d0"      , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx1 >= 0 ? fabs(wvz.lep_ip3d()[lep_Nom_idx1]) : -999; });
         histograms.addHistogram("lepNip3d1"      , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx2 >= 0 ? fabs(wvz.lep_ip3d()[lep_Nom_idx2]) : -999; });
         histograms.addHistogram("lepNdxy0"       , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx1 >= 0 ? fabs(wvz.lep_dxy()[lep_Nom_idx1]) : -999; });
@@ -318,11 +336,11 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("lepNdz1"        , 180 , 0       , 0.1    , [&](){ return lep_Nom_idx2 >= 0 ? fabs(wvz.lep_dz()[lep_Nom_idx2]) : -999; });
         histograms.addHistogram("MllZCand"       , 180 , 0       , 200    , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("MllNom"         , 180 , 0       , 200    , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
-        histograms.addHistogram("MllZ2Cand"       , 180 , 0       , 200    , [&](){ return this->VarMll(lep_Z2Cand_idx1, lep_Z2Cand_idx2); });
+        histograms.addHistogram("MllZ2Cand"      , 180 , 0       , 200    , [&](){ return this->VarMll(lep_Z2Cand_idx1, lep_Z2Cand_idx2); });
         //histograms.addHistogram("M4l"            , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
         //histograms.addHistogram("M4lZoom"        , 180 , 115     , 135    , [&](){ return this->VarM4l(lep_Nom_idx1, lep_Nom_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
-        histograms.addHistogram("MZZ4l"            , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Z2Cand_idx1, lep_Z2Cand_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
-        histograms.addHistogram("MZZ4lZoom"        , 180 , 115     , 135    , [&](){ return this->VarM4l(lep_Z2Cand_idx1, lep_Z2Cand_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
+        histograms.addHistogram("MZZ4l"          , 180 , 0       , 450    , [&](){ return this->VarM4l(lep_Z2Cand_idx1, lep_Z2Cand_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
+        histograms.addHistogram("MZZ4lZoom"      , 180 , 115     , 135    , [&](){ return this->VarM4l(lep_Z2Cand_idx1, lep_Z2Cand_idx2, lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("PtllZCand"      , 180 , 0       , 200    , [&](){ return this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("PtllNom"        , 180 , 0       , 200    , [&](){ return this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2); });
         histograms.addHistogram("HTHad"          , 180 , 0       , 200    , [&](){ return wvz.ht(); });
@@ -370,7 +388,6 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("pt_zeta"        , 180 , -200    , 200       , [&](){ return this->VarPtZetaDiff(); });
         histograms.addHistogram("pt_zeta_vis"    , 180 , -200    , 550       , [&](){ return this->VarPtZetaVis(); });
         histograms.addHistogram("pt_zeta_sum"    , 180 , -200    , 550       , [&](){ return this->VarPtZeta(); });
-        histograms.add2DHistogram("pt_zeta_vis", 50 , -200, 550 , "pt_zeta_sum", 50, -200, 550, [&](){ return this->VarPtZetaVis(); }, [&](){ return this->VarPtZeta(); });
     }
     else if (ntupleVersion.Contains("Trilep"))
     {
@@ -423,15 +440,18 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addWgtSyst("BTagHFDown", [&]() { if (wvz.isData()) return 1.f; return wvz.weight_btagsf() != 0 ? wvz.weight_btagsf_heavy_DN() / wvz.weight_btagsf() : 1; } );
         cutflow.addWgtSyst("BTagLFUp"  , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_btagsf() != 0 ? wvz.weight_btagsf_light_UP() / wvz.weight_btagsf() : 1; } );
         cutflow.addWgtSyst("BTagLFDown", [&]() { if (wvz.isData()) return 1.f; return wvz.weight_btagsf() != 0 ? wvz.weight_btagsf_light_DN() / wvz.weight_btagsf() : 1; } );
-        cutflow.addWgtSyst("PDFUp"     , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.pdfup() == 0 ? 0 : wvz.weight_pdf_up()   / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.pdfup(); } );
-        cutflow.addWgtSyst("PDFDown"   , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.pdfdn() == 0 ? 0 : wvz.weight_pdf_down() / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.pdfdn(); } );
-        cutflow.addWgtSyst("QsqUp"     , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.qsqup() == 0 ? 0 : wvz.weight_fr_r2_f2()     / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.qsqup(); } );
-        cutflow.addWgtSyst("QsqDown"   , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.qsqdn() == 0 ? 0 : wvz.weight_fr_r0p5_f0p5() / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.qsqdn(); } );
-        cutflow.addWgtSyst("AlphaSUp"  , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.alsup() == 0 ? 0 : wvz.weight_alphas_up()   / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.alsup(); } );
-        cutflow.addWgtSyst("AlphaSDown", [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.alsdn() == 0 ? 0 : wvz.weight_alphas_down() / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.alsdn(); } );
-        // TODO on weight systematics
-        // 2. LepSF
-        // 3. TrigSF
+        cutflow.addWgtSyst("PDFUp"     , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.pdfup() == 0 ? 1 : wvz.weight_pdf_up()   / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.pdfup(); } );
+        cutflow.addWgtSyst("PDFDown"   , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.pdfdn() == 0 ? 1 : wvz.weight_pdf_down() / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.pdfdn(); } );
+        cutflow.addWgtSyst("QsqUp"     , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.qsqup() == 0 ? 1 : wvz.weight_fr_r2_f2()     / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.qsqup(); } );
+        cutflow.addWgtSyst("QsqDown"   , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.qsqdn() == 0 ? 1 : wvz.weight_fr_r0p5_f0p5() / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.qsqdn(); } );
+        cutflow.addWgtSyst("AlphaSUp"  , [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.alsup() == 0 ? 1 : wvz.weight_alphas_up()   / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.alsup(); } );
+        cutflow.addWgtSyst("AlphaSDown", [&]() { if (wvz.isData()) return 1.f; return wvz.weight_fr_r1_f1() == 0 or theoryweight.alsdn() == 0 ? 1 : wvz.weight_alphas_down() / wvz.weight_fr_r1_f1() * theoryweight.nominal() / theoryweight.alsdn(); } );
+        cutflow.addWgtSyst("LepSFUp"   , [&]() { if (wvz.isData()) return 1.f; return this->LeptonScaleFactor() != 0 ? this->LeptonScaleFactor(1,1) / this->LeptonScaleFactor() : 1; } );
+        cutflow.addWgtSyst("LepSFDown" , [&]() { if (wvz.isData()) return 1.f; return this->LeptonScaleFactor() != 0 ? this->LeptonScaleFactor(-1,-1) / this->LeptonScaleFactor() : 1; } );
+        cutflow.addWgtSyst("ElLepSFUp"   , [&]() { if (wvz.isData()) return 1.f; return this->LeptonScaleFactor() != 0 ? this->LeptonScaleFactor(1,0) / this->LeptonScaleFactor() : 1; } );
+        cutflow.addWgtSyst("ElLepSFDown" , [&]() { if (wvz.isData()) return 1.f; return this->LeptonScaleFactor() != 0 ? this->LeptonScaleFactor(-1,0) / this->LeptonScaleFactor() : 1; } );
+        cutflow.addWgtSyst("MuLepSFUp"   , [&]() { if (wvz.isData()) return 1.f; return this->LeptonScaleFactor() != 0 ? this->LeptonScaleFactor(0,1) / this->LeptonScaleFactor() : 1; } );
+        cutflow.addWgtSyst("MuLepSFDown" , [&]() { if (wvz.isData()) return 1.f; return this->LeptonScaleFactor() != 0 ? this->LeptonScaleFactor(0,-1) / this->LeptonScaleFactor() : 1; } );
         cutflow.addWgtSyst("PileupUp"  , [&]()
                 {
                 if (wvz.isData()) return 1.f;
@@ -678,13 +698,13 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOnZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZ");
-            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelHZZ4l");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagEMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagOnZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagOffZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "FiveLeptonsRelIso5th");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAREMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAROffZ");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "CutHLTZZ4l");
         }
         else
         {
@@ -698,6 +718,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCut(histograms, "ChannelOnZHighMT");
             cutflow.bookHistogramsForCut(histograms, "ChannelOnZHighMET");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMu");
+            cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMuOneNb");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMuHighMET");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagEMuHighMT");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagOffZ");
@@ -1892,16 +1913,16 @@ float Analysis::LeptonScaleFactorv1()
 }
 
 //______________________________________________________________________________________________
-float Analysis::LeptonScaleFactor()
+float Analysis::LeptonScaleFactor(int vare, int varm)
 {
     if (wvz.isData())
         return 1.;
     // Based on lep_Veto indices
     float scalefactor = 1;
-    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx1, false);
-    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false);
-    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx1, true);
-    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx2, true);
+    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx1, false, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx1, true, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx2, true, vare, varm);
     return scalefactor;
 }
 
@@ -1920,8 +1941,12 @@ float Analysis::LeptonScaleFactorZZ4l()
 }
 
 //______________________________________________________________________________________________
-float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal)
+float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal, int vare, int varm)
 {
+    if (vare != 0 and vare != 1 and vare != -1)
+        RooUtil::error(TString::Format("Unrecognized variation value vare = %d", vare).Data(), "IndividualLeptonScaleFactor");
+    if (varm != 0 and varm != 1 and varm != -1)
+        RooUtil::error(TString::Format("Unrecognized variation value varm = %d", varm).Data(), "IndividualLeptonScaleFactor");
     if (wvz.isData())
         return 1.;
     // Based on lep_Veto indices
@@ -1938,50 +1963,105 @@ float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal)
         {
             if (pt > 20)
             {
-                scalefactor *= histmap_2016_elec_reco_highpt_sf    ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2016_elec_reco_highpt_sf    ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2016_elec_reco_highpt_sf    ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2016_elec_reco_highpt_sf    ->eval_down(eta, pt); // x=eta, y=pt
             }
             else
             {
-                scalefactor *= histmap_2016_elec_reco_lowpt_sf     ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2016_elec_reco_lowpt_sf     ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2016_elec_reco_lowpt_sf     ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2016_elec_reco_lowpt_sf     ->eval_down(eta, pt); // x=eta, y=pt
             }
             if (isNominal)
             {
-                scalefactor *= histmap_2016_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2016_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2016_elec_medium_sf         ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2016_elec_medium_sf         ->eval_down(eta, pt); // x=eta, y=pt
             }
             else
             {
-                scalefactor *= histmap_2016_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2016_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2016_elec_veto_sf           ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2016_elec_veto_sf           ->eval_down(eta, pt); // x=eta, y=pt
             }
         }
         else if (year == 2017)
         {
             if (pt > 20)
             {
-                scalefactor *= histmap_2017_elec_reco_highpt_sf    ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2017_elec_reco_highpt_sf    ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2017_elec_reco_highpt_sf    ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2017_elec_reco_highpt_sf    ->eval_down(eta, pt); // x=eta, y=pt
             }
             else
             {
-                scalefactor *= histmap_2017_elec_reco_lowpt_sf     ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2017_elec_reco_lowpt_sf     ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2017_elec_reco_lowpt_sf     ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2017_elec_reco_lowpt_sf     ->eval_down(eta, pt); // x=eta, y=pt
             }
             if (isNominal)
             {
-                scalefactor *= histmap_2017_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2017_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2017_elec_medium_sf         ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2017_elec_medium_sf         ->eval_down(eta, pt); // x=eta, y=pt
             }
             else
             {
-                scalefactor *= histmap_2017_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2017_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2017_elec_veto_sf           ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2017_elec_veto_sf           ->eval_down(eta, pt); // x=eta, y=pt
             }
         }
         else if (year == 2018)
         {
-            scalefactor *= histmap_2018_elec_reco_sf           ->eval(eta, pt); // x=eta, y=pt
+            if (vare == 0)
+                scalefactor *= histmap_2018_elec_reco_sf           ->eval(eta, pt); // x=eta, y=pt
+            if (vare == 1)
+                scalefactor *= histmap_2018_elec_reco_sf           ->eval_up(eta, pt); // x=eta, y=pt
+            if (vare ==-1)
+                scalefactor *= histmap_2018_elec_reco_sf           ->eval_down(eta, pt); // x=eta, y=pt
             if (isNominal)
             {
-                scalefactor *= histmap_2018_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2018_elec_medium_sf         ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2018_elec_medium_sf         ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2018_elec_medium_sf         ->eval_down(eta, pt); // x=eta, y=pt
             }
             else
             {
-                scalefactor *= histmap_2018_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 0)
+                    scalefactor *= histmap_2018_elec_veto_sf           ->eval(eta, pt); // x=eta, y=pt
+                if (vare == 1)
+                    scalefactor *= histmap_2018_elec_veto_sf           ->eval_up(eta, pt); // x=eta, y=pt
+                if (vare ==-1)
+                    scalefactor *= histmap_2018_elec_veto_sf           ->eval_down(eta, pt); // x=eta, y=pt
             }
         }
     }
@@ -1991,61 +2071,129 @@ float Analysis::IndividualLeptonScaleFactor(int lep_idx, bool isNominal)
         {
             if (pt > 20)
             {
-                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_sf       ->eval(eta, pt)  // x=eta, y=pt
-                    +0.450 * histmap_2016_muon_GH_id_sf          ->eval(eta, pt); // x=eta, y=pt 0.450 of 2016 data
+                if (varm == 0)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_sf       ->eval(eta, pt)  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_id_sf          ->eval(eta, pt); // x=eta, y=pt 0.450 of 2016 data
+                if (varm == 1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_sf       ->eval_up(eta, pt)  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_id_sf          ->eval_up(eta, pt); // x=eta, y=pt 0.450 of 2016 data
+                if (varm ==-1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_sf       ->eval_down(eta, pt)  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_id_sf          ->eval_down(eta, pt); // x=eta, y=pt 0.450 of 2016 data
             }
             else
             {
-                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_lowpt_sf ->eval(pt, abseta)  // x=pt, y=abseta
-                    +0.450 * histmap_2016_muon_GH_id_lowpt_sf    ->eval(pt, abseta); // x=pt, y=abseta 0.450 of 2016 data
+                if (varm == 0)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_lowpt_sf ->eval(pt, abseta)  // x=pt, y=abseta
+                                  +0.450 * histmap_2016_muon_GH_id_lowpt_sf    ->eval(pt, abseta); // x=pt, y=abseta 0.450 of 2016 data
+                if (varm == 1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_lowpt_sf ->eval_up(pt, abseta)  // x=pt, y=abseta
+                                  +0.450 * histmap_2016_muon_GH_id_lowpt_sf    ->eval_up(pt, abseta); // x=pt, y=abseta 0.450 of 2016 data
+                if (varm ==-1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_id_lowpt_sf ->eval_down(pt, abseta)  // x=pt, y=abseta
+                                  +0.450 * histmap_2016_muon_GH_id_lowpt_sf    ->eval_down(pt, abseta); // x=pt, y=abseta 0.450 of 2016 data
             }
             if (isNominal)
             {
-                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
-                    +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+                if (varm == 0)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+                if (varm == 1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval_up(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval_up(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+                if (varm ==-1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_tightiso_sf ->eval_down(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                                  +0.450 * histmap_2016_muon_GH_tightiso_sf    ->eval_down(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
             }
             else
             {
-                scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
-                    +0.450 * histmap_2016_muon_GH_looseiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+                if (varm == 0)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                        +0.450           * histmap_2016_muon_GH_looseiso_sf    ->eval(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+                if (varm == 1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval_up(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                        +0.450           * histmap_2016_muon_GH_looseiso_sf    ->eval_up(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
+                if (varm ==-1)
+                    scalefactor *= 0.550 * histmap_2016_muon_BCDEF_looseiso_sf ->eval_down(eta, std::max((double) pt, 20.1))  // x=eta, y=pt
+                        +0.450           * histmap_2016_muon_GH_looseiso_sf    ->eval_down(eta, std::max((double) pt, 20.1)); // x=eta, y=pt 0.450 of 2016 data
             }
         }
         else if (year == 2017)
         {
             if (pt > 20)
             {
-                scalefactor *= histmap_2017_muon_id_sf             ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2017_muon_id_sf             ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2017_muon_id_sf             ->eval_up(pt, abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2017_muon_id_sf             ->eval_down(pt, abseta); // x=pt, y=abseta
             }
             else
             {
-                scalefactor *= histmap_2017_muon_id_lowpt_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2017_muon_id_lowpt_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2017_muon_id_lowpt_sf       ->eval_up(pt, abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2017_muon_id_lowpt_sf       ->eval_down(pt, abseta); // x=pt, y=abseta
             }
             if (isNominal)
             {
-                scalefactor *= histmap_2017_muon_tightiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2017_muon_tightiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2017_muon_tightiso_sf       ->eval_up(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2017_muon_tightiso_sf       ->eval_down(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
             }
             else
             {
-                scalefactor *= histmap_2017_muon_looseiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2017_muon_looseiso_sf       ->eval(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2017_muon_looseiso_sf       ->eval_up(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2017_muon_looseiso_sf       ->eval_down(std::max((double) pt, 20.1), abseta); // x=pt, y=abseta
             }
         }
         else if (year == 2018)
         {
             if (pt > 20)
             {
-                scalefactor *= histmap_2018_muon_id_sf             ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2018_muon_id_sf             ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2018_muon_id_sf             ->eval_up(pt, abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2018_muon_id_sf             ->eval_down(pt, abseta); // x=pt, y=abseta
             }
             else
             {
-                scalefactor *= histmap_2018_muon_id_lowpt_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2018_muon_id_lowpt_sf       ->eval(pt, abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2018_muon_id_lowpt_sf       ->eval_up(pt, abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2018_muon_id_lowpt_sf       ->eval_down(pt, abseta); // x=pt, y=abseta
             }
             if (isNominal)
             {
-                scalefactor *= histmap_2018_muon_tightiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2018_muon_tightiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2018_muon_tightiso_sf       ->eval_up(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2018_muon_tightiso_sf       ->eval_down(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
             }
             else
             {
-                scalefactor *= histmap_2018_muon_looseiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+                if (varm == 0)
+                    scalefactor *= histmap_2018_muon_looseiso_sf       ->eval(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+                if (varm == 1)
+                    scalefactor *= histmap_2018_muon_looseiso_sf       ->eval_up(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
+                if (varm ==-1)
+                    scalefactor *= histmap_2018_muon_looseiso_sf       ->eval_down(std::max((double) pt, 15.1), abseta); // x=pt, y=abseta
             }
         }
     }
@@ -2985,6 +3133,12 @@ float Analysis::VarNb()
 }
 
 //______________________________________________________________________________________________
+float Analysis::VarNbmed()
+{
+    return wvz.nbmed();
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarLepPt(int idx)
 {
     if (idx < 0)
@@ -3038,6 +3192,39 @@ float Analysis::VarMll2l()
     if (nVetoLeptons < 2)
         return -999;
     return (leptons.at(lep_veto_idxs.at(0)) + leptons.at(lep_veto_idxs.at(1))).M();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMjj()
+{
+    if (wvz.nj() < 2)
+        return -999;
+    return (wvz.jets_p4()[0] + wvz.jets_p4()[1]).M();
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMjjMinDR()
+{
+    if (wvz.nj() < 2)
+        return -999;
+    float mindr = 999;
+    float mjj = -999;
+    for (auto& ijet : wvz.jets_p4())
+    {
+        for (auto& jjet : wvz.jets_p4())
+        {
+            if (ijet != jjet)
+            {
+                float tmpdr = RooUtil::Calc::DeltaR(ijet, jjet);
+                if (tmpdr < mindr)
+                {
+                    mindr = tmpdr;
+                    mjj = (ijet + jjet).mass();
+                }
+            }
+        }
+    }
+    return mjj;
 }
 
 //______________________________________________________________________________________________

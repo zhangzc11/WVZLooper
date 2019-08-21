@@ -357,6 +357,7 @@ public:
     float VarPtZeta(int=0);
     float VarPtZetaVis(int=0);
     float VarMinDRJetsToLep(int);
+    float VarXGBBDT(int idx = 0, int var = 0);
 
     LeptonVectors GetLeptonVectors();
 

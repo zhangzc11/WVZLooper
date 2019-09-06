@@ -139,12 +139,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addCutToLastActiveCut("CutMll2nd"               , [&](){ return fabs(this->VarMll(lep_Z2Cand_idx1, lep_Z2Cand_idx2) - 91.1876) < 10.; } , UNITY );
         cutflow.addCutToLastActiveCut("CutNjetGeq2"             , [&](){ return wvz.nj() >= 2;                   } , UNITY );
         cutflow.addCutToLastActiveCut("CutMjj"                  , [&](){ return this->VarMjjMinDR() > 60. and this->VarMjjMinDR() < 105.;  } , UNITY );
-        cutflow.getCut("CutMll2nd");
-        cutflow.addCutToLastActiveCut("CutZZ4lHighMET"          , [&](){ return this->CutHighMET(); }, UNITY );
-        cutflow.addCutToLastActiveCut("CutZZ4lBMedVeto"         , [&](){ return wvz.nbmed() == 0; }, UNITY );
-        cutflow.addCutToLastActiveCut("CutZZ4lHighMETHigh"      , [&](){ return this->VarMET() > 150.; }, UNITY );
-        cutflow.getCut("CutZZ4lHighMET");
-        cutflow.addCutToLastActiveCut("CutZZ4lBVeto"            , [&](){ return wvz.nb() == 0; }, UNITY );
+        // cutflow.getCut("CutMll2nd");
+        // cutflow.addCutToLastActiveCut("CutZZ4lHighMET"          , [&](){ return this->CutHighMET(); }, UNITY );
+        // cutflow.addCutToLastActiveCut("CutZZ4lBMedVeto"         , [&](){ return wvz.nbmed() == 0; }, UNITY );
+        // cutflow.addCutToLastActiveCut("CutZZ4lHighMETHigh"      , [&](){ return this->VarMET() > 150.; }, UNITY );
+        // cutflow.getCut("CutZZ4lHighMET");
+        // cutflow.addCutToLastActiveCut("CutZZ4lBVeto"            , [&](){ return wvz.nb() == 0; }, UNITY );
 
         // b-tagged emu channel
         cutflow.getCut("Cut4LepBTag");

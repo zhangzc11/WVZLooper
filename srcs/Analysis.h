@@ -265,6 +265,7 @@ public:
     float EventWeight();
     float LeptonScaleFactor(int=0, int=0);
     float LeptonScaleFactorZZ4l();
+    float LeptonScaleFactor5Lep();
     float LeptonScaleFactorv1();
     float IndividualLeptonScaleFactor(int, bool, int=0, int=0);
     float FakeFactor();

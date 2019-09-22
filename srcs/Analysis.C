@@ -57,6 +57,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     // 1. WVZ201*_v* which only contains events with 4 or more leptons
     // 2. Trilep201*_v* which also contains trilepton events in addition to 4 or more  lepton events
 
+    // RooUtil::EventList cutflow_sync_eventlist_to_check("event_to_check.txt");
+
     //========================
     //
     // Defining cuts
@@ -170,10 +172,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
         // Common five lepton selections
         cutflow.getCut("Weight");
-        cutflow.addCutToLastActiveCut("FiveLeptons"             , [&](){ return this->Is5LeptonEvent();          } , [&](){ return this->LeptonScaleFactor(); } );
-        cutflow.addCutToLastActiveCut("FiveLeptonsMllZ"         , [&](){ return this->Is2ndOnZFiveLepton();      } , UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptons"             , [&](){ return this->Is5LeptonEvent();          } , [&](){ return this->LeptonScaleFactor5Lep(); } );
         cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th"    , [&](){ return this->Is5thNominal();            } , UNITY );
-        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th"        , [&](){ return this->VarMT5th() > 30.;          } , UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th"        , [&](){ return this->VarMT5th() > 50.;          } , UNITY );
 
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("ARFindZCandLeptons"            , [&](){ return this->FindZCandLeptons();        } , UNITY );
@@ -689,6 +690,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
     // // Book Cutflow
     // cutflow.bookCutflows();
+    // cutflow.bookEventLists();
 
     // Book histograms
     if (ntupleVersion.Contains("WVZ"))
@@ -757,7 +759,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     ch->Add(fTTree->GetCurrentFile()->GetName());
     looper = new RooUtil::Looper<wvztree>(ch, &wvz, -1); // -1 means process all events
 
-    // if doSkim 
+    // if doSkim
     if (ntupleVersion.Contains("WVZ") and doSkim)
     {
         TString tree_output_tfile = output_path + "/BDTinputTree_" + output_tfile_name;
@@ -777,6 +779,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
                 createNewBranches();
             }
         }
+
+        // cutflow.setEventID(wvz.run(), wvz.lumi(), wvz.evt());
 
         // Once it enters loop it's 1, and then 2, and so on.
         // So need to subtract one and set it to 'ii' so fTTree can load event
@@ -804,6 +808,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
                     fillSkimTree();
             }
         }
+
+        // if (cutflow_sync_eventlist_to_check.has(wvz.run(), wvz.lumi(), wvz.evt()))
+        // {
+        //     cutflow.printCuts();
+        // }
+
     }
 
     cutflow.saveOutput();
@@ -813,6 +823,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         looper->getSkimFile()->cd();
         theoryweight.histmap_neventsinfile->hist->Write();
     }
+
+    // cutflow.getCut("FiveLeptonsMT5th").writeEventList("eventlist.txt");
 
 
 }//end of whole function
@@ -874,7 +886,7 @@ void Analysis::createNewBranches()
     tx->createBranch<float>("jet2BtagScore");
     tx->createBranch<float>("jet3BtagScore");
     tx->createBranch<float>("jet4BtagScore");
-    
+
 }
 
 //______________________________________________________________________________________________
@@ -882,17 +894,17 @@ void Analysis::fillSkimTree()
 {
     int lep1_idx = lep_ZCand_idx1, lep2_idx = lep_ZCand_idx2, lep3_idx = lep_Nom_idx1, lep4_idx = lep_Nom_idx2;
     //Z: lep1 is id>0 lepton
-    if(wvz.lep_id().at(lep_ZCand_idx1) < 0) 
+    if(wvz.lep_id().at(lep_ZCand_idx1) < 0)
     {
         lep1_idx = lep_ZCand_idx2;
         lep2_idx = lep_ZCand_idx1;
-    } 
+    }
     //W: lep3 is higher pt lepton
-    if(wvz.lep_pt().at(lep_Nom_idx1) < wvz.lep_pt().at(lep_Nom_idx2)) 
+    if(wvz.lep_pt().at(lep_Nom_idx1) < wvz.lep_pt().at(lep_Nom_idx2))
     {
         lep3_idx = lep_Nom_idx2;
         lep4_idx = lep_Nom_idx1;
-    } 
+    }
 
     LeptonVectors vLeptons = GetLeptonVectors();
     HZZ4lEventParameters eventParameters = ConvertVectorsToAngles( vLeptons );
@@ -1363,6 +1375,89 @@ void Analysis::select5LepLeptons()
     lep_5Lep_Z2_idx1 = -999;
     lep_5Lep_Z2_idx2 = -999;
     lep_5Lep_W_idx = -999;
+
+    double chi1_sq, chi2_sq, mT;
+    int z_lep1;
+    int z_lep2;
+    int z_lep3;
+    int z_lep4;
+    int w_lep;
+    z_lep1=z_lep2=z_lep3=z_lep4=w_lep=-999;
+    chi1_sq=chi2_sq=0.0;
+    double Mz = 91.1876;
+    double Mw = 80.379;
+    double pair1massDiff, pair2massDiff;
+    pair1massDiff=pair2massDiff=0.0;
+    double compare1 = 15;
+    double compare2 = 15;
+
+    // std::cout <<  " lep_veto_idxs.size(): " << lep_veto_idxs.size() <<  std::endl;
+
+    // for (unsigned int i = 0; i < lep_veto_idxs.size(); i++)
+    // {
+    //     for (unsigned int j = 0; j < lep_veto_idxs.size(); j++)
+    //     {
+    //         if (i == j) //make sure not checking same lepton
+    //             continue;
+    //         if (wvz.lep_id()[lep_veto_idxs.at(i)]*wvz.lep_id()[lep_veto_idxs.at(j)] == -121 or wvz.lep_id()[lep_veto_idxs.at(i)]*wvz.lep_id()[lep_veto_idxs.at(j)] == -169) //check opposite sign pair
+    //             pair1massDiff = ((wvz.lep_p4()[lep_veto_idxs.at(i)] + wvz.lep_p4()[lep_veto_idxs.at(j)]).M() - Mz);
+    //     }
+    // }
+
+    for(unsigned int i=0; i<lep_veto_idxs.size(); i++)
+    {
+        for(unsigned int j=0; j<lep_veto_idxs.size(); j++)
+        {
+            if(i!=j)//make sure not checking same lepton
+            {
+                if(wvz.lep_id()[lep_veto_idxs.at(i)]*wvz.lep_id()[lep_veto_idxs.at(j)]==-121 or wvz.lep_id()[lep_veto_idxs.at(i)]*wvz.lep_id()[lep_veto_idxs.at(j)]==-169) //check opposite sign pair
+                {
+                    pair1massDiff = ((wvz.lep_p4()[lep_veto_idxs.at(i)]+wvz.lep_p4()[lep_veto_idxs.at(j)]).M() - Mz);
+                    for(unsigned int k=0; k<lep_veto_idxs.size(); k++)
+                    {
+                        for(unsigned int l=0; l<lep_veto_idxs.size(); l++)
+                        {
+                            if(j!=l and j!=k and i!=k and i!=l)//make sure not checking same lepton
+                            {
+                                if(wvz.lep_id()[lep_veto_idxs.at(k)]*wvz.lep_id()[lep_veto_idxs.at(l)]==-121 or wvz.lep_id()[lep_veto_idxs.at(k)]*wvz.lep_id()[lep_veto_idxs.at(l)]==-169) //check second opposite sign pair
+                                {
+                                    pair2massDiff = ((wvz.lep_p4()[lep_veto_idxs.at(k)]+wvz.lep_p4()[lep_veto_idxs.at(l)]).M() - Mz);
+                                    if(fabs(pair1massDiff) < compare1 and fabs(pair2massDiff) < compare2)
+                                    {
+                                        compare1 = fabs(pair1massDiff);
+                                        compare2 = fabs(pair2massDiff);
+                                        z_lep1=i;
+                                        z_lep2=j;
+                                        z_lep3=k;
+                                        z_lep4=l;
+
+                                        for(unsigned int m=0; m<lep_veto_idxs.size(); m++)
+                                        {
+                                            if(i!=m and j!=m and k!=m and l!=m)//make sure not checking same lepton
+                                            {
+                                                mT = sqrt(2*met_pt*wvz.lep_p4()[lep_veto_idxs.at(m)].pt()*(1.0 - cos(wvz.lep_p4()[lep_veto_idxs.at(m)].phi() - met_phi)));
+                                                w_lep=m;
+                                                //if(mT > 50.0) w_lep=m;
+                                                //if(fabs(mT-Mw)<=20) w_lep=m;
+                                            }//w-tag
+                                        }//m-loop
+                                    }//zz-tag
+                                }//second opposite sign pair
+                            }//lepton index check
+                        }//l-loop
+                    }//k-loop
+                }//first opposite sign pair
+            }//lepton index check
+        }//j-loop
+    }//i-loop
+
+    lep_5Lep_Z1_idx1 = z_lep1;
+    lep_5Lep_Z1_idx2 = z_lep2;
+    lep_5Lep_Z2_idx1 = z_lep3;
+    lep_5Lep_Z2_idx2 = z_lep4;
+    lep_5Lep_W_idx = w_lep;
+
+    return;
 }
 
 //______________________________________________________________________________________________
@@ -1948,6 +2043,21 @@ float Analysis::LeptonScaleFactorZZ4l()
     scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false);
     scalefactor *= IndividualLeptonScaleFactor(lep_Z2Cand_idx1, false);
     scalefactor *= IndividualLeptonScaleFactor(lep_Z2Cand_idx2, false);
+    return scalefactor;
+}
+
+//______________________________________________________________________________________________
+float Analysis::LeptonScaleFactor5Lep()
+{
+    if (wvz.isData())
+        return 1.;
+    // Based on lep_Veto indices
+    float scalefactor = 1;
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z1_idx1, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z1_idx2, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z2_idx1, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z2_idx2, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_W_idx, false);
     return scalefactor;
 }
 
@@ -2646,7 +2756,15 @@ bool Analysis::Is5LeptonEvent()
 {
     if (not (nVetoLeptons == 5)) return false;
     if (not (CutHLT())) return false;
-    if (lep_ZCand_idx1 < 0) return false;
+    if (lep_5Lep_Z1_idx1 < 0) return false;
+    if (lep_5Lep_Z1_idx2 < 0) return false;
+    if (lep_5Lep_Z2_idx1 < 0) return false;
+    if (lep_5Lep_Z2_idx2 < 0) return false;
+    if (lep_5Lep_W_idx < 0) return false;
+    if (not (wvz.lep_pt()[lep_5Lep_Z1_idx1] > 25)) return false;
+    if (not (wvz.lep_pt()[lep_5Lep_Z1_idx2] > 10)) return false;
+    if (not (wvz.lep_pt()[lep_5Lep_Z2_idx1] > 25)) return false;
+    if (not (wvz.lep_pt()[lep_5Lep_Z2_idx2] > 10)) return false;
     return true;
 }
 
@@ -2859,7 +2977,13 @@ bool Analysis::Is5thNominal()
     // else
     //     return passNominalLeptonID(idx_w_max_reliso) and wvz.lep_p4()[lep_WCand_idx1].pt() > 20.;
 
-    return passNominalLeptonID(lep_WCand_idx1) and passNominalLeptonID(lep_2ndZCand_idx2) and wvz.lep_p4()[lep_WCand_idx1].pt() > 20.;
+    // return passNominalLeptonID(lep_WCand_idx1) and passNominalLeptonID(lep_2ndZCand_idx2) and wvz.lep_p4()[lep_WCand_idx1].pt() > 20.;
+
+    if (abs(wvz.lep_id()[lep_5Lep_W_idx]) == 11)
+        return wvz.lep_relIso03EA()[lep_5Lep_W_idx] < 0.1;
+    else
+        return wvz.lep_relIso04DB()[lep_5Lep_W_idx] < 0.1;
+
     // if (lep_relIso03EA->at(lep_WCand_idx1) < 0.1)
     //     return true;
     // else
@@ -3062,13 +3186,13 @@ float Analysis::VarMTll(int idx1, int idx2, int var)
 
 
 //______________________________________________________________________________________________
-float Analysis::VarMT5th(int var)           { return VarMT(lep_WCand_idx1, var);                                   } 
-float Analysis::VarMTNom0(int var)          { return VarMT(lep_Nom_idx1, var);                                     } 
-float Analysis::VarMTNom1(int var)          { return VarMT(lep_Nom_idx2, var);                                     } 
-float Analysis::VarMTMax(int var)           { return std::max((double) VarMTNom0(var), (double) VarMTNom1(var));   } 
-float Analysis::VarMTMin(int var)           { return std::min((double) VarMTNom0(var), (double) VarMTNom1(var));   } 
-float Analysis::VarMTVetoButNotNom(int var) { return VarMT(lep_VetoButNotNom_idx, var);                            } 
-float Analysis::VarMTFakeable(int var)      { return VarMT(lep_Fakeable_idx, var);                                 } 
+float Analysis::VarMT5th(int var)           { return VarMT(lep_5Lep_W_idx, var);                                   }
+float Analysis::VarMTNom0(int var)          { return VarMT(lep_Nom_idx1, var);                                     }
+float Analysis::VarMTNom1(int var)          { return VarMT(lep_Nom_idx2, var);                                     }
+float Analysis::VarMTMax(int var)           { return std::max((double) VarMTNom0(var), (double) VarMTNom1(var));   }
+float Analysis::VarMTMin(int var)           { return std::min((double) VarMTNom0(var), (double) VarMTNom1(var));   }
+float Analysis::VarMTVetoButNotNom(int var) { return VarMT(lep_VetoButNotNom_idx, var);                            }
+float Analysis::VarMTFakeable(int var)      { return VarMT(lep_Fakeable_idx, var);                                 }
 
 //______________________________________________________________________________________________
 float Analysis::VarRelIso5th()
@@ -3330,7 +3454,7 @@ float Analysis::VarPtZeta(int var)
     metv3 = RooUtil::Calc::getLV(metv3_);
     lep1 = RooUtil::Calc::getLV(lep1_);
     lep2 = RooUtil::Calc::getLV(lep2_);
-    
+
     float lep1mag = sqrt(lep1.Px()*lep1.Px() + lep1.Py()*lep1.Py() + lep1.Pz()*lep1.Pz());
     float lep2mag = sqrt(lep2.Px()*lep2.Px() + lep2.Py()*lep2.Py() + lep2.Pz()*lep2.Pz());
 
@@ -3341,7 +3465,7 @@ float Analysis::VarPtZeta(int var)
     sum = sum_vis + metv3;
 
     return  (sum.Px()*zeta.Px() + sum.Py()*zeta.Py() + sum.Pz()*zeta.Pz()) / zetamag;
-    
+
 }
 
 //______________________________________________________________________________________________

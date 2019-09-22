@@ -168,6 +168,11 @@ public:
     int lep_DYX_DYCand_idx1;
     int lep_DYX_DYCand_idx2;
     int lep_Fakeable_MCmatched_idx;
+    int lep_5Lep_Z1_idx1;
+    int lep_5Lep_Z1_idx2;
+    int lep_5Lep_Z2_idx1;
+    int lep_5Lep_Z2_idx2;
+    int lep_5Lep_W_idx;
     LV dilepZCand;
     LV dilepNominal;
     TString output_tfile_name;
@@ -252,6 +257,7 @@ public:
     void select2ndZCandAndWCandLeptons();
     void selectVetoButNotNomLeptons();
     void selectFakeableLeptons();
+    void select5LepLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
     void correctMET();

@@ -790,6 +790,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         select2ndZCandLeptons();
         select2ndZCandAndWCandLeptons();
         selectFakeableLeptons();
+        select5LepLeptons();
         /* probably not necessary anymore */ sortLeptonIndex();
         selectFakeStudyLeptons();
         correctMET();
@@ -1352,6 +1353,16 @@ void Analysis::selectFakeableLeptons()
 
     return;
 
+}
+
+//______________________________________________________________________________________________
+void Analysis::select5LepLeptons()
+{
+    lep_5Lep_Z1_idx1 = -999;
+    lep_5Lep_Z1_idx2 = -999;
+    lep_5Lep_Z2_idx1 = -999;
+    lep_5Lep_Z2_idx2 = -999;
+    lep_5Lep_W_idx = -999;
 }
 
 //______________________________________________________________________________________________

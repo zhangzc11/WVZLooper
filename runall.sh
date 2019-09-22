@@ -65,7 +65,7 @@ if [ -z ${NTUPLEVERSION}  ]; then usage; fi
 if [ -z ${FORCELOOPER}  ]; then FORCELOOPER=false; fi
 if [ -z ${FORCEHADDER}  ]; then FORCEHADDER=false; fi
 if [ -z ${DIRNAME}  ]; then DIRNAME="yield"; fi
-if [ -z ${PATTERN}  ]; then PATTERN="ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZ__Yield,ChannelBTagEMu__Yield"; fi
+if [ -z ${PATTERN}  ]; then PATTERN="ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZ__Yield,ChannelBTagEMu__Yield,FiveLeptonsMT5th__Yield"; fi
 if [ -z "${NBINS}" ]; then NBINS=""; fi
 if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 if [ -z ${YAXISLOG}  ]; then YAXISLOG=""; fi
@@ -176,6 +176,7 @@ if [ -n ${DIRNAME} ] && [ -n ${PATTERN} ]; then
     fi
 
     # Plotting the output histograms of all year
+    echo python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
     python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
 
 fi

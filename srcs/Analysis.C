@@ -172,9 +172,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
         // Common five lepton selections
         cutflow.getCut("Weight");
-        cutflow.addCutToLastActiveCut("FiveLeptons"             , [&](){ return this->Is5LeptonEvent();          } , [&](){ return this->LeptonScaleFactor5Lep(); } );
+        cutflow.addCutToLastActiveCut("FiveLeptons"             , [&](){ return this->Is5LeptonEvent();          } , [&](){ return this->LeptonScaleFactor(); } );
         cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th"    , [&](){ return this->Is5thNominal();            } , UNITY );
-        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th"        , [&](){ return this->VarMT5th() > 50.;          } , UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsMT5th"        , [&](){ return this->CutHighMT();               } , UNITY );
 
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("ARFindZCandLeptons"            , [&](){ return this->FindZCandLeptons();        } , UNITY );
@@ -2024,12 +2024,19 @@ float Analysis::LeptonScaleFactor(int vare, int varm)
     if (wvz.isData())
         return 1.;
     // Based on lep_Veto indices
-    float scalefactor = 1;
-    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx1, false, vare, varm);
-    scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false, vare, varm);
-    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx1, true, vare, varm);
-    scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx2, true, vare, varm);
-    return scalefactor;
+    if (nVetoLeptons == 4)
+    {
+        float scalefactor = 1;
+        scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx1, false, vare, varm);
+        scalefactor *= IndividualLeptonScaleFactor(lep_ZCand_idx2, false, vare, varm);
+        scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx1, true, vare, varm);
+        scalefactor *= IndividualLeptonScaleFactor(lep_Nom_idx2, true, vare, varm);
+        return scalefactor;
+    }
+    else if (nVetoLeptons == 5)
+    {
+        return LeptonScaleFactor5Lep(vare, varm);
+    }
 }
 
 //______________________________________________________________________________________________
@@ -2047,17 +2054,17 @@ float Analysis::LeptonScaleFactorZZ4l()
 }
 
 //______________________________________________________________________________________________
-float Analysis::LeptonScaleFactor5Lep()
+float Analysis::LeptonScaleFactor5Lep(int vare, int varm)
 {
     if (wvz.isData())
         return 1.;
     // Based on lep_Veto indices
     float scalefactor = 1;
-    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z1_idx1, false);
-    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z1_idx2, false);
-    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z2_idx1, false);
-    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z2_idx2, false);
-    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_W_idx, false);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z1_idx1, false, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z1_idx2, false, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z2_idx1, false, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_Z2_idx2, false, vare, varm);
+    scalefactor *= IndividualLeptonScaleFactor(lep_5Lep_W_idx, false, vare, varm);
     return scalefactor;
 }
 
@@ -2544,9 +2551,17 @@ bool Analysis::CutLowPtZeta(int var)
 //______________________________________________________________________________________________
 bool Analysis::CutHighMT(int var)
 {
-    if (not (VarMTNom0(var) > 40.)) return false;
-    if (not (VarMTNom1(var) > 20.)) return false;
-    return true;
+    if (nVetoLeptons == 4)
+    {
+        if (not (VarMTNom0(var) > 40.)) return false;
+        if (not (VarMTNom1(var) > 20.)) return false;
+        return true;
+    }
+    else if (nVetoLeptons == 5)
+    {
+        if (not (VarMT5th(var) > 50.)) return false;
+        return true;
+    }
 }
 
 //______________________________________________________________________________________________

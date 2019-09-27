@@ -9,6 +9,7 @@
 #include "xgboost/wwz_vs_ttz_nbAll.h"
 #include "xgboost/wwz_vs_zz_emuHighTTZBDT.h"
 #include "xgboost/wwz_vs_zz_OffZHighTTZBDT.h"
+#include "xgboost/wwz_vs_ttz_nbAll_nob.h"
 //#include "xgboost/wwz_vs_zz_OffZHighMETHighTTZBDT.h"
 
 //#include "xgboost/wwz_vs_zz_emuHighTTZBDT_full.h"
@@ -106,7 +107,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("FindZCandLeptons");
         cutflow.addCutToLastActiveCut("Cut4LepHighBDTZZEMu"      , [&](){ return this->VarXGBBDT(1) > 0.9333;      } , UNITY );
         cutflow.addCutToLastActiveCut("ChannelEMuNobVetoHighBDTZZ"      , [&](){ return this->IsChannelEMu();            } , UNITY );
+        cutflow.addCutToLastActiveCut("ChannelEMuNbVetoHighBDTZZ"      , [&](){ return this->Cut4LepBVeto();            } , [&](){ return this->BTagSF();            } );
 
+        cutflow.getCut("ChannelEMu");
+        cutflow.addCutToLastActiveCut("ChannelEMuCutTTZBDT"      , [&](){ return this->VarXGBBDT(3) > 0.680;      } , UNITY );
         // OnZ channel
         cutflow.getCut("Cut4LepBVeto");
         cutflow.addCutToLastActiveCut("ChannelOnZ"              , [&](){ return this->IsChannelOnZ();            } , UNITY );
@@ -128,6 +132,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.getCut("ChannelOffZ");
         cutflow.addCutToLastActiveCut("ChannelOffZLowMT"        , [&](){ return not this->CutHighMT();           } , UNITY );
 
+        cutflow.getCut("ChannelOffZ");
+        cutflow.addCutToLastActiveCut("ChannelOffZCutTTZBDT"      , [&](){ return this->VarXGBBDT(3) > 0.850;      } , UNITY );
+        cutflow.addCutToLastActiveCut("ChannelOffZHighMETCutTTZBDT"      , [&](){ return this->CutHighMET();              } , UNITY );
         // OffZ channel - replace nb veto by BDT veto
         cutflow.getCut("FindZCandLeptons");
         cutflow.addCutToLastActiveCut("Cut4LepBDTBVetoOffZ"       , [&](){ return this->VarXGBBDT(0) > 0.987;    } , UNITY );
@@ -137,6 +144,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addCutToLastActiveCut("Cut4LepHighBDTZZOffZ"      , [&](){ return this->VarXGBBDT(2) > 0.9333;      } , UNITY );
         cutflow.addCutToLastActiveCut("ChannelOffZNobVetoHighBDTZZ"      , [&](){ return this->IsChannelOffZ();            } , UNITY );
         cutflow.addCutToLastActiveCut("ChannelOffZHighMETNobVetoHighBDTZZ"      , [&](){ return this->CutHighMET();            } , UNITY );
+        cutflow.getCut("ChannelOffZNobVetoHighBDTZZ");
+        cutflow.addCutToLastActiveCut("ChannelOffZNbVetoHighBDTZZ"      , [&](){ return this->Cut4LepBVeto();            } , [&](){ return this->BTagSF();            } );
+        cutflow.addCutToLastActiveCut("ChannelOffZHighMETNbVetoHighBDTZZ"      , [&](){ return this->CutHighMET();            } , UNITY );
 
 
         // OffZ Low/High Mll
@@ -433,9 +443,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.add2DHistogram("pt_zeta_vis", 50 , -200, 550 , "pt_zeta_sum", 50, -200, 550, [&](){ return this->VarPtZetaVis(); }, [&](){ return this->VarPtZeta(); });
 
         histograms.addHistogram("disc_ttz_nbAll"        , 180 , 0       , 1      , [&](){ return this->VarXGBBDT(0); });
-        histograms.addHistogram("disc_ttz_nbAll_nbAll"        , 180 , 0       , 1      , [&](){ return this->VarXGBBDT(3); });
         histograms.addHistogram("disc_zz_emuHighTTZBDT" , 180 , 0       , 1      , [&](){ return this->VarXGBBDT(1); });
         histograms.addHistogram("disc_zz_OffZHighTTZBDT", 180 , 0       , 1      , [&](){ return this->VarXGBBDT(2); });
+        histograms.addHistogram("disc_ttz_nbAll_nob"        , 180 , 0       , 1      , [&](){ return this->VarXGBBDT(3); });
         //histograms.addHistogram("disc_zz_OffZHighMETHighTTZBDT", 180 , 0       , 1      , [&](){ return this->VarXGBBDT(3); });
         //histograms.addHistogram("disc_zz_emuHighTTZBDT_full" , 180 , 0       , 1      , [&](){ return this->VarXGBBDT(3); });
         //histograms.addHistogram("disc_zz_OffZHighTTZBDT_full", 180 , 0       , 1      , [&](){ return this->VarXGBBDT(4); });
@@ -791,10 +801,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         if (not doSyst)
         {
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMu");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuCutTTZBDT");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOnZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOnZBDT");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOnZBDTHighMET");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZ");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMET");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETCutTTZBDT");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZCutTTZBDT");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelHZZ4l");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagEMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBDTBTagEMu");
@@ -809,7 +823,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZBDTBVeto");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETBDTBVeto");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuNobVetoHighBDTZZ");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelEMuNbVetoHighBDTZZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETNobVetoHighBDTZZ");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZNbVetoHighBDTZZ");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelOffZHighMETNbVetoHighBDTZZ");
         }
         else
         {
@@ -913,8 +930,9 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             //if (cutflow.getCut("ChannelEMuBDTBVeto").pass)
             //if (cutflow.getCut("ChannelOffZBDTBVeto").pass)
             //if (cutflow.getCut("ChannelOffZHighMETBDTBVeto").pass)
-            if (cutflow.getCut("ChannelEMuNobVetoHighBDTZZ").pass)
+            //if (cutflow.getCut("ChannelEMuNobVetoHighBDTZZ").pass)
             //if (cutflow.getCut("ChannelOffZHighMETNobVetoHighBDTZZ").pass)
+            if (cutflow.getCut("Cut4LepBVeto").pass)
             {
                 if (doSkim)
                     fillSkimTree();
@@ -994,6 +1012,11 @@ void Analysis::createNewBranches()
     tx->createBranch<float>("Pt4l");
     tx->createBranch<float>("met_pt_corr");
     tx->createBranch<float>("disc_ttz_nbAll");
+    tx->createBranch<float>("disc_ttz_nbAll_nob");
+    tx->createBranch<float>("disc_zz_emuHighTTZBDT");
+    tx->createBranch<float>("disc_zz_OffZHighTTZBDT");
+    tx->createBranch<int>("isChannelEMu");
+    tx->createBranch<int>("isChannelOffZ");
     
 }
 
@@ -1062,6 +1085,11 @@ void Analysis::fillSkimTree()
     tx->setBranch<float>("Pt4l", (wvz.lep_p4().at(lep1_idx) + wvz.lep_p4().at(lep2_idx) + wvz.lep_p4().at(lep3_idx) + wvz.lep_p4().at(lep4_idx)).Pt());
     tx->setBranch<float>("met_pt_corr", this->VarMET());
     tx->setBranch<float>("disc_ttz_nbAll", this->VarXGBBDT(0));
+    tx->setBranch<float>("disc_ttz_nbAll_nob", this->VarXGBBDT(3));
+    tx->setBranch<float>("disc_zz_emuHighTTZBDT", this->VarXGBBDT(1));
+    tx->setBranch<float>("disc_zz_OffZHighTTZBDT", this->VarXGBBDT(2));
+    tx->setBranch<int>("isChannelEMu", this->IsChannelEMu());
+    tx->setBranch<int>("isChannelOffZ", this->IsChannelOffZ());
 
     looper->fillSkim();
 }
@@ -3424,6 +3452,7 @@ float Analysis::VarXGBBDT(int idx, int var)
     std::vector<float> test_sample_ttz_nbAll{evt_nb,evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet1BtagScore,evt_jet2BtagScore,evt_jet3BtagScore,evt_jet4BtagScore,evt_MllN,evt_ZPt,evt_M4l,evt_Pt4l};
     std::vector<float> test_sample_zz_emuHighTTZBDT{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_M4l,evt_Pt4l};
     std::vector<float> test_sample_zz_OffZHighTTZBDT{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_M4l,evt_Pt4l};
+    std::vector<float> test_sample_ttz_nbAll_nob{evt_minDRJetToLep3,evt_minDRJetToLep4,evt_jet1Pt,evt_jet2Pt,evt_jet3Pt,evt_jet4Pt,evt_MllN,evt_ZPt,evt_M4l,evt_Pt4l};
     //std::vector<float> test_sample_zz_OffZHighMETHighTTZBDT{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_M4l,evt_Pt4l};
 
     //std::vector<float> test_sample_zz_emuHighTTZBDT_full{evt_met_pt,evt_lep3Pt,evt_lep4Pt,evt_ZPt,evt_lep3dZ,evt_lep4dZ,evt_lep3MT,evt_lep4MT,evt_lep34MT,evt_phi0,evt_theta0,evt_phi,evt_theta1,evt_theta2,evt_MllN,evt_pt_zeta,evt_pt_zeta_vis,evt_M4l,evt_Pt4l};
@@ -3440,6 +3469,7 @@ float Analysis::VarXGBBDT(int idx, int var)
     if(idx == 0) return wwz_vs_ttz_nbAll(test_sample_ttz_nbAll, true)[0];
     if(idx == 1) return wwz_vs_zz_emuHighTTZBDT(test_sample_zz_emuHighTTZBDT, true)[0];
     if(idx == 2) return wwz_vs_zz_OffZHighTTZBDT(test_sample_zz_OffZHighTTZBDT, true)[0];
+    if(idx == 3) return wwz_vs_ttz_nbAll_nob(test_sample_ttz_nbAll_nob, true)[0];
     //if(idx == 3) return wwz_vs_zz_OffZHighMETHighTTZBDT(test_sample_zz_OffZHighMETHighTTZBDT, true)[0];
 
     //if(idx == 3) return wwz_vs_zz_emuHighTTZBDT_full(test_sample_zz_emuHighTTZBDT_full, true)[0];

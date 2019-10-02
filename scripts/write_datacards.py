@@ -96,6 +96,8 @@ def write_datacards(ntuple_version, tag):
     for proc, fname in zip(procs, fnames):
         tfiles[proc] = r.TFile(fname)
 
+    r.gROOT.cd()
+
     ###########################
     # OnZ Control region yields
     ###########################

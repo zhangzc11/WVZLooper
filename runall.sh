@@ -183,10 +183,12 @@ fi
 
 if [[ ${PATTERN} == *"ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZ__Yield,ChannelBTagEMu__Yield"* ]] && [[ ${NTUPLETYPE} == *"WVZ"* ]]; then
 
-    # pretty_print each year
-    sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
-    sh ./scripts/yield_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
-    sh ./scripts/yield_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+    if ${RUNALLYEAR}; then
+        # pretty_print each year
+        sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
+        sh ./scripts/yield_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
+        sh ./scripts/yield_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+    fi
 
     # Printing in to text format for easy keynote export
     sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"

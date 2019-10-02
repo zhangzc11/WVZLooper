@@ -41,13 +41,16 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
     else
         echo "hadd -f wz.root ${PREFIX}wz_3lv_amcatnlo_1_results.root" >> .hadd.cmds.txt
     fi
-    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]]; then
+    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]] || [[ $1 == *"WVZMVA2017_v0.1.15"* ]] || [[ $1 == *"WVZMVA2018_v0.1.15"* ]]; then
         echo "hadd -f sig.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
     else
         echo "hadd -f sig.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
     fi
+    # if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]] || [[ $1 == *"WVZMVA2017_v0.1.15"* ]] || [[ $1 == *"WVZMVA2018_v0.1.15"* ]]; then
     if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]]; then
        echo "hadd -f wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
+    elif [[ $1 == *"WVZMVA2017_v0.1.15"* ]] || [[ $1 == *"WVZMVA2018_v0.1.15"* ]]; then
+       echo "hadd -f wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}zh_ww_4l_powheg_1_results.root ${PREFIX}ggzh_ww_4l_powheg_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
     else
        echo "hadd -f wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}zh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
     fi
@@ -58,7 +61,7 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
     echo "hadd -f wh_www.root ${PREFIX}wh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f wh_wzz.root ${PREFIX}wh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f zh_zzz.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
-    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]]; then
+    if [[ $1 == *"WVZ2017_v0.1.12."* ]] || [[ $1 == *"WVZ2018_v0.1.12."* ]] || [[ $1 == *"WVZMVA2017_v0.1.15"* ]] || [[ $1 == *"WVZMVA2018_v0.1.15"* ]]; then
        echo "hadd -f nonh_wwz.root ${PREFIX}wwz_amcatnlo_1_results.root ${PREFIX}wwz_4l2v_amcatnlo_1_results.root" >> .hadd.cmds.txt
     else
        echo "hadd -f nonh_wwz.root ${PREFIX}wwz_amcatnlo_1_results.root" >> .hadd.cmds.txt

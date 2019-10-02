@@ -133,6 +133,8 @@ public:
     bool doFakeEst;
     bool doSyst;
     bool doSkim;
+    bool useMVAID;
+    bool doNotApplyMETSmear;
     std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
     std::vector<int> lep_tight_idxs;

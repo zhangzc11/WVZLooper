@@ -175,6 +175,14 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         cutflow.addCutToLastActiveCut("FiveLeptons"             , [&](){ return this->Is5LeptonEvent();          } , [&](){ return this->LeptonScaleFactor(); } );
         cutflow.addCutToLastActiveCut("FiveLeptonsRelIso5th"    , [&](){ return this->Is5thNominal();            } , UNITY );
         cutflow.addCutToLastActiveCut("FiveLeptonsMT5th"        , [&](){ return this->CutHighMT();               } , UNITY );
+        cutflow.getCut("FiveLeptons");
+        cutflow.addCutToLastActiveCut("FiveLeptonsEl"           , [&](){ return abs(wvz.lep_id()[lep_5Lep_W_idx]) == 11;} , UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsElRelIso5th"  , [&](){ return wvz.lep_isCutBasedIsoMediumPOG()[lep_5Lep_W_idx]; } , UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsElMT5th"      , [&](){ return this->CutHighMT();               } , UNITY );
+        cutflow.getCut("FiveLeptons");
+        cutflow.addCutToLastActiveCut("FiveLeptonsMu"           , [&](){ return abs(wvz.lep_id()[lep_5Lep_W_idx]) == 13;} , UNITY );
+        cutflow.addCutToLastActiveCut("FiveLeptonsMuRelIso5th"  , [&](){ return this->Is5thNominal();            } , UNITY );
+        // cutflow.addCutToLastActiveCut("FiveLeptonsMuMT5th"      , [&](){ return this->Is5thNominal();            } , UNITY );
 
         cutflow.getCut("Weight");
         cutflow.addCutToLastActiveCut("ARFindZCandLeptons"            , [&](){ return this->FindZCandLeptons();        } , UNITY );
@@ -295,8 +303,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         // histograms.addHistogram("VarBinMET"      , {0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100., 200., 500.}    , [&](){ return this->VarMET(); });
         // histograms.addHistogram("VarBinMETCoarse", {0., 100., 500.}    , [&](){ return this->VarMET(); });
         // histograms.addHistogram("Mll2ndZ"        , 180 , 0       , 300    , [&](){ return this->VarMll2ndZ(); });
-        // histograms.addHistogram("MT5th"          , 180 , 0       , 300    , [&](){ return this->VarMT5th(); });
-        // histograms.addHistogram("RelIso5th"      , 180 , 0       , 0.4    , [&](){ return this->VarRelIso5th(); });
+        histograms.addHistogram("ID5thraw"       , 180 , -15     , 15     , [&](){ return wvz.lep_id()[lep_5Lep_W_idx]; });
+        histograms.addHistogram("ID5th"          , 2   , 0       , 2      , [&](){ return abs(wvz.lep_id()[lep_5Lep_W_idx]) == 11 ? 0 : 1; });
+        histograms.addHistogram("IsoMed5th"      , 2   , 0       , 2      , [&](){ return wvz.lep_isCutBasedIsoMediumPOG()[lep_5Lep_W_idx]; });
+        histograms.addHistogram("IsoTight5th"    , 2   , 0       , 2      , [&](){ return wvz.lep_isCutBasedIsoTightPOG()[lep_5Lep_W_idx]; });
+        histograms.addHistogram("MT5th"          , 180 , 0       , 300    , [&](){ return this->VarMT5th(); });
+        histograms.addHistogram("RelIso5th"      , 180 , 0       , 0.4    , [&](){ return this->VarRelIso5th(); });
         // histograms.addHistogram("Pt5th"          , 180 , 0       , 200    , [&](){ return this->VarPt5th(); });
         histograms.addHistogram("Njet"           , 6   , 0       , 6      , [&](){ return this->VarNjet(); });
         histograms.addHistogram("Mjj"            , 180 , 0       , 300    , [&](){ return this->VarMjj(); });
@@ -321,6 +333,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         histograms.addHistogram("lepZPt1"        , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_ZCand_idx2); });
         histograms.addHistogram("lepNPt0"        , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Nom_idx1); });
         histograms.addHistogram("lepNPt1"        , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Nom_idx2); });
+        histograms.addHistogram("lepZIsoLep0"    , 180 , 0       , 0.4    , [&](){ return lep_ZCand_idx2 > 0 ? (wvz.lep_relIso03EAwLep().at(lep_ZCand_idx1)) : 999; });
+        histograms.addHistogram("lepZIsoLep1"    , 180 , 0       , 0.4    , [&](){ return lep_ZCand_idx2 > 0 ? (wvz.lep_relIso03EAwLep().at(lep_ZCand_idx2)) : 999; });
+        histograms.addHistogram("lepZIsoLepMax"  , 180 , 0       , 0.4    , [&](){ return lep_ZCand_idx2 > 0 ? std::max(wvz.lep_relIso03EAwLep().at(lep_ZCand_idx1), wvz.lep_relIso03EAwLep().at(lep_ZCand_idx2)) : 999; });
+        histograms.addHistogram("lepNIsoLep0"    , 180 , 0       , 0.4    , [&](){ return lep_Nom_idx2 > 0 ? (wvz.lep_relIso03EAwLep().at(lep_Nom_idx1)) : 999; });
+        histograms.addHistogram("lepNIsoLep1"    , 180 , 0       , 0.4    , [&](){ return lep_Nom_idx2 > 0 ? (wvz.lep_relIso03EAwLep().at(lep_Nom_idx2)) : 999; });
+        histograms.addHistogram("lepNIsoEl"      , 180 , 0       , 0.4    , [&](){ return lep_Nom_idx2 > 0 ? (abs(wvz.lep_id().at(lep_Nom_idx1)) == 11 ? wvz.lep_relIso03EAwLep().at(lep_Nom_idx1) : wvz.lep_relIso03EAwLep().at(lep_Nom_idx2)) : 999; });
         histograms.addHistogram("lepZ2Pt0"       , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Z2Cand_idx1); });
         histograms.addHistogram("lepZ2Pt1"       , 180 , 0       , 200    , [&](){ return this->VarLepPt(lep_Z2Cand_idx2); });
         histograms.addHistogram("lepZEta0"       , 180 , -5      , 5      , [&](){ return lep_ZCand_idx1 >= 0 ? wvz.lep_eta()[lep_ZCand_idx1] : -999; });
@@ -682,6 +700,19 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
     }
 
+    histograms_Z_peak.addHistogram("MllZCandZoom" , 180 , 60 , 120 , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
+    histograms_Z_peak.addHistogram("MllNomZoom"   , 180 , 60 , 120 , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
+    histograms_Z_peak.addHistogram("MllZCand" , 180 , 0 , 200 , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
+    histograms_Z_peak.addHistogram("MllNom"   , 180 , 0 , 200 , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
+    histograms_Z_peak.addHistogram("lepZPt0"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_ZCand_idx1); });
+    histograms_Z_peak.addHistogram("lepZPt1"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_ZCand_idx2); });
+    histograms_Z_peak.addHistogram("lepNPt0"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Nom_idx1); });
+    histograms_Z_peak.addHistogram("lepNPt1"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Nom_idx2); });
+    histograms_Z_peak.addHistogram("lepVPt0"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx1); });
+    histograms_Z_peak.addHistogram("lepVPt1"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx2); });
+    histograms_Z_peak.addHistogram("lepVPt2"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx3); });
+    histograms_Z_peak.addHistogram("lepVPt3"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx4); });
+
     //==========================
     //
     // Book Analysis to perform
@@ -703,10 +734,11 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagEMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagOnZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelBTagOffZ");
-            cutflow.bookHistogramsForCutAndBelow(histograms, "FiveLeptonsRelIso5th");
+            cutflow.bookHistogramsForCutAndBelow(histograms, "FiveLeptons");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAREMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAROffZ");
             cutflow.bookHistogramsForCutAndBelow(histograms, "CutHLTZZ4l");
+            cutflow.bookHistogramsForCut(histograms_Z_peak, "Cut4LepLeptonPt");
         }
         else
         {
@@ -726,18 +758,6 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagOffZ");
             cutflow.bookHistogramsForCut(histograms, "ChannelBTagOffZHighMET");
             cutflow.bookHistogramsForCut(histograms, "FiveLeptonsMT5th");
-            histograms_Z_peak.addHistogram("MllZCandZoom" , 180 , 60 , 120 , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
-            histograms_Z_peak.addHistogram("MllNomZoom"   , 180 , 60 , 120 , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
-            histograms_Z_peak.addHistogram("MllZCand" , 180 , 0 , 200 , [&](){ return this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2); });
-            histograms_Z_peak.addHistogram("MllNom"   , 180 , 0 , 200 , [&](){ return this->VarMll(lep_Nom_idx1, lep_Nom_idx2); });
-            histograms_Z_peak.addHistogram("lepZPt0"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_ZCand_idx1); });
-            histograms_Z_peak.addHistogram("lepZPt1"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_ZCand_idx2); });
-            histograms_Z_peak.addHistogram("lepNPt0"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Nom_idx1); });
-            histograms_Z_peak.addHistogram("lepNPt1"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Nom_idx2); });
-            histograms_Z_peak.addHistogram("lepVPt0"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx1); });
-            histograms_Z_peak.addHistogram("lepVPt1"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx2); });
-            histograms_Z_peak.addHistogram("lepVPt2"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx3); });
-            histograms_Z_peak.addHistogram("lepVPt3"  , 180 , 0 , 200 , [&](){ return this->VarLepPt(lep_Veto_idx4); });
             cutflow.bookHistogramsForCut(histograms_Z_peak, "Cut4LepLeptonPt");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAREMu");
             cutflow.bookHistogramsForCutAndBelow(histograms, "ChannelAROffZ");
@@ -774,6 +794,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         // If new file in chain set some things may need to be set
         if (looper->isNewFileInChain())
         {
+            useMVAID = looper->getCurrentFileName().Contains("WVZMVA") and looper->getCurrentFileName().Contains("v0.1.15");
+            doNotApplyMETSmear = looper->getCurrentFileName().Contains("WVZMVA") and looper->getCurrentFileName().Contains("v0.1.15");
             theoryweight.setFile(looper->getCurrentFileName());
             if (ntupleVersion.Contains("WVZ") and doSkim)
             {
@@ -798,7 +820,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
         select5LepLeptons();
         /* probably not necessary anymore */ sortLeptonIndex();
         selectFakeStudyLeptons();
-        correctMET();
+        if (not doNotApplyMETSmear) correctMET();
         cutflow.fill();
 
         if (ntupleVersion.Contains("WVZ"))
@@ -1668,37 +1690,46 @@ bool Analysis::passVetoLeptonID(int idx)
 bool Analysis::passVetoElectronID(int idx)
 {
 
-    // // HEM Veto
-    // if (
-    //         (wvz.isData() and wvz.run() >= 319077)
-    //      // or ((not wvz.isData()) and ((wvz.evt() % 1961) < 1286))
-    //    )
-    // {
-    //     if (    wvz.lep_p4().at(idx).eta() > -4.7
-    //         and wvz.lep_p4().at(idx).eta() < -1.4
-    //         and wvz.lep_p4().at(idx).phi() > -1.6
-    //         and wvz.lep_p4().at(idx).phi() < -0.8) return false;
-    // }
+    if (useMVAID)
+    {
+        if (not (wvz.lep_isVVVVeto()[idx])) return false;
+        return true;
+    }
+    else
+    {
 
-    if (!( wvz.lep_p4().at(idx).pt() > 10.           )) return false;
-    if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.5    )) return false;
-    if (!( wvz.lep_isCutBasedIsoVetoPOG().at(idx)    )) return false;
-    // following is already applied in the baby making stage
-    // if (fabs(wvz.els_etaSC().at(idx)) <= 1.479)
-    // {
-    //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.1      )) return false;
-    //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.05    )) return false;
-    // }
-    // else
-    // {
-    //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.2      )) return false;
-    //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.1     )) return false;
-    // }
+        // // HEM Veto
+        // if (
+        //         (wvz.isData() and wvz.run() >= 319077)
+        //      // or ((not wvz.isData()) and ((wvz.evt() % 1961) < 1286))
+        //    )
+        // {
+        //     if (    wvz.lep_p4().at(idx).eta() > -4.7
+        //         and wvz.lep_p4().at(idx).eta() < -1.4
+        //         and wvz.lep_p4().at(idx).phi() > -1.6
+        //         and wvz.lep_p4().at(idx).phi() < -0.8) return false;
+        // }
 
-    // One addition on top of veto ID
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        if (!( wvz.lep_p4().at(idx).pt() > 10.           )) return false;
+        if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.5    )) return false;
+        if (!( wvz.lep_isCutBasedIsoVetoPOG().at(idx)    )) return false;
+        // following is already applied in the baby making stage
+        // if (fabs(wvz.els_etaSC().at(idx)) <= 1.479)
+        // {
+        //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.1      )) return false;
+        //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.05    )) return false;
+        // }
+        // else
+        // {
+        //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.2      )) return false;
+        //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.1     )) return false;
+        // }
 
-    return true;
+        // One addition on top of veto ID
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+
+        return true;
+    }
 
 }
 
@@ -1706,28 +1737,37 @@ bool Analysis::passVetoElectronID(int idx)
 bool Analysis::passVetoMuonID(int idx)
 {
 
-    if (!( wvz.lep_p4().at(idx).pt() > 10.        )) return false;
-    if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.4 )) return false;
-    if (!( wvz.lep_relIso04DB().at(idx) < 0.25    )) return false;
-    // following is already applied in the baby making stage
-    // if (fabs(cms3.mus_p4().at(idx).eta()) <= 1.479)
-    // {
-    //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.1       )) return false;
-    //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.05     )) return false;
-    // }
-    // else
-    // {
-    //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.2       )) return false;
-    //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.1      )) return false;
-    // }
+    if (useMVAID)
+    {
+        if (not (wvz.lep_isVVVVeto()[idx])) return false;
+        return true;
+    }
+    else
+    {
 
-    // Try Medium POG ID
-    if (not (wvz.lep_isMediumPOG().at(idx))) return false;
+        if (!( wvz.lep_p4().at(idx).pt() > 10.        )) return false;
+        if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.4 )) return false;
+        if (!( wvz.lep_relIso04DB().at(idx) < 0.25    )) return false;
+        // following is already applied in the baby making stage
+        // if (fabs(cms3.mus_p4().at(idx).eta()) <= 1.479)
+        // {
+        //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.1       )) return false;
+        //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.05     )) return false;
+        // }
+        // else
+        // {
+        //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.2       )) return false;
+        //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.1      )) return false;
+        // }
 
-    // One addition on top of veto ID
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        // Try Medium POG ID
+        if (not (wvz.lep_isMediumPOG().at(idx))) return false;
 
-    return true;
+        // One addition on top of veto ID
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+
+        return true;
+    }
 }
 
 //______________________________________________________________________________________________
@@ -1743,59 +1783,91 @@ bool Analysis::passZCandLeptonID(int idx)
 bool Analysis::passZCandElectronID(int idx)
 {
 
-    // Must pass Veto ID
-    if (not (passVetoElectronID(idx))) return false;
+    if (useMVAID)
+    {
+        if (not (passVetoElectronID(idx))) return false;
+        // if (not (wvz.lep_isMVAwp90IsoPOG()[idx])) return false;
+        // if (not (wvz.lep_isMVAwpLooseIsoPOG()[idx])) return false;
+        if (not (wvz.lep_isMVAwpLooseNoIsoPOG()[idx])) return false;
+        // if (fabs(wvz.lep_etaSC().at(idx)) <= 1.479)
+        // {
+        //     if (not (wvz.lep_relIso03EAwLep().at(idx) < 0.25)) return false;
+        // }
+        // else
+        // {
+        //     if (not (wvz.lep_relIso03EAwLep().at(idx) < 0.3)) return false;
+        // }
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        return true;
+    }
+    else
+    {
 
-    if (!( wvz.lep_p4().at(idx).pt() > 10.           )) return false;
-    if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.5    )) return false;
-    if (!( wvz.lep_isCutBasedIsoVetoPOG().at(idx)    )) return false;
-    // following is already applied in the baby making stage
-    // if (fabs(wvz.els_etaSC().at(idx)) <= 1.479)
-    // {
-    //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.1      )) return false;
-    //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.05    )) return false;
-    // }
-    // else
-    // {
-    //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.2      )) return false;
-    //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.1     )) return false;
-    // }
+        // Must pass Veto ID
+        if (not (passVetoElectronID(idx))) return false;
 
-    // One addition on top of veto ID
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        if (!( wvz.lep_p4().at(idx).pt() > 10.           )) return false;
+        if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.5    )) return false;
+        if (!( wvz.lep_isCutBasedIsoVetoPOG().at(idx)    )) return false;
+        // following is already applied in the baby making stage
+        // if (fabs(wvz.els_etaSC().at(idx)) <= 1.479)
+        // {
+        //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.1      )) return false;
+        //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.05    )) return false;
+        // }
+        // else
+        // {
+        //     if (!( fabs(wvz.lep_dz().at(idx)) < 0.2      )) return false;
+        //     if (!( fabs(wvz.lep_dxy().at(idx)) < 0.1     )) return false;
+        // }
 
-    return true;
+        // One addition on top of veto ID
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+
+        return true;
+    }
 
 }
 
 //______________________________________________________________________________________________
 bool Analysis::passZCandMuonID(int idx)
 {
-    // Must pass ZCand ID
-    if (not (passVetoMuonID(idx))) return false;
+    if (useMVAID)
+    {
+        if (not (passVetoMuonID(idx))) return false;
+        if (not (wvz.lep_isMediumPOG().at(idx))) return false;
+        if (not ( wvz.lep_relIso04DB().at(idx) < 0.25 )) return false;
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        return true;
+    }
+    else
+    {
+        // Must pass ZCand ID
+        if (not (passVetoMuonID(idx))) return false;
 
-    if (!( wvz.lep_p4().at(idx).pt() > 10.        )) return false;
-    if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.4 )) return false;
-    if (!( wvz.lep_relIso04DB().at(idx) < 0.25    )) return false;
-    // following is already applied in the baby making stage
-    // if (fabs(cms3.mus_p4().at(idx).eta()) <= 1.479)
-    // {
-    //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.1       )) return false;
-    //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.05     )) return false;
-    // }
-    // else
-    // {
-    //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.2       )) return false;
-    //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.1      )) return false;
-    // }
+        if (!( wvz.lep_p4().at(idx).pt() > 10.        )) return false;
+        if (!( fabs(wvz.lep_p4().at(idx).eta()) < 2.4 )) return false;
+        if (!( wvz.lep_relIso04DB().at(idx) < 0.25    )) return false;
+        // following is already applied in the baby making stage
+        // if (fabs(cms3.mus_p4().at(idx).eta()) <= 1.479)
+        // {
+        //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.1       )) return false;
+        //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.05     )) return false;
+        // }
+        // else
+        // {
+        //     if (!( fabs(cms3.mus_dzPV().at(idx)) < 0.2       )) return false;
+        //     if (!( fabs(cms3.mus_dxyPV().at(idx)) < 0.1      )) return false;
+        // }
 
-    // Try Medium POG ID
-    if (not (wvz.lep_isMediumPOG().at(idx))) return false;
+        // Try Medium POG ID
+        if (not (wvz.lep_isMediumPOG().at(idx))) return false;
 
-    // One addition on top of veto ID
-    if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        // One addition on top of veto ID
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
 
-    return true;
+        return true;
+    }
 }
 
 //______________________________________________________________________________________________
@@ -1810,32 +1882,61 @@ bool Analysis::passNominalLeptonID(int idx)
 //______________________________________________________________________________________________
 bool Analysis::passNominalElectronID(int idx)
 {
-    // Must pass ZCand ID
-    if (not (passZCandElectronID(idx))) return false;
-
-    // Cut-based IsoMedium
-    if (looper->getCurrentFileName().Contains("WVZMVA"))
+    if (useMVAID)
     {
-        if (not (wvz.lep_isMVAwp80IsoPOG().at(idx))) return false;
+        if (not (passZCandElectronID(idx))) return false;
+        if (not (wvz.lep_isMVAwp90IsoPOG()[idx])) return false;
+        // if (not (wvz.lep_isMVAwp80IsoPOG()[idx])) return false;
+        // if (fabs(wvz.lep_etaSC().at(idx)) <= 1.479)
+        // {
+        //     if (not (wvz.lep_relIso03EAwLep().at(idx) < 0.1)) return false;
+        // }
+        // else
+        // {
+        //     if (not (wvz.lep_relIso03EAwLep().at(idx) < 0.16)) return false;
+        // }
+        if (not (fabs(lep_sip3d->at(idx)) < 4)) return false;
+        return true;
     }
     else
     {
-        if (not (wvz.lep_isCutBasedIsoMediumPOG().at(idx))) return false;
-    }
+        // Must pass ZCand ID
+        if (not (passZCandElectronID(idx))) return false;
 
-    return true;
+        // Cut-based IsoMedium
+        if (looper->getCurrentFileName().Contains("WVZMVA"))
+        {
+            if (not (wvz.lep_isMVAwp80IsoPOG().at(idx))) return false;
+        }
+        else
+        {
+            if (not (wvz.lep_isCutBasedIsoMediumPOG().at(idx))) return false;
+        }
+
+        return true;
+    }
 }
 
 //______________________________________________________________________________________________
 bool Analysis::passNominalMuonID(int idx)
 {
-    // Must pass ZCand ID
-    if (not (passZCandMuonID(idx))) return false;
 
-    // Tight POG muon isolation
-    if (not (fabs(wvz.lep_relIso04DB().at(idx)) < 0.15)) return false;
+    if (useMVAID)
+    {
+        if (not (passZCandMuonID(idx))) return false;
+        if (not (fabs(wvz.lep_relIso04DB().at(idx)) < 0.15)) return false;
+        return true;
+    }
+    else
+    {
+        // Must pass ZCand ID
+        if (not (passZCandMuonID(idx))) return false;
 
-    return true;
+        // Tight POG muon isolation
+        if (not (fabs(wvz.lep_relIso04DB().at(idx)) < 0.15)) return false;
+
+        return true;
+    }
 }
 
 //______________________________________________________________________________________________
@@ -1874,6 +1975,10 @@ float Analysis::EventWeight()
         if (looper->getCurrentFileName().Contains("v0.1.12.7")
                 and looper->getCurrentFileName().Contains("ttz_llvv_mll10"))
             fixXsec = 0.2728/0.2529; // TTZ AN2018-025 has 0.2728 while we used 0.2529
+        if ((looper->getCurrentFileName().Contains("v0.1.15"))
+                and year == 2018
+                and looper->getCurrentFileName().Contains("wwz_4l2v_amcatnlo"))
+            fixXsec = 3.528723e-7 / 3.1019e-7 ; // Error from wrong scale1fb
         if (year == 2016)
             return fixXsec * evt_scale1fb * 35.9 * getTruePUw2016(wvz.nTrueInt());
         else if (year == 2017)
@@ -3103,7 +3208,9 @@ float Analysis::VarMll2ndZ()
 //______________________________________________________________________________________________
 float Analysis::VarMET(int var)
 {
-    if (wvz.isData())
+
+    // The newer version has the met smearing already applied
+    if (doNotApplyMETSmear)
     {
         if      (var == 0) return wvz.met_pt();
         else if (var == 1) return wvz.met_up_pt();
@@ -3117,26 +3224,47 @@ float Analysis::VarMET(int var)
         RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
         return -999;
     }
+    // Older version had to be smeared
     else
     {
-        if      (var == 0) return metobj_corrected.extras.met;
-        else if (var == 1) return metobj_corrected.extras.met_JECup;
-        else if (var == 2) return metobj_corrected.extras.met_JERup;
-        else if (var == 3) return metobj_corrected.extras.met_METup;
-        else if (var == 4) return metobj_corrected.extras.met_PUup;
-        else if (var ==-1) return metobj_corrected.extras.met_JECdn;
-        else if (var ==-2) return metobj_corrected.extras.met_JERdn;
-        else if (var ==-3) return metobj_corrected.extras.met_METdn;
-        else if (var ==-4) return metobj_corrected.extras.met_PUdn;
-        RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
-        return -999;
+
+        if (wvz.isData())
+        {
+            if      (var == 0) return wvz.met_pt();
+            else if (var == 1) return wvz.met_up_pt();
+            else if (var == 2) return wvz.met_pt();
+            else if (var == 3) return wvz.met_pt();
+            else if (var == 4) return wvz.met_pt();
+            else if (var ==-1) return wvz.met_pt();
+            else if (var ==-2) return wvz.met_dn_pt();
+            else if (var ==-3) return wvz.met_pt();
+            else if (var ==-4) return wvz.met_pt();
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
+            return -999;
+        }
+        else
+        {
+            if      (var == 0) return metobj_corrected.extras.met;
+            else if (var == 1) return metobj_corrected.extras.met_JECup;
+            else if (var == 2) return metobj_corrected.extras.met_JERup;
+            else if (var == 3) return metobj_corrected.extras.met_METup;
+            else if (var == 4) return metobj_corrected.extras.met_PUup;
+            else if (var ==-1) return metobj_corrected.extras.met_JECdn;
+            else if (var ==-2) return metobj_corrected.extras.met_JERdn;
+            else if (var ==-3) return metobj_corrected.extras.met_METdn;
+            else if (var ==-4) return metobj_corrected.extras.met_PUdn;
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
+            return -999;
+        }
+
     }
 }
 
 //______________________________________________________________________________________________
 float Analysis::VarMETPhi(int var)
 {
-    if (wvz.isData())
+    // The newer version has the met smearing already applied
+    if (doNotApplyMETSmear)
     {
         if      (var == 0) return wvz.met_phi();
         else if (var == 1) return wvz.met_up_phi();
@@ -3152,17 +3280,34 @@ float Analysis::VarMETPhi(int var)
     }
     else
     {
-        if      (var == 0) return metobj_corrected.extras.phi;
-        else if (var == 1) return metobj_corrected.extras.phi_JECup;
-        else if (var == 2) return metobj_corrected.extras.phi_JERup;
-        else if (var == 3) return metobj_corrected.extras.phi_METup;
-        else if (var == 4) return metobj_corrected.extras.phi_PUup;
-        else if (var ==-1) return metobj_corrected.extras.phi_JECdn;
-        else if (var ==-2) return metobj_corrected.extras.phi_JERdn;
-        else if (var ==-3) return metobj_corrected.extras.phi_METdn;
-        else if (var ==-4) return metobj_corrected.extras.phi_PUdn;
-        RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhi");
-        return -999;
+        if (wvz.isData())
+        {
+            if      (var == 0) return wvz.met_phi();
+            else if (var == 1) return wvz.met_up_phi();
+            else if (var == 2) return wvz.met_phi();
+            else if (var == 3) return wvz.met_phi();
+            else if (var == 4) return wvz.met_phi();
+            else if (var ==-1) return wvz.met_phi();
+            else if (var ==-2) return wvz.met_dn_phi();
+            else if (var ==-3) return wvz.met_phi();
+            else if (var ==-4) return wvz.met_phi();
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhi");
+            return -999;
+        }
+        else
+        {
+            if      (var == 0) return metobj_corrected.extras.phi;
+            else if (var == 1) return metobj_corrected.extras.phi_JECup;
+            else if (var == 2) return metobj_corrected.extras.phi_JERup;
+            else if (var == 3) return metobj_corrected.extras.phi_METup;
+            else if (var == 4) return metobj_corrected.extras.phi_PUup;
+            else if (var ==-1) return metobj_corrected.extras.phi_JECdn;
+            else if (var ==-2) return metobj_corrected.extras.phi_JERdn;
+            else if (var ==-3) return metobj_corrected.extras.phi_METdn;
+            else if (var ==-4) return metobj_corrected.extras.phi_PUdn;
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhi");
+            return -999;
+        }
     }
 }
 
@@ -3213,11 +3358,12 @@ float Analysis::VarMTFakeable(int var)      { return VarMT(lep_Fakeable_idx, var
 //______________________________________________________________________________________________
 float Analysis::VarRelIso5th()
 {
-    if (lep_WCand_idx1 >= 0)
-        return lep_relIso03EA->at(lep_WCand_idx1);
-        // return lep_relIso03EA->at(lep_WCand_idx1);
+    if (lep_5Lep_W_idx < 0)
+        return 999;
+    if (abs(wvz.lep_id()[lep_5Lep_W_idx]) == 11)
+        return wvz.lep_relIso03EA()[lep_5Lep_W_idx];
     else
-        return -999;
+        return wvz.lep_relIso04DB()[lep_5Lep_W_idx];
 }
 
 //______________________________________________________________________________________________

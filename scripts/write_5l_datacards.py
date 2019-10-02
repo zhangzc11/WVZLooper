@@ -97,6 +97,8 @@ def write_datacards(ntuple_version, tag):
         tfiles[proc] = r.TFile(fname)
         tfiles[proc].Get("FiveLeptonsMT5th__Yield").Print("all")
 
+    r.gROOT.cd()
+
     ###############################
     # EMu channel data card writing
     ###############################
@@ -122,14 +124,13 @@ def write_datacards(ntuple_version, tag):
         for syst in systnames:
 
             if syst == "Nominal":
-                # h = tfiles[proc].Get("{}__{}".format(fitreg, fitvar)).Clone()
-                h = tfiles[proc].Get("{}__{}".format(fitreg, fitvar)).Clone(proc+fitreg+fitvar+syst)
+                h = tfiles[proc].Get("{}__{}".format(fitreg, fitvar)).Clone()
 
             else:
                 systhacked = syst
                 if proc == "NONE":
                     systhacked = ""
-                h = tfiles[proc].Get("{}{}__{}".format(fitreg, systhacked, fitvar)).Clone(proc+fitreg+fitvar+syst)
+                h = tfiles[proc].Get("{}{}__{}".format(fitreg, systhacked, fitvar)).Clone()
 
                 # print tfiles[proc]
                 # print proc

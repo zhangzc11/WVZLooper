@@ -175,6 +175,10 @@ public:
     int lep_5Lep_Z2_idx1;
     int lep_5Lep_Z2_idx2;
     int lep_5Lep_W_idx;
+    int lep_wzcr_idx1;
+    int lep_wzcr_idx2;
+    int lep_wzcr_idx3;
+    int lep_wzcr_idxe;
     LV dilepZCand;
     LV dilepNominal;
     TString output_tfile_name;
@@ -214,6 +218,12 @@ public:
     RooUtil::HistMap* histmap_2017_fake_rate_mu;
     RooUtil::HistMap* histmap_2018_fake_rate_el;
     RooUtil::HistMap* histmap_2018_fake_rate_mu;
+    RooUtil::HistMap* histmap_2016_elec_mva_medium_sf;
+    RooUtil::HistMap* histmap_2016_elec_mva_veto_sf;
+    RooUtil::HistMap* histmap_2017_elec_mva_medium_sf;
+    RooUtil::HistMap* histmap_2017_elec_mva_veto_sf;
+    RooUtil::HistMap* histmap_2018_elec_mva_medium_sf;
+    RooUtil::HistMap* histmap_2018_elec_mva_veto_sf;
 
     // MET MC Correction for
     METCorrectionHandler metcorrector;
@@ -263,6 +273,7 @@ public:
     void sortLeptonIndex();
     void setDilepMasses();
     void correctMET();
+    void selectWZCRLeptons();
 
     float EventWeight();
     float LeptonScaleFactor(int=0, int=0);
@@ -369,6 +380,7 @@ public:
     float VarPtZeta(int=0);
     float VarPtZetaVis(int=0);
     float VarMinDRJetsToLep(int);
+    float VarMT2(int=0);
 
     LeptonVectors GetLeptonVectors();
 

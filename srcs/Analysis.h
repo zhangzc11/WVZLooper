@@ -318,7 +318,7 @@ public:
 
     bool Cut4LepLeptonPt(bool=false);
     bool CutZZ4LepLeptonPt();
-    bool CutHLT();
+    bool CutHLT(std::vector<int> idxs=std::vector<int>());
     bool Cut4LepLowMll(bool=false);
     bool Cut4LepBVeto(int=0);
     bool Cut4LepBTag(int=0);

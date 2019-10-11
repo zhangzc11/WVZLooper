@@ -1024,8 +1024,8 @@ void Analysis::createNewBranches()
     tx->createBranch<int>("ChannelOffZ");
     tx->createBranch<int>("ChannelOnZ");
     tx->createBranch<int>("ChannelBTagEMu");
-    tx->createBranch<float>("bdt_emu_zz");
-    tx->createBranch<float>("bdt_emu_ttz");
+    // tx->createBranch<float>("bdt_emu_zz");
+    // tx->createBranch<float>("bdt_emu_ttz");
 
     newbranchesadded = true;
 
@@ -1102,8 +1102,8 @@ void Analysis::fillSkimTree(std::vector<int> region_flags)
     tx->setBranch<int>("ChannelOffZ", region_flags[1]);
     tx->setBranch<int>("ChannelOnZ", region_flags[2]);
     tx->setBranch<int>("ChannelBTagEMu", region_flags[3]);
-    tx->setBranch<float>("bdt_emu_zz", this->VarZZBDT());
-    tx->setBranch<float>("bdt_emu_ttz", this->VarTTZBDT());
+    // tx->setBranch<float>("bdt_emu_zz", this->VarZZBDT());
+    // tx->setBranch<float>("bdt_emu_ttz", this->VarTTZBDT());
 
     looper->fillSkim();
 }
@@ -3485,6 +3485,30 @@ float Analysis::VarMll2ndZ()
 //______________________________________________________________________________________________
 float Analysis::VarMET(int var)
 {
+    return VarMETNoSmearing(var);
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMETNoSmearing(int var)
+{
+
+    if      (var == 0) return wvz.met_orig_pt();
+    else if (var == 1) return wvz.met_orig_pt();
+    else if (var == 2) return wvz.met_orig_pt();
+    else if (var == 3) return wvz.met_orig_pt();
+    else if (var == 4) return wvz.met_orig_pt();
+    else if (var ==-1) return wvz.met_orig_pt();
+    else if (var ==-2) return wvz.met_orig_pt();
+    else if (var ==-3) return wvz.met_orig_pt();
+    else if (var ==-4) return wvz.met_orig_pt();
+    RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETNoSmearing");
+    return -999;
+
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMETSmearing(int var)
+{
 
     // The newer version has the met smearing already applied
     if (doNotApplyMETSmear)
@@ -3498,7 +3522,7 @@ float Analysis::VarMET(int var)
         else if (var ==-2) return wvz.met_dn_pt();
         else if (var ==-3) return wvz.met_pt();
         else if (var ==-4) return wvz.met_pt();
-        RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
+        RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETSmearing");
         return -999;
     }
     // Older version had to be smeared
@@ -3516,7 +3540,7 @@ float Analysis::VarMET(int var)
             else if (var ==-2) return wvz.met_dn_pt();
             else if (var ==-3) return wvz.met_pt();
             else if (var ==-4) return wvz.met_pt();
-            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETSmearing");
             return -999;
         }
         else
@@ -3530,7 +3554,7 @@ float Analysis::VarMET(int var)
             else if (var ==-2) return metobj_corrected.extras.met_JERdn;
             else if (var ==-3) return metobj_corrected.extras.met_METdn;
             else if (var ==-4) return metobj_corrected.extras.met_PUdn;
-            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMET");
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETSmearing");
             return -999;
         }
 
@@ -3539,6 +3563,28 @@ float Analysis::VarMET(int var)
 
 //______________________________________________________________________________________________
 float Analysis::VarMETPhi(int var)
+{
+    return VarMETPhiNoSmearing(var);
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMETPhiNoSmearing(int var)
+{
+    if      (var == 0) return wvz.met_phi();
+    else if (var == 1) return wvz.met_phi();
+    else if (var == 2) return wvz.met_phi();
+    else if (var == 3) return wvz.met_phi();
+    else if (var == 4) return wvz.met_phi();
+    else if (var ==-1) return wvz.met_phi();
+    else if (var ==-2) return wvz.met_phi();
+    else if (var ==-3) return wvz.met_phi();
+    else if (var ==-4) return wvz.met_phi();
+    RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhiNoSmearing");
+    return -999;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarMETPhiSmearing(int var)
 {
     // The newer version has the met smearing already applied
     if (doNotApplyMETSmear)
@@ -3552,7 +3598,7 @@ float Analysis::VarMETPhi(int var)
         else if (var ==-2) return wvz.met_dn_phi();
         else if (var ==-3) return wvz.met_phi();
         else if (var ==-4) return wvz.met_phi();
-        RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhi");
+        RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhiSmearing");
         return -999;
     }
     else
@@ -3568,7 +3614,7 @@ float Analysis::VarMETPhi(int var)
             else if (var ==-2) return wvz.met_dn_phi();
             else if (var ==-3) return wvz.met_phi();
             else if (var ==-4) return wvz.met_phi();
-            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhi");
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhiSmearing");
             return -999;
         }
         else
@@ -3582,7 +3628,7 @@ float Analysis::VarMETPhi(int var)
             else if (var ==-2) return metobj_corrected.extras.phi_JERdn;
             else if (var ==-3) return metobj_corrected.extras.phi_METdn;
             else if (var ==-4) return metobj_corrected.extras.phi_PUdn;
-            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhi");
+            RooUtil::error(TString::Format("Unrecognized variation value var = %d", var).Data(), "VarMETPhiSmearing");
             return -999;
         }
     }

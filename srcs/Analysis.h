@@ -357,6 +357,8 @@ public:
     float VarMjj();
     float VarMjjMinDR();
     float VarMET(int=0);
+    float VarMETNoSmearing(int=0);
+    float VarMETSmearing(int=0);
     float VarNvtx();
     float VarMll2ndZ();
     float VarMT(int,int=0);
@@ -387,6 +389,8 @@ public:
     float VarHTLep(int, int, int, int);
     float VarHTLep5();
     float VarMETPhi(int=0);
+    float VarMETPhiNoSmearing(int=0);
+    float VarMETPhiSmearing(int=0);
     float VarTauTauDisc(int=0);
     float VarPtZetaDiff(int=0);
     float VarPtZeta(int=0);

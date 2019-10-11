@@ -52,8 +52,8 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     // Load fast forest and bdt model
     emu_zz_features = {"looper_MllN", "pt_4l", "looper_ZPt", "looper_mt2", "looper_lep3Pt", "looper_lep4Pt", "looper_pt_zeta", "looper_pt_zeta_vis", "met_pt", "looper_lep3MT", "looper_lep4MT", "looper_lep3dZ", "looper_lep4dZ"};
     emu_ttz_features = {"looper_MllN", "pt_4l", "looper_ZPt", "looper_mt2", "looper_lep3Pt", "looper_lep4Pt", "looper_minDRJetToLep3", "looper_minDRJetToLep4", "looper_jet1Pt"};
-    fast_forest_emu_zz = new FastForest("emu_zz_bdt.txt", emu_zz_features);
-    fast_forest_emu_ttz = new FastForest("emu_ttz_bdt.txt", emu_ttz_features);
+    fast_forest_emu_zz = new FastForest("bdtmodel/emu_zz_bdt.txt", emu_zz_features);
+    fast_forest_emu_ttz = new FastForest("bdtmodel/emu_ttz_bdt.txt", emu_ttz_features);
 
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
@@ -4005,7 +4005,8 @@ float Analysis::VarZZBDT(int var)
         wvz.lep_dz().at(lep_Nom_idx2), //"looper_lep4dZ"
         };
 
-    return 1./(1. + std::exp(-(*fast_forest_emu_zz)(emu_zz_input.data())));
+    // Evaluate the bdt score
+    return (*fast_forest_emu_zz)(emu_zz_input.data());
 }
 
 //______________________________________________________________________________________________
@@ -4025,7 +4026,7 @@ float Analysis::VarTTZBDT(int var)
         };
 
     // Evaluate the bdt score
-    return 1./(1. + std::exp(-(*fast_forest_emu_ttz)(emu_ttz_input.data())));
+    return (*fast_forest_emu_ttz)(emu_ttz_input.data());
 }
 
 //______________________________________________________________________________________________

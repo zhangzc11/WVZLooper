@@ -32,6 +32,7 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     doSyst = dosyst;
     // Whether to run skimming or not
     doSkim = doskim;
+    newbranchesadded = false; // This is needed to check whether the branches were added to the skim tree
 
     // Parsing year
     if (ntupleVersion.Contains("v0.0.5")) year = -1; // Meaning use this sets to scale it up to 137
@@ -905,10 +906,10 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
 
         if (ntupleVersion.Contains("WVZ"))
         {
-            if (cutflow.getCut("ChannelEMu").pass)
+            if (cutflow.getCut("ChannelEMu").pass or cutflow.getCut("ChannelOffZ").pass or cutflow.getCut("ChannelOnZ").pass or cutflow.getCut("ChannelBTagEMu").pass)
             {
                 if (doSkim)
-                    fillSkimTree();
+                    fillSkimTree({cutflow.getCut("ChannelEMu").pass, cutflow.getCut("ChannelOffZ").pass, cutflow.getCut("ChannelOnZ").pass, cutflow.getCut("ChannelBTagEMu").pass});
             }
         }
 
@@ -925,6 +926,15 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
             }
         // }
 
+    }
+
+    // If there were zero events looped over the createNewBranches never gets called
+    // Then, the skim ntuples of different samples will have different TBranches
+    // Then this causes problems during hadding of various output files
+    // So check that whether createNewBranches was called if not called then add the branch
+    if (ntupleVersion.Contains("WVZ") and doSkim and not newbranchesadded)
+    {
+        createNewBranches();
     }
 
     cutflow.saveOutput();
@@ -950,60 +960,67 @@ void Analysis::setDoSkim(bool setDoSkim)
 void Analysis::createNewBranches()
 {
     tx = new RooUtil::TTreeX(looper->getSkimTree());
-    tx->createBranch<int>("lep_Z_idx0");
-    tx->createBranch<int>("lep_Z_idx1");
-    tx->createBranch<int>("lep_N_idx0");
-    tx->createBranch<int>("lep_N_idx1");
-    tx->createBranch<float>("eventweight");
-    tx->createBranch<float>("lepsf");
+    tx->createBranch<int>("looper_lep_Z_idx0");
+    tx->createBranch<int>("looper_lep_Z_idx1");
+    tx->createBranch<int>("looper_lep_N_idx0");
+    tx->createBranch<int>("looper_lep_N_idx1");
+    tx->createBranch<float>("looper_eventweight");
+    tx->createBranch<float>("looper_lepsf");
+    tx->createBranch<float>("looper_btagsf");
     //needed for wwz vs ZZ BDT
     //lep1: Z cand lepton, id > 0
     //lep2: Z cand lepton, id < 0
     //lep3: W cand lepton, leading pt
     //lep4: W cand lepton, subleading pt
-    tx->createBranch<float>("MllN");
-    tx->createBranch<float>("MllZ");
-    tx->createBranch<float>("ZPt");
-    tx->createBranch<float>("lep1Pt");
-    tx->createBranch<float>("lep2Pt");
-    tx->createBranch<float>("lep3Pt");
-    tx->createBranch<float>("lep4Pt");
-    tx->createBranch<float>("lep3Id");
-    tx->createBranch<float>("lep4Id");
-    tx->createBranch<float>("lep3MT");
-    tx->createBranch<float>("lep4MT");
-    tx->createBranch<float>("lep34MT");
-    tx->createBranch<float>("lep1dZ");
-    tx->createBranch<float>("lep2dZ");
-    tx->createBranch<float>("lep3dZ");
-    tx->createBranch<float>("lep4dZ");
-    tx->createBranch<float>("pt_zeta");
-    tx->createBranch<float>("pt_zeta_vis");
-    tx->createBranch<float>("pt_zeta_diff");
-    tx->createBranch<float>("mt2");
-    tx->createBranch<float>("phi0");
-    tx->createBranch<float>("phi");
-    tx->createBranch<float>("phiH");
-    tx->createBranch<float>("theta0");
-    tx->createBranch<float>("theta1");
-    tx->createBranch<float>("theta2");
+    tx->createBranch<float>("looper_MllN");
+    tx->createBranch<float>("looper_MllZ");
+    tx->createBranch<float>("looper_ZPt");
+    tx->createBranch<float>("looper_lep1Pt");
+    tx->createBranch<float>("looper_lep2Pt");
+    tx->createBranch<float>("looper_lep3Pt");
+    tx->createBranch<float>("looper_lep4Pt");
+    tx->createBranch<float>("looper_lep3Id");
+    tx->createBranch<float>("looper_lep4Id");
+    tx->createBranch<float>("looper_lep3MT");
+    tx->createBranch<float>("looper_lep4MT");
+    tx->createBranch<float>("looper_lep34MT");
+    tx->createBranch<float>("looper_lep1dZ");
+    tx->createBranch<float>("looper_lep2dZ");
+    tx->createBranch<float>("looper_lep3dZ");
+    tx->createBranch<float>("looper_lep4dZ");
+    tx->createBranch<float>("looper_pt_zeta");
+    tx->createBranch<float>("looper_pt_zeta_vis");
+    tx->createBranch<float>("looper_pt_zeta_diff");
+    tx->createBranch<float>("looper_mt2");
+    tx->createBranch<float>("looper_phi0");
+    tx->createBranch<float>("looper_phi");
+    tx->createBranch<float>("looper_phiH");
+    tx->createBranch<float>("looper_theta0");
+    tx->createBranch<float>("looper_theta1");
+    tx->createBranch<float>("looper_theta2");
     //needed for wwz vs ttZ BDT
     //for jet1/2/3/4, if not enough jets, fill with -999
-    tx->createBranch<float>("minDRJetToLep3");
-    tx->createBranch<float>("minDRJetToLep4");
-    tx->createBranch<float>("jet1Pt");
-    tx->createBranch<float>("jet2Pt");
-    tx->createBranch<float>("jet3Pt");
-    tx->createBranch<float>("jet4Pt");
-    tx->createBranch<float>("jet1BtagScore");
-    tx->createBranch<float>("jet2BtagScore");
-    tx->createBranch<float>("jet3BtagScore");
-    tx->createBranch<float>("jet4BtagScore");
+    tx->createBranch<float>("looper_minDRJetToLep3");
+    tx->createBranch<float>("looper_minDRJetToLep4");
+    tx->createBranch<float>("looper_jet1Pt");
+    tx->createBranch<float>("looper_jet2Pt");
+    tx->createBranch<float>("looper_jet3Pt");
+    tx->createBranch<float>("looper_jet4Pt");
+    tx->createBranch<float>("looper_jet1BtagScore");
+    tx->createBranch<float>("looper_jet2BtagScore");
+    tx->createBranch<float>("looper_jet3BtagScore");
+    tx->createBranch<float>("looper_jet4BtagScore");
+    tx->createBranch<int>("ChannelEMu");
+    tx->createBranch<int>("ChannelOffZ");
+    tx->createBranch<int>("ChannelOnZ");
+    tx->createBranch<int>("ChannelBTagEMu");
+
+    newbranchesadded = true;
 
 }
 
 //______________________________________________________________________________________________
-void Analysis::fillSkimTree()
+void Analysis::fillSkimTree(std::vector<int> region_flags)
 {
     int lep1_idx = lep_ZCand_idx1, lep2_idx = lep_ZCand_idx2, lep3_idx = lep_Nom_idx1, lep4_idx = lep_Nom_idx2;
     //Z: lep1 is id>0 lepton
@@ -1022,49 +1039,53 @@ void Analysis::fillSkimTree()
     LeptonVectors vLeptons = GetLeptonVectors();
     HZZ4lEventParameters eventParameters = ConvertVectorsToAngles( vLeptons );
     //start filling...
-    tx->setBranch<int>("lep_Z_idx0", lep1_idx);
-    tx->setBranch<int>("lep_Z_idx1", lep2_idx);
-    tx->setBranch<int>("lep_N_idx0", lep3_idx);
-    tx->setBranch<int>("lep_N_idx1", lep4_idx);
-    tx->setBranch<float>("eventweight", this->EventWeight());
-    tx->setBranch<float>("lepsf", this->LeptonScaleFactor());
-    tx->setBranch<float>("btagsf", this->BTagSF());
-    tx->setBranch<float>("MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
-    tx->setBranch<float>("MllZ", this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2));
-    tx->setBranch<float>("ZPt", this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2));
-    tx->setBranch<float>("lep1Pt", this->VarLepPt(lep1_idx));
-    tx->setBranch<float>("lep2Pt", this->VarLepPt(lep2_idx));
-    tx->setBranch<float>("lep3Pt", this->VarLepPt(lep3_idx));
-    tx->setBranch<float>("lep4Pt", this->VarLepPt(lep4_idx));
-    tx->setBranch<float>("lep3Id", wvz.lep_id().at(lep3_idx));
-    tx->setBranch<float>("lep4Id", wvz.lep_id().at(lep4_idx));
-    tx->setBranch<float>("lep3MT", this->VarMT(lep3_idx));
-    tx->setBranch<float>("lep4MT", this->VarMT(lep4_idx));
-    tx->setBranch<float>("lep34MT", this->VarMTll(lep3_idx, lep4_idx));
-    tx->setBranch<float>("lep1dZ", wvz.lep_dz().at(lep1_idx));
-    tx->setBranch<float>("lep2dZ", wvz.lep_dz().at(lep2_idx));
-    tx->setBranch<float>("lep3dZ", wvz.lep_dz().at(lep3_idx));
-    tx->setBranch<float>("lep4dZ", wvz.lep_dz().at(lep4_idx));
-    tx->setBranch<float>("pt_zeta", this->VarPtZeta());
-    tx->setBranch<float>("pt_zeta_vis", this->VarPtZetaVis());
-    tx->setBranch<float>("pt_zeta_diff", this->VarPtZetaDiff());
-    tx->setBranch<float>("mt2", this->VarMT2());
-    tx->setBranch<float>("phi0", eventParameters.Phi0);
-    tx->setBranch<float>("phi", eventParameters.Phi);
-    tx->setBranch<float>("phiH", eventParameters.PhiH);
-    tx->setBranch<float>("theta0", eventParameters.Theta0);
-    tx->setBranch<float>("theta1", eventParameters.Theta1);
-    tx->setBranch<float>("theta2", eventParameters.Theta2);
-    tx->setBranch<float>("minDRJetToLep3", this->VarMinDRJetsToLep(lep3_idx));
-    tx->setBranch<float>("minDRJetToLep4", this->VarMinDRJetsToLep(lep4_idx));
-    tx->setBranch<float>("jet1Pt", wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999);
-    tx->setBranch<float>("jet2Pt", wvz.jets_p4().size() > 1 ? wvz.jets_p4()[1].pt() : -999);
-    tx->setBranch<float>("jet3Pt", wvz.jets_p4().size() > 2 ? wvz.jets_p4()[2].pt() : -999);
-    tx->setBranch<float>("jet4Pt", wvz.jets_p4().size() > 3 ? wvz.jets_p4()[3].pt() : -999);
-    tx->setBranch<float>("jet1BtagScore", wvz.jets_btag_score().size() > 0 ? wvz.jets_btag_score()[0] : -999);
-    tx->setBranch<float>("jet2BtagScore", wvz.jets_btag_score().size() > 1 ? wvz.jets_btag_score()[1] : -999);
-    tx->setBranch<float>("jet3BtagScore", wvz.jets_btag_score().size() > 2 ? wvz.jets_btag_score()[2] : -999);
-    tx->setBranch<float>("jet4BtagScore", wvz.jets_btag_score().size() > 3 ? wvz.jets_btag_score()[3] : -999);
+    tx->setBranch<int>("looper_lep_Z_idx0", lep1_idx);
+    tx->setBranch<int>("looper_lep_Z_idx1", lep2_idx);
+    tx->setBranch<int>("looper_lep_N_idx0", lep3_idx);
+    tx->setBranch<int>("looper_lep_N_idx1", lep4_idx);
+    tx->setBranch<float>("looper_eventweight", this->EventWeight());
+    tx->setBranch<float>("looper_lepsf", this->LeptonScaleFactor());
+    tx->setBranch<float>("looper_btagsf", this->BTagSF());
+    tx->setBranch<float>("looper_MllN", this->VarMll(lep_Nom_idx1, lep_Nom_idx2));
+    tx->setBranch<float>("looper_MllZ", this->VarMll(lep_ZCand_idx1, lep_ZCand_idx2));
+    tx->setBranch<float>("looper_ZPt", this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2));
+    tx->setBranch<float>("looper_lep1Pt", this->VarLepPt(lep1_idx));
+    tx->setBranch<float>("looper_lep2Pt", this->VarLepPt(lep2_idx));
+    tx->setBranch<float>("looper_lep3Pt", this->VarLepPt(lep3_idx));
+    tx->setBranch<float>("looper_lep4Pt", this->VarLepPt(lep4_idx));
+    tx->setBranch<float>("looper_lep3Id", wvz.lep_id().at(lep3_idx));
+    tx->setBranch<float>("looper_lep4Id", wvz.lep_id().at(lep4_idx));
+    tx->setBranch<float>("looper_lep3MT", this->VarMT(lep3_idx));
+    tx->setBranch<float>("looper_lep4MT", this->VarMT(lep4_idx));
+    tx->setBranch<float>("looper_lep34MT", this->VarMTll(lep3_idx, lep4_idx));
+    tx->setBranch<float>("looper_lep1dZ", wvz.lep_dz().at(lep1_idx));
+    tx->setBranch<float>("looper_lep2dZ", wvz.lep_dz().at(lep2_idx));
+    tx->setBranch<float>("looper_lep3dZ", wvz.lep_dz().at(lep3_idx));
+    tx->setBranch<float>("looper_lep4dZ", wvz.lep_dz().at(lep4_idx));
+    tx->setBranch<float>("looper_pt_zeta", this->VarPtZeta());
+    tx->setBranch<float>("looper_pt_zeta_vis", this->VarPtZetaVis());
+    tx->setBranch<float>("looper_pt_zeta_diff", this->VarPtZetaDiff());
+    tx->setBranch<float>("looper_mt2", this->VarMT2());
+    tx->setBranch<float>("looper_phi0", eventParameters.Phi0);
+    tx->setBranch<float>("looper_phi", eventParameters.Phi);
+    tx->setBranch<float>("looper_phiH", eventParameters.PhiH);
+    tx->setBranch<float>("looper_theta0", eventParameters.Theta0);
+    tx->setBranch<float>("looper_theta1", eventParameters.Theta1);
+    tx->setBranch<float>("looper_theta2", eventParameters.Theta2);
+    tx->setBranch<float>("looper_minDRJetToLep3", this->VarMinDRJetsToLep(lep3_idx));
+    tx->setBranch<float>("looper_minDRJetToLep4", this->VarMinDRJetsToLep(lep4_idx));
+    tx->setBranch<float>("looper_jet1Pt", wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999);
+    tx->setBranch<float>("looper_jet2Pt", wvz.jets_p4().size() > 1 ? wvz.jets_p4()[1].pt() : -999);
+    tx->setBranch<float>("looper_jet3Pt", wvz.jets_p4().size() > 2 ? wvz.jets_p4()[2].pt() : -999);
+    tx->setBranch<float>("looper_jet4Pt", wvz.jets_p4().size() > 3 ? wvz.jets_p4()[3].pt() : -999);
+    tx->setBranch<float>("looper_jet1BtagScore", wvz.jets_btag_score().size() > 0 ? wvz.jets_btag_score()[0] : -999);
+    tx->setBranch<float>("looper_jet2BtagScore", wvz.jets_btag_score().size() > 1 ? wvz.jets_btag_score()[1] : -999);
+    tx->setBranch<float>("looper_jet3BtagScore", wvz.jets_btag_score().size() > 2 ? wvz.jets_btag_score()[2] : -999);
+    tx->setBranch<float>("looper_jet4BtagScore", wvz.jets_btag_score().size() > 3 ? wvz.jets_btag_score()[3] : -999);
+    tx->setBranch<int>("ChannelEMu", region_flags[0]);
+    tx->setBranch<int>("ChannelOffZ", region_flags[1]);
+    tx->setBranch<int>("ChannelOnZ", region_flags[2]);
+    tx->setBranch<int>("ChannelBTagEMu", region_flags[3]);
 
     looper->fillSkim();
 }
@@ -1598,7 +1619,7 @@ void Analysis::selectWZCRLeptons()
         {
             if (
                     wvz.lep_isMediumPOG()[ii] and fabs(wvz.lep_sip3d()[ii]) < 4.
-                and wvz.lep_relIso04DB()[ii] < 0.25
+                // and wvz.lep_relIso04DB()[ii] < 0.25
                 )
             {
                 lep_muon_idxs.push_back(ii);
@@ -1608,11 +1629,11 @@ void Analysis::selectWZCRLeptons()
         {
             if (
                     wvz.lep_isCutBasedNoIsoVetoPOG()[ii] and fabs(wvz.lep_sip3d()[ii]) < 4.
-                and wvz.lep_relIso03EA()[ii] <
-                    (fabs(wvz.lep_eta()[ii]) <= 1.479 ?
-                     0.198 + (0.506 / wvz.lep_pt()[ii]) :
-                     0.203 + (0.963 / wvz.lep_pt()[ii])
-                    )
+                // and wvz.lep_relIso03EA()[ii] <
+                //     (fabs(wvz.lep_eta()[ii]) <= 1.479 ?
+                //      0.198 + (0.506 / wvz.lep_pt()[ii]) :
+                //      0.203 + (0.963 / wvz.lep_pt()[ii])
+                //     )
                 )
             {
                 lep_elec_idxs.push_back(ii);
@@ -2978,6 +2999,8 @@ bool Analysis::CutHLT(std::vector<int> idxs)
     else
         lep_veto_idxs_ = idxs;
     if (nVetoLeptons < 2)
+        return false;
+    if (not wvz.evt_passgoodrunlist())
         return false;
     if (not wvz.passesMETfiltersRun2())
         return false;

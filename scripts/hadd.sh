@@ -62,7 +62,11 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
     echo "hadd -f www.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f wzz.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f zzz.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
-    echo "hadd -f zh_wwz.root ${PREFIX}zh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
+    if [[ $1 == *"WVZMVA2016_v0.1.15"* ]] || [[ $1 == *"WVZMVA2017_v0.1.15"* ]] || [[ $1 == *"WVZMVA2018_v0.1.15"* ]]; then
+        echo "hadd -f zh_wwz.root ${PREFIX}zh_ww_4l_powheg_1_results.root ${PREFIX}ggzh_ww_4l_powheg_1_results.root" >> .hadd.cmds.txt
+    else
+        echo "hadd -f zh_wwz.root ${PREFIX}zh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
+    fi
     echo "hadd -f wh_www.root ${PREFIX}wh_ww_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f wh_wzz.root ${PREFIX}wh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
     echo "hadd -f zh_zzz.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
@@ -93,7 +97,11 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
         echo "hadd -f rarevvv.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}www_amcatnlo_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}wh_ww_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
     fi
     echo "hadd -f higgs.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
-    echo "hadd -f data.root DATA_data_Run*.root" >> .hadd.cmds.txt
+    if [[ ${PREFIX} == *"BDTinputTree_"* ]]; then
+        echo "hadd -f data.root BDTinputTree_DATA_data_Run*.root" >> .hadd.cmds.txt
+    else
+        echo "hadd -f data.root DATA_data_Run*.root" >> .hadd.cmds.txt
+    fi
     # echo "hadd -f data_prehem.root DATA_data_Run201*A*.root DATA_data_Run201*B*.root" >> .hadd.cmds.txt
     # echo "hadd -f ddfake.root FAKE_*.root" >> .hadd.cmds.txt
     echo "hadd -f other.root ${PREFIX}dy_m1050_madgraph_1_results.root ${PREFIX}dy_m50_madgraph_1_results.root ${PREFIX}ttbar_dilep_madgraph_1_results.root ${PREFIX}zg_llg_amcatnlo_1_results.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root" >> .hadd.cmds.txt
@@ -101,7 +109,7 @@ elif [[ $1 == *"WVZ"* ]] || [[ $1 == *"Trilep"* ]] || [[ $1 == *"TTZ"* ]]; then
     echo "hadd -f triother.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}zz_4l_powheg_1_results.root ${PREFIX}zz_2l2q_powheg_1_results.root ${PREFIX}zz_2l2v_powheg_1_results.root ${PREFIX}ggzz_*.root ${PREFIX}ttz_ll_mll1_amcatnlo_1_results.root ${PREFIX}ttz_llvv_mll10_amcatnlo_1_results.root ${PREFIX}twz_ll_madgraph_1_results.root" >> .hadd.cmds.txt
 
     echo "hadd -f othervvv.root ${PREFIX}dy_m1050_madgraph_1_results.root ${PREFIX}dy_m50_madgraph_1_results.root ${PREFIX}ttbar_dilep_madgraph_1_results.root ${PREFIX}zg_llg_amcatnlo_1_results.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}ggh_hzz4l_powheg_1_results.root ${PREFIX}vh_nonbbwwzz_amcatnlo_1_results.root ${PREFIX}tth_nonbb_powheg_1_results.root ${PREFIX}wzz_amcatnlo_1_results.root ${PREFIX}wh_zz_amcatnlo_1_results.root ${PREFIX}zzz_amcatnlo_1_results.root ${PREFIX}zh_zz_amcatnlo_1_results.root" >> .hadd.cmds.txt
-    echo "hadd -f othernoh.root ${PREFIX}dy_m1050_madgraph_1_results.root ${PREFIX}dy_m50_madgraph_1_results.root ${PREFIX}ttbar_dilep_madgraph_1_results.root ${PREFIX}zg_llg_amcatnlo_1_results.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root ${PREFIX}wzg_amcatnlo_1_results.root" >> .hadd.cmds.txt
+    echo "hadd -f othernoh.root ${PREFIX}wzg_amcatnlo_1_results.root ${PREFIX}dy_m1050_madgraph_1_results.root ${PREFIX}dy_m50_madgraph_1_results.root ${PREFIX}ttbar_dilep_madgraph_1_results.root ${PREFIX}zg_llg_amcatnlo_1_results.root ${PREFIX}sts_4f_leptonic_madgraph_1_results.root ${PREFIX}tZq_ll_madgraph_1_results.root ${PREFIX}ttw_lnu_amcatnlo_1_results.root ${PREFIX}tw_antitopnofullhad_powheg_1_results.root ${PREFIX}tw_topnofullhad_powheg_1_results.root ${PREFIX}ww_2l_powheg_1_results.root ${PREFIX}wwg_amcatnlo_1_results.root" >> .hadd.cmds.txt
 
 fi
 

@@ -133,6 +133,7 @@ public:
     bool doFakeEst;
     bool doSyst;
     bool doSkim;
+    bool newbranchesadded;
     bool useMVAID;
     bool doNotApplyMETSmear;
     std::vector<LV> leptons;
@@ -254,7 +255,7 @@ public:
 
     void setDoSkim(bool=true);
     void createNewBranches();
-    void fillSkimTree();
+    void fillSkimTree(std::vector<int>);
 
     void loadScaleFactors();
 

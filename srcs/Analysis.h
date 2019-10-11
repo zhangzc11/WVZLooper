@@ -40,6 +40,8 @@
 // MET MC Correction
 #include "METCorrectionHandler.h"
 
+#include "fastforest.h"
+
 using namespace std;
 
 //class: the main class for functions;
@@ -241,6 +243,14 @@ public:
     TFile* BDTinputFile;
     RooUtil::TTreeX* tx;
 
+    // FastForest
+    FastForest* fast_forest_emu_zz;
+    FastForest* fast_forest_emu_ttz;
+    FastForest* fast_forest_offz_zz;
+    FastForest* fast_forest_offz_ttz;
+    std::vector<std::string> emu_zz_features;
+    std::vector<std::string> emu_ttz_features;
+
 //*******functions********//
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
@@ -367,6 +377,7 @@ public:
     float VarNbmed();
     float VarMll2l();
     float VarNSFOS();
+    LV VarLepP4(int);
     float VarLepPt(int);
     float VarLepEta(int idx);
     float VarLepPhi(int idx);
@@ -382,6 +393,8 @@ public:
     float VarPtZetaVis(int=0);
     float VarMinDRJetsToLep(int);
     float VarMT2(int=0);
+    float VarZZBDT(int=0);
+    float VarTTZBDT(int=0);
 
     LeptonVectors GetLeptonVectors();
 

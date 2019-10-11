@@ -49,6 +49,12 @@ void Analysis::Loop(const char* NtupleVersion, const char* TagName, bool dosyst,
     // Load scale factor histograms (year needs to be set prior)
     loadScaleFactors();
 
+    // Load fast forest and bdt model
+    emu_zz_features = {"looper_MllN", "pt_4l", "looper_ZPt", "looper_mt2", "looper_lep3Pt", "looper_lep4Pt", "looper_pt_zeta", "looper_pt_zeta_vis", "met_pt", "looper_lep3MT", "looper_lep4MT", "looper_lep3dZ", "looper_lep4dZ"};
+    emu_ttz_features = {"looper_MllN", "pt_4l", "looper_ZPt", "looper_mt2", "looper_lep3Pt", "looper_lep4Pt", "looper_minDRJetToLep3", "looper_minDRJetToLep4", "looper_jet1Pt"};
+    fast_forest_emu_zz = new FastForest("emu_zz_bdt.txt", emu_zz_features);
+    fast_forest_emu_ttz = new FastForest("emu_ttz_bdt.txt", emu_ttz_features);
+
     // The RooUtil::Cutflow object facilitates various cutflow/histogramming
     RooUtil::Cutflow cutflow(output_file);
     cutflow.addCut("EventWeight", [&](){ return 1; }, [&](){ return this->EventWeight(); } );
@@ -1010,10 +1016,16 @@ void Analysis::createNewBranches()
     tx->createBranch<float>("looper_jet2BtagScore");
     tx->createBranch<float>("looper_jet3BtagScore");
     tx->createBranch<float>("looper_jet4BtagScore");
+    tx->createBranch<float>("looper_vecsum_pt_4l");
+    tx->createBranch<float>("looper_scalarsum_pt_4l");
+    tx->createBranch<float>("looper_m_4l");
+    tx->createBranch<float>("pt_4l");
     tx->createBranch<int>("ChannelEMu");
     tx->createBranch<int>("ChannelOffZ");
     tx->createBranch<int>("ChannelOnZ");
     tx->createBranch<int>("ChannelBTagEMu");
+    tx->createBranch<float>("bdt_emu_zz");
+    tx->createBranch<float>("bdt_emu_ttz");
 
     newbranchesadded = true;
 
@@ -1082,10 +1094,16 @@ void Analysis::fillSkimTree(std::vector<int> region_flags)
     tx->setBranch<float>("looper_jet2BtagScore", wvz.jets_btag_score().size() > 1 ? wvz.jets_btag_score()[1] : -999);
     tx->setBranch<float>("looper_jet3BtagScore", wvz.jets_btag_score().size() > 2 ? wvz.jets_btag_score()[2] : -999);
     tx->setBranch<float>("looper_jet4BtagScore", wvz.jets_btag_score().size() > 3 ? wvz.jets_btag_score()[3] : -999);
+    tx->setBranch<float>("looper_vecsum_pt_4l", (this->VarLepP4(lep1_idx) + this->VarLepP4(lep2_idx) + this->VarLepP4(lep3_idx) + this->VarLepP4(lep4_idx)).pt());
+    tx->setBranch<float>("looper_scalarsum_pt_4l", this->VarLepPt(lep1_idx) + this->VarLepPt(lep2_idx) + this->VarLepPt(lep3_idx) + this->VarLepPt(lep4_idx));
+    tx->setBranch<float>("looper_m_4l", (this->VarLepP4(lep1_idx) + this->VarLepP4(lep2_idx) + this->VarLepP4(lep3_idx) + this->VarLepP4(lep4_idx)).mass());
+    tx->setBranch<float>("pt_4l", this->VarLepPt(lep1_idx) + this->VarLepPt(lep2_idx) + this->VarLepPt(lep3_idx) + this->VarLepPt(lep4_idx));
     tx->setBranch<int>("ChannelEMu", region_flags[0]);
     tx->setBranch<int>("ChannelOffZ", region_flags[1]);
     tx->setBranch<int>("ChannelOnZ", region_flags[2]);
     tx->setBranch<int>("ChannelBTagEMu", region_flags[3]);
+    tx->setBranch<float>("bdt_emu_zz", this->VarZZBDT());
+    tx->setBranch<float>("bdt_emu_ttz", this->VarTTZBDT());
 
     looper->fillSkim();
 }
@@ -3695,6 +3713,14 @@ float Analysis::VarNbmed()
 }
 
 //______________________________________________________________________________________________
+LV Analysis::VarLepP4(int idx)
+{
+    if (idx < 0)
+        return LV();
+    return wvz.lep_p4().at(idx);
+}
+
+//______________________________________________________________________________________________
 float Analysis::VarLepPt(int idx)
 {
     if (idx < 0)
@@ -3957,6 +3983,49 @@ float Analysis::VarMT2(int var)
     double MT2_0mass = asymm_mt2_lester_bisect::get_mT2(0,lepton1.Px(),lepton1.Py(),0,lepton2.Px(),lepton2.Py(),misspart.Px(), misspart.Py(),0,0,0);
 
     return MT2_0mass;
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarZZBDT(int var)
+{
+    // BDT variables
+    std::vector<float> emu_zz_input = {
+        this->VarMll(lep_Nom_idx1, lep_Nom_idx2), //"looper_MllN",
+        this->VarLepPt(lep_Nom_idx1) + this->VarLepPt(lep_Nom_idx2) + this->VarLepPt(lep_ZCand_idx1) + this->VarLepPt(lep_ZCand_idx2), //"pt_4l",
+        this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2), //"looper_ZPt",
+        this->VarMT2(var), //"looper_mt2",
+        this->VarLepPt(lep_Nom_idx1), //"looper_lep3Pt",
+        this->VarLepPt(lep_Nom_idx2), //"looper_lep4Pt",
+        this->VarPtZeta(var), //"looper_pt_zeta",
+        this->VarPtZetaVis(var), //"looper_pt_zeta_vis",
+        this->VarMET(var), //"met_pt",
+        this->VarMTNom0(var), //"looper_lep3MT",
+        this->VarMTNom1(var), //"looper_lep4MT",
+        wvz.lep_dz().at(lep_Nom_idx1), //"looper_lep3dZ",
+        wvz.lep_dz().at(lep_Nom_idx2), //"looper_lep4dZ"
+        };
+
+    return 1./(1. + std::exp(-(*fast_forest_emu_zz)(emu_zz_input.data())));
+}
+
+//______________________________________________________________________________________________
+float Analysis::VarTTZBDT(int var)
+{
+
+    std::vector<float> emu_ttz_input = {
+        this->VarMll(lep_Nom_idx1, lep_Nom_idx2), //"looper_MllN",
+        this->VarLepPt(lep_Nom_idx1) + this->VarLepPt(lep_Nom_idx2) + this->VarLepPt(lep_ZCand_idx1) + this->VarLepPt(lep_ZCand_idx2), //"pt_4l",
+        this->VarPtll(lep_ZCand_idx1, lep_ZCand_idx2), //"looper_ZPt",
+        this->VarMT2(var), //"looper_mt2",
+        this->VarLepPt(lep_Nom_idx1), //"looper_lep3Pt",
+        this->VarLepPt(lep_Nom_idx2), //"looper_lep4Pt",
+        this->VarMinDRJetsToLep(lep_Nom_idx1), //"looper_minDRJetToLep3",
+        this->VarMinDRJetsToLep(lep_Nom_idx2), //"looper_minDRJetToLep4",
+        (wvz.jets_p4().size() > 0 ? wvz.jets_p4()[0].pt() : -999), //"looper_jet1Pt",
+        };
+
+    // Evaluate the bdt score
+    return 1./(1. + std::exp(-(*fast_forest_emu_ttz)(emu_ttz_input.data())));
 }
 
 //______________________________________________________________________________________________

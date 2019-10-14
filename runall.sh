@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# trap "kill 0" EXIT
+trap "kill 0" EXIT
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -29,12 +29,13 @@ usage()
   echo "  -r    yaxis_range            (e.g. -r \"[0., 100.]\")"
   echo "  -a    run all year           (e.g. -a)"
   echo "  -c    one combined signal    (e.g. -c)"
+  echo "  -i    stack signal           (e.g. -i)"
   echo
   exit
 }
 
 # Command-line opts
-while getopts ":b:t:v:d:p:n:r:x:12uyskach" OPTION; do
+while getopts ":b:t:v:d:p:n:r:x:12uyskacih" OPTION; do
   case $OPTION in
     b) BASELINE=${OPTARG};;
     t) NTUPLETYPE=${OPTARG};;
@@ -52,6 +53,7 @@ while getopts ":b:t:v:d:p:n:r:x:12uyskach" OPTION; do
     k) DOSKIM=" -k";;
     a) RUNALLYEAR=true;;
     c) ONESIGNAL=" -c";;
+    i) STACKSIGNAL=" -i";;
     h) usage;;
     :) usage;;
   esac
@@ -63,7 +65,7 @@ if [ -z ${NTUPLEVERSION}  ]; then usage; fi
 if [ -z ${FORCELOOPER}  ]; then FORCELOOPER=false; fi
 if [ -z ${FORCEHADDER}  ]; then FORCEHADDER=false; fi
 if [ -z ${DIRNAME}  ]; then DIRNAME="yield"; fi
-if [ -z ${PATTERN}  ]; then PATTERN="ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZ__Yield,ChannelBTagEMu__Yield"; fi
+if [ -z ${PATTERN}  ]; then PATTERN="ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZ__Yield,ChannelBTagEMu__Yield,FiveLeptonsMT5th__Yield"; fi
 if [ -z "${NBINS}" ]; then NBINS=""; fi
 if [ -z ${UNBLIND}  ]; then UNBLIND=""; fi
 if [ -z ${YAXISLOG}  ]; then YAXISLOG=""; fi
@@ -73,6 +75,7 @@ if [ -z "${XAXISLABEL}" ]; then XAXISLABEL=""; fi
 if [ -z "${YAXISRANGE}" ]; then YAXISRANGE=""; fi
 if [ -z ${RUNALLYEAR}  ]; then RUNALLYEAR=false; fi
 if [ -z ${ONESIGNAL}  ]; then ONESIGNAL=""; fi
+if [ -z ${STACKSIGNAL}  ]; then STACKSIGNAL=""; fi
 
 # Verbose
 date
@@ -96,6 +99,7 @@ echo "DOSYST         : ${DOSYST}"
 echo "DOSKIM         : ${DOSKIM}"
 echo "RUNALLYEAR     : ${RUNALLYEAR}"
 echo "ONESIGNAL      : ${ONESIGNAL}"
+echo "STACKSIGNAL    : ${STACKSIGNAL}"
 echo "================================================"
 
 # to shift away the parsed options
@@ -166,22 +170,25 @@ if [ -n ${DIRNAME} ] && [ -n ${PATTERN} ]; then
 
     if ${RUNALLYEAR}; then
         # Plotting the output histograms by each year
-        python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
-        python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
-        python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+        python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION} -t y2016_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+        python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2017_${NTUPLEVERSION} -t y2017_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
+        python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # The last two arguments must match the last two arguments from previous command
     fi
 
     # Plotting the output histograms of all year
-    python ./scripts/plot.py ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
+    echo python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
+    python ./scripts/plot.py ${STACKSIGNAL} ${ONESIGNAL} -r "${YAXISRANGE}" -x "${XAXISLABEL}" ${YAXISLOG} ${UNBLIND} -s ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} -t y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} -d ${DIRNAME} -p ${PATTERN} ${NBINS} # Basically the tags are just concatenated with "_"
 
 fi
 
 if [[ ${PATTERN} == *"ChannelEMuHighMT__Yield,ChannelOffZHighMET__Yield,ChannelOnZ__Yield,ChannelBTagEMu__Yield"* ]] && [[ ${NTUPLETYPE} == *"WVZ"* ]]; then
 
-    # pretty_print each year
-    sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
-    sh ./scripts/yield_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
-    sh ./scripts/yield_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+    if ${RUNALLYEAR}; then
+        # pretty_print each year
+        sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION} y2016_${BASELINE} # Basically the tags are just concatenated with "_"
+        sh ./scripts/yield_print.sh ${NTUPLETYPE}2017_${NTUPLEVERSION} y2017_${BASELINE} # Basically the tags are just concatenated with "_"
+        sh ./scripts/yield_print.sh ${NTUPLETYPE}2018_${NTUPLEVERSION} y2018_${BASELINE} # Basically the tags are just concatenated with "_"
+    fi
 
     # Printing in to text format for easy keynote export
     sh ./scripts/yield_print.sh ${NTUPLETYPE}2016_${NTUPLEVERSION}_${NTUPLETYPE}2017_${NTUPLEVERSION}_${NTUPLETYPE}2018_${NTUPLEVERSION} y2016_${BASELINE}_y2017_${BASELINE}_y2018_${BASELINE} # Basically the tags are just concatenated with "_"

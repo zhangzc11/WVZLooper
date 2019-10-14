@@ -25,6 +25,19 @@ def compare_fake(lepflav, variable):
         if hist.Integral() != 0:
             hist.Scale(1./hist.Integral())
 
+    xaxis_label = ""
+    if "MotherID" in variable and lepflav == "El":
+        xaxis_label = "Flavor of misid'd electron"
+
+    if "MotherID" in variable and lepflav == "Mu":
+        xaxis_label = "Flavor of misid'd muon"
+
+    if "relIso03EA" in variable:
+        xaxis_label = "I_{rel,0.3,EA,e}"
+
+    if "relIso04DB" in variable:
+        xaxis_label = "I_{rel,0.4,DB,#mu}"
+
     extraoptions={
         "print_yield":True,
         "nbins":45,
@@ -38,6 +51,8 @@ def compare_fake(lepflav, variable):
         "lumi_value":-1,
         "remove_underflow": True,
         "xaxis_ndivisions":505,
+        "xaxis_label":xaxis_label,
+        "ratio_xaxis_title":xaxis_label,
         "ratio_range":[0.,4.],
         "output_name":"plots_fakes/wz_v_dy_{}.pdf".format(histogram_name),
         "legend_datalabel":"WZ",
@@ -58,6 +73,8 @@ def compare_fake(lepflav, variable):
         "lumi_value":-1,
         "remove_underflow": True,
         "xaxis_ndivisions":505,
+        "xaxis_label":xaxis_label,
+        "ratio_xaxis_title":xaxis_label,
         "ratio_range":[0.,4.],
         "output_name":"plots_fakes/wz_v_ttbar_{}.pdf".format(histogram_name),
         "legend_datalabel":"WZ",
@@ -67,14 +84,14 @@ def compare_fake(lepflav, variable):
 
 if __name__ == "__main__":
 
-    compare_fake("El", "lepFakeMCmatchedMotherID")
+    # compare_fake("El", "lepFakeMCmatchedMotherID")
     # compare_fake("El", "lepFakeMCmatchedMCID")
-    compare_fake("El", "lepFakeMCmatchedPt")
+    # compare_fake("El", "lepFakeMCmatchedPt")
     # compare_fake("El", "lepFakeMCmatcheddz")
     # compare_fake("El", "lepFakeMCmatcheddxy")
     # compare_fake("El", "lepFakeMCmatchedsip3d")
     # compare_fake("El", "lepFakeMCmatchedip3d")
-    compare_fake("El", "lepFakeMCmatchedrelIso03EA")
+    # compare_fake("El", "lepFakeMCmatchedrelIso03EA")
     # compare_fake("El", "lepFakeMCmatchedrelIso04DB")
     # compare_fake("El", "lepFakeMCmatchedPtVarBin")
     # compare_fake("El", "lepFakeMCmatchedPtVarBinFwd")
@@ -82,18 +99,25 @@ if __name__ == "__main__":
     # compare_fake("El", "lepFakeMCmatchedPtFineVarBin")
     # compare_fake("El", "lepFakeMCmatchedPtFineVarBinFwd")
     # compare_fake("El", "lepFakeMCmatchedPtFineVarBinCen")
-    compare_fake("Mu", "lepFakeMCmatchedMotherID")
+    # compare_fake("Mu", "lepFakeMCmatchedMotherID")
     # compare_fake("Mu", "lepFakeMCmatchedMCID")
-    compare_fake("Mu", "lepFakeMCmatchedPt")
+    # compare_fake("Mu", "lepFakeMCmatchedPt")
     # compare_fake("Mu", "lepFakeMCmatcheddz")
     # compare_fake("Mu", "lepFakeMCmatcheddxy")
     # compare_fake("Mu", "lepFakeMCmatchedsip3d")
     # compare_fake("Mu", "lepFakeMCmatchedip3d")
     # compare_fake("Mu", "lepFakeMCmatchedrelIso03EA")
-    compare_fake("Mu", "lepFakeMCmatchedrelIso04DB")
+    # compare_fake("Mu", "lepFakeMCmatchedrelIso04DB")
     # compare_fake("Mu", "lepFakeMCmatchedPtVarBin")
     # compare_fake("Mu", "lepFakeMCmatchedPtVarBinFwd")
     # compare_fake("Mu", "lepFakeMCmatchedPtVarBinCen")
     # compare_fake("Mu", "lepFakeMCmatchedPtFineVarBin")
     # compare_fake("Mu", "lepFakeMCmatchedPtFineVarBinFwd")
     # compare_fake("Mu", "lepFakeMCmatchedPtFineVarBinCen")
+
+    compare_fake("El", "lepFakeMCmatchedMotherID")
+    compare_fake("El", "lepFakeMCmatchedPt")
+    compare_fake("El", "lepFakeMCmatchedrelIso03EA")
+    compare_fake("Mu", "lepFakeMCmatchedMotherID")
+    compare_fake("Mu", "lepFakeMCmatchedPt")
+    compare_fake("Mu", "lepFakeMCmatchedrelIso04DB")

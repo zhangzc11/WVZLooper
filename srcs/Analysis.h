@@ -40,6 +40,8 @@
 // MET MC Correction
 #include "METCorrectionHandler.h"
 
+#include "fastforest.h"
+
 using namespace std;
 
 //class: the main class for functions;
@@ -133,6 +135,9 @@ public:
     bool doFakeEst;
     bool doSyst;
     bool doSkim;
+    bool newbranchesadded;
+    bool useMVAID;
+    bool doNotApplyMETSmear;
     std::vector<LV> leptons;
     std::vector<int> lep_veto_idxs;
     std::vector<int> lep_tight_idxs;
@@ -168,6 +173,15 @@ public:
     int lep_DYX_DYCand_idx1;
     int lep_DYX_DYCand_idx2;
     int lep_Fakeable_MCmatched_idx;
+    int lep_5Lep_Z1_idx1;
+    int lep_5Lep_Z1_idx2;
+    int lep_5Lep_Z2_idx1;
+    int lep_5Lep_Z2_idx2;
+    int lep_5Lep_W_idx;
+    int lep_wzcr_idx1;
+    int lep_wzcr_idx2;
+    int lep_wzcr_idx3;
+    int lep_wzcr_idxe;
     LV dilepZCand;
     LV dilepNominal;
     TString output_tfile_name;
@@ -207,6 +221,12 @@ public:
     RooUtil::HistMap* histmap_2017_fake_rate_mu;
     RooUtil::HistMap* histmap_2018_fake_rate_el;
     RooUtil::HistMap* histmap_2018_fake_rate_mu;
+    RooUtil::HistMap* histmap_2016_elec_mva_medium_sf;
+    RooUtil::HistMap* histmap_2016_elec_mva_veto_sf;
+    RooUtil::HistMap* histmap_2017_elec_mva_medium_sf;
+    RooUtil::HistMap* histmap_2017_elec_mva_veto_sf;
+    RooUtil::HistMap* histmap_2018_elec_mva_medium_sf;
+    RooUtil::HistMap* histmap_2018_elec_mva_veto_sf;
 
     // MET MC Correction for
     METCorrectionHandler metcorrector;
@@ -223,6 +243,14 @@ public:
     TFile* BDTinputFile;
     RooUtil::TTreeX* tx;
 
+    // FastForest
+    FastForest* fast_forest_emu_zz;
+    FastForest* fast_forest_emu_ttz;
+    FastForest* fast_forest_offz_zz;
+    FastForest* fast_forest_offz_ttz;
+    std::vector<std::string> emu_zz_features;
+    std::vector<std::string> emu_ttz_features;
+
 //*******functions********//
     Analysis(const char* ifileName, const char* RootName);
     virtual ~Analysis();
@@ -237,7 +265,7 @@ public:
 
     void setDoSkim(bool=true);
     void createNewBranches();
-    void fillSkimTree();
+    void fillSkimTree(std::vector<int>);
 
     void loadScaleFactors();
 
@@ -252,15 +280,18 @@ public:
     void select2ndZCandAndWCandLeptons();
     void selectVetoButNotNomLeptons();
     void selectFakeableLeptons();
+    void select5LepLeptons();
     void sortLeptonIndex();
     void setDilepMasses();
     void correctMET();
+    void selectWZCRLeptons();
 
     float EventWeight();
-    float LeptonScaleFactor();
+    float LeptonScaleFactor(int=0, int=0);
     float LeptonScaleFactorZZ4l();
+    float LeptonScaleFactor5Lep(int=0, int=0);
     float LeptonScaleFactorv1();
-    float IndividualLeptonScaleFactor(int, bool);
+    float IndividualLeptonScaleFactor(int, bool, int=0, int=0);
     float FakeFactor();
     float BTagSF();
 
@@ -298,7 +329,7 @@ public:
 
     bool Cut4LepLeptonPt(bool=false);
     bool CutZZ4LepLeptonPt();
-    bool CutHLT();
+    bool CutHLT(std::vector<int> idxs=std::vector<int>());
     bool Cut4LepLowMll(bool=false);
     bool Cut4LepBVeto(int=0);
     bool Cut4LepBTag(int=0);
@@ -323,7 +354,11 @@ public:
     bool ChannelOffZHighMET();
 
     float VarMll();
+    float VarMjj();
+    float VarMjjMinDR();
     float VarMET(int=0);
+    float VarMETNoSmearing(int=0);
+    float VarMETSmearing(int=0);
     float VarNvtx();
     float VarMll2ndZ();
     float VarMT(int,int=0);
@@ -341,8 +376,10 @@ public:
     float VarNEENoiseJet();
     float VarNfwdjet();
     float VarNb();
+    float VarNbmed();
     float VarMll2l();
     float VarNSFOS();
+    LV VarLepP4(int);
     float VarLepPt(int);
     float VarLepEta(int idx);
     float VarLepPhi(int idx);
@@ -352,11 +389,16 @@ public:
     float VarHTLep(int, int, int, int);
     float VarHTLep5();
     float VarMETPhi(int=0);
+    float VarMETPhiNoSmearing(int=0);
+    float VarMETPhiSmearing(int=0);
     float VarTauTauDisc(int=0);
     float VarPtZetaDiff(int=0);
     float VarPtZeta(int=0);
     float VarPtZetaVis(int=0);
     float VarMinDRJetsToLep(int);
+    float VarMT2(int=0);
+    float VarZZBDT(int=0);
+    float VarTTZBDT(int=0);
 
     LeptonVectors GetLeptonVectors();
 

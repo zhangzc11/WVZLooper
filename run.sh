@@ -66,7 +66,7 @@ for i in $(ls -r /nfs-7/userdata/phchang/babies/${NTUPLETYPE}${YEAR}_${NTUPLEVER
     if [[ $i == *"zz_4l_powheg"* ]]; then
         echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} ${SYST} ${SKIM}" | tee outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${SYST}${SKIM}${i}.log"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${SYST}_${SKIM}.txt
     else
-        echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} ${SYST} ${SKIM}"> outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${SYST}${SKIM}${i}.log"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${SYST}_${SKIM}.txt
+        echo ./Analysis.exe ${i} ${NTUPLETYPE}${YEAR}_${NTUPLEVERSION} ${TAG} ${SYST} ${SKIM}" > outputs/${NTUPLETYPE}${YEAR}_${NTUPLEVERSION}/${TAG}/${SYST}${SKIM}${i}.log 2>&1"  >> .jobs_${YEAR}_${NTUPLEVERSION}_${NTUPLETYPE}_${TAG}_${SYST}_${SKIM}.txt
     fi
 done
 

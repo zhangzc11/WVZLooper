@@ -1,0 +1,36 @@
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -s -1 -2
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d met_correction -u -p ChannelOnZ__MET -n 45 -x \"MET [GeV]\" -y -r 0.01,1e7
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d met_correction -u -p ChannelOnZ__OrigMET -n 45 -x \"MET w/ no smear [GeV]\" -y -r 0.01,1e7
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d signal_discriminant -p ChannelEMu__MTNom0 -n 15 -x \"#it{m}_{T}^{l1} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d signal_discriminant -p ChannelEMu__MTNom1 -n 15 -x \"#it{m}_{T}^{l2} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d signal_discriminant -p ChannelOffZ__MET -n 15 -y -x \"MET [GeV]\" -r 0.01,1e6
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d fits -p ChannelEMuHighMT__MllNom -n 5 -x \"#it{m}_{ll} [GeV]\" -a
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d fits -p ChannelOffZHighMET__Yield -n 1 -x \"Yield\" -a
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d fits -p ChannelOnZ__Yield -n 1 -x \"Yield\" -a -u -c
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d fits -p ChannelBTagEMu__Yield -n 1 -x \"Yield\" -a -u -c
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d btagcr -p ChannelBTagEMu__LargeMTNom0 -n 15 -u -x \"#it{m}_{T}^{l1} [GeV]\" -a
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d btagcr -p ChannelBTagEMu__LargeMTNom1 -n 15 -u -x \"#it{m}_{T}^{l2} [GeV]\" -a
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d btagcr -p ChannelBTagEMu__MET -n 15 -u -x \"MET [GeV]\" -a
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d onzcr -p ChannelOnZ__MTNom0 -n 30 -u -x \"#it{m}_{T}^{l1} [GeV]\" -a 
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d onzcr -p ChannelOnZ__MTNom1 -n 30 -u -x \"#it{m}_{T}^{l1} [GeV]\" -a 
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d onzcr -p ChannelOnZ__MET -n 45 -u -x \"MET [GeV]\" -a 
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d hzzcr -p ChannelHZZ4l__MZZ4lZoom -u -x \"#it{m}_{4l} [GeV]\" -n 15
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d hzzcr -p ChannelHZZ4l__MllZCand -u -x \"#it{m}_{ll,1st} [GeV]\" -n 45
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d hzzcr -p ChannelHZZ4l__MllZ2Cand -u -x \"#it{m}_{ll,2nd} [GeV]\" -n 45
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d zpeak -p Cut4LepLeptonPt__lepZPt0 -u -n 45 -x \"#it{p}_{T}^{Z-tag1} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d zpeak -p Cut4LepLeptonPt__lepZPt1 -u -n 45 -x \"#it{p}_{T}^{Z-tag2} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d zpeak -p Cut4LepLeptonPt__lepNPt0 -u -n 45 -x \"#it{p}_{T}^{l1} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d zpeak -p Cut4LepLeptonPt__lepNPt1 -u -n 45 -x \"#it{p}_{T}^{l2} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d zpeak -p Cut4LepLeptonPt__MllZCandZoom -u -n 45 -x \"#it{m}_{ll}^{Z-tag} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d zpeak -p Cut4LepLeptonPt__MllNomZoom -u -n 45 -x \"#it{m}_{ll} [GeV]\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d twzcr -p ChannelBTagEMuOneNb__Njet  -u -x \"#it{n}_{jet}\"
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d wzar -p ChannelAREMuHighMT__lepFrelIso03EA  -u -x \"I_{rel,0.3,EA,e}\" -n 5
+sh runall.sh -b mtsum -t WVZ -v v0.1.12.7 -d wzar -p ChannelAREMuHighMT__lepFrelIso04DB  -u -x \"I_{rel,0.4,DB,#mu}\" -n 5
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p DYPlusXFakeMu__lepFakeCand2relIso04DB -u -y -x \"I_{rel,0.4,DB,#mu}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p DYPlusXFakeEl__lepFakeCand2relIso03EA -u -y -x \"I_{rel,0.3,EA,e}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p DYPlusXFakeMu__lepFakeCand2PtReg -u -x \"#it{p}_{T,#mu}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p DYPlusXFakeEl__lepFakeCand2PtReg -u -x \"#it{p}_{T,e}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p EMuPlusXFakeMu__lepFakeCand2relIso04DB -u -y -x \"I_{rel,0.4,DB,#mu}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p EMuPlusXFakeEl__lepFakeCand2relIso03EA -u -y -x \"I_{rel,0.3,EA,e}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p EMuPlusXFakeMu__lepFakeCand2PtReg -u -x \"#it{p}_{T,#mu}\"
+sh runall.sh -b test -t Trilep -v v0.1.11 -d wzvr -p EMuPlusXFakeEl__lepFakeCand2PtReg -u -x \"#it{p}_{T,e}\"

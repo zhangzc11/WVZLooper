@@ -14,7 +14,7 @@ import math
 Ntuple_Version = "v0.1.12.7"
 Baseline_Version = "syst"
 
-syst_list_all = ["Nominal", "JES", "JER", "Pileup", "BTagHF", "BTagLF", "MET", "PDF", "Qsq", "AlphaS", "METPileup"]
+syst_list_all = ["Nominal", "ElLepSF", "MuLepSF", "JES", "Pileup", "BTagHF", "BTagLF", "MET", "PDF", "Qsq", "AlphaS", "METPileup"]
 syst_list = ["Nominal", "JES", "JER", "Pileup", "MET", "METPileup"]
 syst_list = syst_list_all
 
@@ -489,49 +489,124 @@ def get_alpha_hists(proc, num, den):
     hists.insert(2, h)
     return hists
 
-def main():
+def main_old_v2():
 
-    # # N btag extrapolation uncertainty from simulation
-    # hists = get_alpha_hists("ttz", "ChannelEMu", "ChannelBTagEMu")
-    # p.print_yield_table_from_list(hists, "exp/ttz_emu_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_alpha.tex", prec=2, caption="Nb extrapolation", noerror=True)
+    # N btag extrapolation uncertainty from simulation
+    hists = get_alpha_hists("ttz", "ChannelEMu", "ChannelBTagEMu")
+    p.print_yield_table_from_list(hists, "exp/ttz_emu_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_alpha.tex", prec=2, caption="Nb extrapolation", noerror=True)
 
-    # # N btag and em to eemm extrapolation uncertainty from simulation
-    # hists = get_alpha_hists("ttz", "ChannelOffZ", "ChannelBTagEMu")
-    # p.print_yield_table_from_list(hists, "exp/ttz_offz_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/ttz_offz_alpha.tex", prec=2, caption="Nb plus emu eemm Extrapolation", noerror=True)
+    # N btag and em to eemm extrapolation uncertainty from simulation
+    hists = get_alpha_hists("ttz", "ChannelOffZ", "ChannelBTagEMu")
+    p.print_yield_table_from_list(hists, "exp/ttz_offz_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/ttz_offz_alpha.tex", prec=2, caption="Nb plus emu eemm Extrapolation", noerror=True)
 
-    # # MT extrapolation
-    # hists = get_alpha_hists("ttz", "ChannelEMuHighMT", "ChannelEMu")
-    # p.print_yield_table_from_list(hists, "exp/ttz_emu_mt_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_mt_alpha.tex", prec=2, caption="emu MT extrapolation", noerror=True)
+    # MT extrapolation
+    hists = get_alpha_hists("ttz", "ChannelEMuHighMT", "ChannelEMu")
+    p.print_yield_table_from_list(hists, "exp/ttz_emu_mt_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_mt_alpha.tex", prec=2, caption="emu MT extrapolation", noerror=True)
 
-    # # MET extrapolation
-    # hists = get_alpha_hists("ttz", "ChannelOffZHighMET", "ChannelOffZ")
-    # p.print_yield_table_from_list(hists, "exp/ttz_eemm_met_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/ttz_eemm_met_alpha.tex", prec=2, caption="eemm MET extrapolation", noerror=True)
+    # MET extrapolation
+    hists = get_alpha_hists("ttz", "ChannelOffZHighMET", "ChannelOffZ")
+    p.print_yield_table_from_list(hists, "exp/ttz_eemm_met_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/ttz_eemm_met_alpha.tex", prec=2, caption="eemm MET extrapolation", noerror=True)
 
-    # # Mll extrapolation
-    # hists = get_alpha_hists("zz", "ChannelOffZ", "ChannelOnZ")
-    # p.print_yield_table_from_list(hists, "exp/zz_eemm_mll_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_mll_alpha.tex", prec=2, caption="eemm Mll extrapolation", noerror=True)
+    # Mll extrapolation
+    hists = get_alpha_hists("zz", "ChannelOffZ", "ChannelOnZ")
+    p.print_yield_table_from_list(hists, "exp/zz_eemm_mll_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_mll_alpha.tex", prec=2, caption="eemm Mll extrapolation", noerror=True)
 
-    # # MET extrapolation
-    # hists = get_alpha_hists("zz", "ChannelOffZHighMET", "ChannelOffZ")
-    # p.print_yield_table_from_list(hists, "exp/zz_eemm_met_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_met_alpha.tex", prec=2, caption="eemm Mll extrapolation", noerror=True)
+    # MET extrapolation
+    hists = get_alpha_hists("zz", "ChannelOffZHighMET", "ChannelOffZ")
+    p.print_yield_table_from_list(hists, "exp/zz_eemm_met_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_met_alpha.tex", prec=2, caption="eemm Mll extrapolation", noerror=True)
 
-    # # MET extrapolation
-    # hists = get_alpha_hists("zz", "ChannelEMu", "ChannelOnZ")
-    # p.print_yield_table_from_list(hists, "exp/zz_emu_flav_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
-    # p.print_yield_tex_table_from_list(hists, "exp/zz_emu_flav_alpha.tex", prec=2, caption="emu flavor extrapolation", noerror=True)
+    # MET extrapolation
+    hists = get_alpha_hists("zz", "ChannelEMu", "ChannelOnZ")
+    p.print_yield_table_from_list(hists, "exp/zz_emu_flav_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/zz_emu_flav_alpha.tex", prec=2, caption="emu flavor extrapolation", noerror=True)
 
     # MT extrapolation
     hists = get_alpha_hists("zz", "ChannelEMuHighMT", "ChannelEMu")
     p.print_yield_table_from_list(hists, "exp/zz_emu_mt_alpha.txt", prec=2, binrange=[1,2,3], noerror=True)
     p.print_yield_tex_table_from_list(hists, "exp/zz_emu_mt_alpha.tex", prec=2, caption="emu mtor extrapolation", noerror=True)
 
+
+def main():
+    # -- combined version where only one transfer factor is computed
+
+    # MET/Mll combined extrapolation
+    hists = get_alpha_hists("zz", "ChannelOffZHighMET", "ChannelOnZ")
+    p.print_yield_table_from_list(hists, "exp/zz_eemm_tf.txt", prec=4, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/zz_eemm_tf.tex", prec=4, caption="eemm zz transfer factor", noerror=True)
+
+    # flavor/Mll/MT combined extrapolation
+    hists = get_alpha_hists("zz", "ChannelEMuHighMT", "ChannelOnZ")
+    p.print_yield_table_from_list(hists, "exp/zz_emu_tf.txt", prec=4, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/zz_emu_tf.tex", prec=4, caption="emu zz transfer factor", noerror=True)
+
+    # nbjet/MT combined extrapolation
+    hists = get_alpha_hists("ttz", "ChannelEMuHighMT", "ChannelBTagEMu")
+    p.print_yield_table_from_list(hists, "exp/ttz_emu_tf.txt", prec=4, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/ttz_emu_tf.tex", prec=4, caption="emu ttz transfer factor", noerror=True)
+
+    # flavor/nbjet/MET combined extrapolation
+    hists = get_alpha_hists("ttz", "ChannelOffZHighMET", "ChannelBTagEMu")
+    p.print_yield_table_from_list(hists, "exp/ttz_eemm_tf.txt", prec=4, binrange=[1,2,3], noerror=True)
+    p.print_yield_tex_table_from_list(hists, "exp/ttz_eemm_tf.tex", prec=4, caption="eemm ttz transfer factor", noerror=True)
+
+
+def main_add():
+
+    # hists = get_eff_ratios("ttz" , "BTagEMu" , "MET" , "mc")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_met.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_met.tex", prec=4, caption="ttz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("ttz" , "BTagEMu" , "MET" , "data")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_met.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_met.tex", prec=4, caption="ttz cut eff. comparison", noerror=False)
+
+    hists = get_eff_ratios("ttz" , "BTagEMu" , "MET" , "ratio")
+    p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_met.txt", prec=4, binrange=[1], noerror=False)
+    p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_met.tex", prec=4, caption="ttz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("ttz" , "BTagEMu" , "MT" , "mc")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_mt.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_mt.tex", prec=4, caption="ttz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("ttz" , "BTagEMu" , "MT" , "data")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_mt.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_mt.tex", prec=4, caption="ttz cut eff. comparison", noerror=False)
+
+    hists = get_eff_ratios("ttz" , "BTagEMu" , "MT" , "ratio")
+    p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_mt.txt", prec=4, binrange=[1], noerror=False)
+    p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_mt.tex", prec=4, caption="ttz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("ttz" , "BTagEMu" , "MET" , "mc")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_met.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_met.tex", prec=4, caption="zz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("ttz" , "BTagEMu" , "MET" , "data")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_ttz_met.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_ttz_met.tex", prec=4, caption="zz cut eff. comparison", noerror=False)
+
+    hists = get_eff_ratios("zz" , "OnZ" , "MET" , "ratio")
+    p.print_yield_table_from_list(hists, "exp/eff_ratio_zz_met.txt", prec=4, binrange=[1], noerror=False)
+    p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_zz_met.tex", prec=4, caption="zz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("zz" , "OnZ" , "MT" , "mc")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_zz_mt.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_zz_mt.tex", prec=4, caption="zz cut eff. comparison", noerror=False)
+
+    # hists = get_eff_ratios("zz" , "OnZ" , "MT" , "data")
+    # p.print_yield_table_from_list(hists, "exp/eff_ratio_zz_mt.txt", prec=4, binrange=[1], noerror=False)
+    # p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_zz_mt.tex", prec=4, caption="zz cut eff. comparison", noerror=False)
+
+    hists = get_eff_ratios("zz" , "OnZ" , "MT" , "ratio")
+    p.print_yield_table_from_list(hists, "exp/eff_ratio_zz_mt.txt", prec=4, binrange=[1], noerror=False)
+    p.print_yield_tex_table_from_list(hists, "exp/eff_ratio_zz_mt.tex", prec=4, caption="zz cut eff. comparison", noerror=False)
+
 if __name__ == "__main__":
 
-    main()
+    main_add()
 
